@@ -19,10 +19,11 @@ export const EventDetail = () => {
       {/* 2. Main Content */}
       <main className="event-detail-main">
         <h1 className="event-detail-title">Sự kiện 1</h1>
+        <br></br>
         <p className="event-detail-org">Đơn vị tổ chức</p>
 
         {/* Action Bar */}
-        <div className="event-action-bar">
+        <div className="event-action-bar" align="center">
           <div className="action-item">
             <div className="action-icon">📍</div>
             <span className="action-label">Explore</span>
