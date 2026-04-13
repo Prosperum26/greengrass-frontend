@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { QRScanner } from '../../checkin/components/QRScanner';
 import './EventDetail.css';
 
 export const EventDetail = () => {
+  const [showQR, setShowQR] = useState(false);
   return (
     <div className="event-detail-container">
+      {showQR && <QRScanner onClose={() => setShowQR(false)} />}
       {/* 1. Header */}
       <header className="site-header">
         <div className="logo-text">
@@ -32,7 +35,7 @@ export const EventDetail = () => {
             <div className="action-icon">🔖</div>
             <span className="action-label">Join</span>
           </div>
-          <div className="action-item">
+          <div className="action-item" onClick={() => setShowQR(true)} style={{ cursor: 'pointer' }}>
             <div className="action-icon">📷</div>
             <span className="action-label">QR Scanning</span>
           </div>
