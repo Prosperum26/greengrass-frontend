@@ -1,0 +1,235 @@
+.event-detail-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+  font-family: sans-serif;
+}
+
+/* Header & Footer Resets */
+.site-header {
+  background-color: #000000;
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+}
+
+.logo-text {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.logo-highlight {
+  color: #2e8b57; /* specific green tone later adjusted in tailwind if needed */
+}
+
+.main-nav .nav-link {
+  color: #fff;
+  text-decoration: none;
+  margin-right: 2rem;
+  font-size: 0.9rem;
+}
+
+.btn-login {
+  background-color: #fff;
+  color: #000;
+  border: none;
+  padding: 0.5rem 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+/* Main Content Area */
+.event-detail-main {
+  flex: 1;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 3rem 2rem;
+  width: 100%;
+}
+
+.event-detail-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #000;
+  margin-bottom: 0.5rem;
+}
+
+.event-detail-org {
+  font-size: 1.1rem;
+  color: #666;
+  margin-bottom: 2rem;
+}
+
+/* Action Bar */
+.event-action-bar {
+  display: flex;
+  background-color: #f6edff;
+  border-radius: 50px;
+  padding: 0.5rem 2rem;
+  width: fit-content;
+  margin-bottom: 3rem;
+  gap: 3rem;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.event-action-bar:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+}
+
+.action-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  color: #444;
+  transition: color 0.2s ease;
+}
+
+.action-item:hover {
+  color: #000;
+}
+
+.action-icon {
+  font-size: 1.25rem;
+  margin-bottom: 0.25rem;
+}
+
+.action-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* Body Text */
+.event-description-box {
+  margin-bottom: 2rem;
+  line-height: 1.6;
+  color: #333;
+  font-size: 0.95rem;
+  text-align: justify;
+}
+
+.event-info-block {
+  margin-bottom: 2rem;
+  font-size: 0.95rem;
+  color: #000;
+  line-height: 1.8;
+  font-weight: 500;
+}
+
+/* Image Grid */
+.event-image-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.event-image-grid img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 8px;
+  transition: transform 0.3s ease;
+}
+
+.event-image-grid img:hover {
+  transform: scale(1.02);
+}
+
+/* Notes & Map Section */
+.event-notes {
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+}
+
+.event-notes p {
+  margin-bottom: 0.5rem;
+}
+
+.event-notes ul {
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.event-map-container {
+  margin-top: 1rem;
+  width: 100%;
+  height: 400px;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.event-map-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Participants Section */
+.event-participants-section {
+  background-color: #2f6a39; /* Green section from mockup */
+  padding: 4rem 2rem;
+  color: #fff;
+}
+
+.participants-inner {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.participants-title {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin-bottom: 2rem;
+}
+
+.participants-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.participant-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: transform 0.2s ease;
+  cursor: pointer;
+}
+
+.participant-item:hover {
+  transform: translateX(10px);
+}
+
+.participant-avatar {
+  background-color: #e6ddff;
+  color: #5d24b6;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.participant-name {
+  font-size: 0.95rem;
+  color: #fff;
+}
+
+/* Footer (Shared styles can be placed if necessary) */
+.site-footer {
+  background: #111;
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  padding: 3rem 2rem;
+}

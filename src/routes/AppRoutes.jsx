@@ -4,7 +4,7 @@ import { MainLayout } from "../components/layout";
 
 // Page Components (to be created)
 import { EventList } from "../features/events";
-import EventDetail from "../features/events/components/EventDetail";
+
 const HomePage = () => (
   <div className="p-6">
     <h1 className="text-2xl font-bold">Trang chủ GreenGrass</h1>
