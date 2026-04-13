@@ -24,9 +24,9 @@ export const AppRoutes = () => {
     <BrowserRouter>
       <Routes>
         {/* Public Routes - No Layout */}
-        <Route path="/login" element={<LoginPage />} />
+        <Route path="/login" element={<LogInPage />} />
         <Route path="/register" element={<RegisterPage />} />
-        
+
         {/* Protected Routes - With MainLayout */}
         <Route path="/" element={<MainLayout />}>
           <Route index element={<HomePage />} />
@@ -37,7 +37,7 @@ export const AppRoutes = () => {
           <Route path="forum" element={<ForumPage />} />
           <Route path="profile" element={<ProfilePage />} />
         </Route>
-        
+
         {/* 404 */}
         <Route path="*" element={<NotFoundPage />} />
       </Routes>

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import googleLogo from '../../../assets/logo_google.png';
 import { useAuth } from '../hooks/useAuth';
-// import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 const LoginPage = () => {
     // 1. Tạo biến để nhớ những gì người dùng gõ vào ô input
@@ -11,7 +11,7 @@ const LoginPage = () => {
 
     // 2. Lôi đồ nghề từ useAuth ra xài
     const { login, isLoading, error: apiError } = useAuth();
-    // const navigate = useNavigate();
+    const navigate = useNavigate();
 
     // 3. Hàm kích hoạt khi bấm nút "Sign In"
     const handleLoginSubmit = async (e) => {
@@ -30,7 +30,7 @@ const LoginPage = () => {
 
             // Nếu chạy qua được dòng trên mà không bị văng lỗi (catch), nghĩa là thành công!
             alert("Đăng nhập thành công!");
-            // navigate('/');
+            navigate('/');
 
         } catch (err) {
             // Lỗi từ server đã được useAuth bắt và gán vào biến `apiError` rồi
@@ -107,12 +107,15 @@ const LoginPage = () => {
 
                 {/* Các liên kết bên dưới */}
                 <div className="mt-2 flex flex-col items-start gap-2">
-                    <a href="#" className="text-[14px] text-gray-600 hover:text-black underline underline-offset-4 decoration-1">
+                    {/* <a href="#" className="text-[14px] text-gray-600 hover:text-black underline underline-offset-4 decoration-1">
                         Forgot password?
-                    </a>
-                    {/* <Link to="/register" className="text-[14px] text-gray-600 hover:text-black underline underline-offset-4 decoration-1">
+                    </a> */}
+                    <Link to="/forgot-password" className="text-[14px] text-gray-600 hover:text-black underline underline-offset-4 decoration-1">
+                        Forgot password?
+                    </Link>
+                    <Link to="/register" className="text-[14px] text-gray-600 hover:text-black underline underline-offset-4 decoration-1">
                         Bạn chưa có tài khoản?
-                    </Link> */}
+                    </Link>
                 </div>
 
             </div>

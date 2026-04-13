@@ -73,13 +73,25 @@ export const useAuth = () => {
     }
   }, []);
 
+  // const logout = useCallback(async () => {
+  //   try {
+  //     await authApi.logout();
+  //   } finally {
+  //     localStorage.removeItem('token');
+  //     setUser(null);
+  //   }
+  // }, []);
   const logout = useCallback(async () => {
-    try {
-      await authApi.logout();
-    } finally {
-      localStorage.removeItem('token');
-      setUser(null);
-    }
+    // Không cần dùng try-catch gọi API nữa vì mình biết chắc chắn nó sẽ lỗi do chưa có BE
+    // Chúng ta thực hiện dọn dẹp bộ nhớ ngay lập tức
+
+    localStorage.removeItem('token'); // Xóa token khỏi kho lưu trữ
+    setUser(null);                    // Đưa trạng thái user về trống rỗng
+
+    // Nếu bạn muốn mượt hơn, có thể giả lập đợi 0.3s cho giống thật
+    await new Promise(resolve => setTimeout(resolve, 300));
+
+    console.log("Đã đăng xuất cục bộ thành công!");
   }, []);
 
   const googleAuth = useCallback(async (token) => {
