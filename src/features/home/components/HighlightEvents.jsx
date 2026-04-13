@@ -1,17 +1,8 @@
 import React from 'react';
 import { SectionTitle, Button } from '../../../components/ui';
 import { useNavigate } from 'react-router-dom';
-import img1 from '../../../assets/event_dummy1.png';
-import img2 from '../../../assets/event_dummy2.png';
-import img3 from '../../../assets/event_dummy3.png';
 
-const events = [
-  { img: img1, title: 'Hội Thảo Hành Động Xanh', time: 'Thứ 7, 15/05/2026', location: 'Hội trường A, ĐH Tôn Đức Thắng', participants: 120 },
-  { img: img2, title: 'Quyên Góp Sách Đổi Cây', time: 'Chủ Nhật, 16/05/2026', location: 'Khu A Ký túc xá ĐHQG HCM', participants: 350 },
-  { img: img3, title: 'Thu Gom Rác Hỗ Trợ Đảo Xa', time: 'Thứ 5, 20/05/2026', location: 'Khu vực bãi biển Cần Giờ', participants: 45 }
-];
-
-export const HighlightEvents = () => {
+export const HighlightEvents = ({ events = [] }) => {
   const navigate = useNavigate();
 
   return (
@@ -23,8 +14,9 @@ export const HighlightEvents = () => {
         />
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
-          {events.map((event, idx) => (
-            <div key={idx} className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-xl transition-shadow duration-300 group cursor-pointer" onClick={() => navigate('/events')}>
+          {events.length > 0 ? (
+            events.map((event, idx) => (
+              <div key={event.id || idx} className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-xl transition-shadow duration-300 group cursor-pointer" onClick={() => navigate('/events')}>
               <div className="relative h-48 overflow-hidden bg-gray-200">
                 <img src={event.img} alt={event.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-bold text-primary shadow-sm">
@@ -43,9 +35,14 @@ export const HighlightEvents = () => {
                     {event.location}
                   </div>
                 </div>
+                </div>
               </div>
+            ))
+          ) : (
+            <div className="col-span-3 text-center text-gray-500 py-8">
+              Chưa có sự kiện nổi bật nào.
             </div>
-          ))}
+          )}
         </div>
         
         <div className="text-center mt-12">

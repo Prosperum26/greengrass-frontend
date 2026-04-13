@@ -3,7 +3,7 @@ import { Button } from '../../../components/ui';
 import { useNavigate } from 'react-router-dom';
 import leaderboardImg from '../../../assets/leaderboard_dummy.png';
 
-export const GamificationPreview = () => {
+export const GamificationPreview = ({ stats, leaderboard = [] }) => {
   const navigate = useNavigate();
 
   return (
@@ -13,7 +13,7 @@ export const GamificationPreview = () => {
         <div className="w-full lg:w-1/2 bg-accent text-white p-12 lg:p-20 xl:p-28 flex flex-col justify-center">
           <h2 className="text-3xl md:text-5xl font-bold mb-6 text-white drop-shadow-md">Ghi Danh Trên Bảng Vàng</h2>
           <p className="text-orange-50 text-lg mb-8 max-w-lg leading-relaxed">
-            Mỗi đóng góp của bạn đều được ghi nhận. Tích lũy điểm rèn luyện, thu thập huy hiệu độc đáo và thi đua cùng hàng ngàn sinh viên khác trên toàn quốc. Sự nỗ lực của bạn là nguồn cảm hứng cho cộng đồng.
+            Mỗi đóng góp của bạn đều được ghi nhận. Tích lũy điểm rèn luyện, thu thập huy hiệu độc đáo và thi đua cùng {stats?.totalStudents || 'hàng ngàn'} sinh viên khác trên toàn quốc. Sự nỗ lực của bạn là nguồn cảm hứng cho cộng đồng.
           </p>
           
           <div className="space-y-6 mb-10">

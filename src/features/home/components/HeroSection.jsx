@@ -3,7 +3,7 @@ import { Button } from '../../../components/ui';
 import { useNavigate } from 'react-router-dom';
 import heroImage from '../../../assets/hero.png';
 
-export const HeroSection = () => {
+export const HeroSection = ({ stats }) => {
   const navigate = useNavigate();
 
   return (
@@ -60,7 +60,7 @@ export const HeroSection = () => {
               </div>
               <div>
                 <p className="text-xs text-gray-500 font-medium tracking-wide uppercase">Cộng đồng</p>
-                <p className="text-brown-900 font-bold">1000+ sinh viên</p>
+                <p className="text-brown-900 font-bold">{stats?.totalStudents || '1000+'}+ sinh viên</p>
               </div>
             </div>
           </div>
