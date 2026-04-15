@@ -39,13 +39,13 @@
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 // Thay đường dẫn này cho đúng với chỗ bạn lưu file nhé
-import { UserProfilePage } from './features/profile';
+import { UserProfilePage, OrgProfilePage } from './features/profile';
 
 const App = () => {
   return (
     // Bọc cái này vào là thẻ <Link> bên trong sẽ hết khóc
     <BrowserRouter>
-      <UserProfilePage />
+      <OrgProfilePage />
     </BrowserRouter>
   );
 };
