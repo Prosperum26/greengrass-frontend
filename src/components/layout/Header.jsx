@@ -1,41 +1,66 @@
-// Header Component
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { useAuth } from '../../features/auth/hooks/useAuth';
 
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user, isAuthenticated } = useAuth();
+
+  const avatarText = useMemo(() => {
+    const name = user?.fullName || user?.name || user?.email || '';
+    const first = String(name).trim()[0];
+    return (first || 'U').toUpperCase();
+  }, [user]);
   
   return (
-    <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
+    <header className="sticky top-0 z-40 bg-brown-900/90 shadow-[0_12px_48px_rgba(33,26,20,0.08)] backdrop-blur">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <a href="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center">
+            <Link to="/" className="flex items-center gap-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary">
                 <span className="text-white font-bold text-sm">G</span>
               </div>
-              <span className="text-xl font-bold text-green-700">GreenGrass</span>
-            </a>
+              <span className="text-xl font-bold text-white font-display tracking-tight">GreenGrass</span>
+            </Link>
           </div>
           
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-6">
-            <a href="/events" className="text-gray-600 hover:text-green-600 font-medium">Sự kiện</a>
-            <a href="/map" className="text-gray-600 hover:text-green-600 font-medium">Bản đồ</a>
-            <a href="/leaderboard" className="text-gray-600 hover:text-green-600 font-medium">Bảng xếp hạng</a>
-            <a href="/forum" className="text-gray-600 hover:text-green-600 font-medium">Forum</a>
+            <Link to="/events" className="font-medium text-white/75 hover:text-primary-light">Events</Link>
+            <Link to="/map" className="font-medium text-white/75 hover:text-primary-light">Map</Link>
+            <Link to="/leaderboard" className="font-medium text-white/75 hover:text-primary-light">Leaderboard</Link>
+            <Link to="/profile" className="font-medium text-white/75 hover:text-primary-light">Profile</Link>
           </nav>
           
           {/* User Actions */}
           <div className="flex items-center gap-3">
-            <button className="p-2 text-gray-500 hover:text-green-600 relative">
+            <button className="relative p-2 text-white/60 hover:text-[#859448]">
               <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
               </svg>
             </button>
-            <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-              <span className="text-green-700 font-medium text-sm">U</span>
-            </div>
+            {!isAuthenticated ? (
+              <div className="flex items-center gap-2 text-sm font-medium">
+                <Link to="/login" className="text-white/75 hover:text-[#859448]">
+                  Đăng nhập
+                </Link>
+                <span className="text-white/30">/</span>
+                <Link to="/register" className="text-white/75 hover:text-[#859448]">
+                  Đăng ký
+                </Link>
+              </div>
+            ) : (
+              <Link
+                to="/profile"
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-[#3D362B] hover:ring-2 hover:ring-[#859448]/40"
+                aria-label="Profile"
+                title="Profile"
+              >
+                <span className="text-sm font-medium text-white">{avatarText}</span>
+              </Link>
+            )}
           </div>
         </div>
       </div>

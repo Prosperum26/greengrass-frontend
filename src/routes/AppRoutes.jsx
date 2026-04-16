@@ -1,94 +1,49 @@
-// App Routes Configuration
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { MainLayout, Header, Footer } from '../components/layout';
-
-// Page Components (to be created)
-import { EventList } from "../features/events";
-
-const HomePage = () => (
-  <div className="p-6">
-    <h1 className="text-2xl font-bold">Trang chủ GreenGrass</h1>
-  </div>
-);
-const EventsPage = () => (
-  <div className="p-6">
-    <h1 className="text-2xl font-bold">Sự kiện</h1>
-  </div>
-);
-// const EventDetailPage = () => <div className="p-6"><h1 className="text-2xl font-bold">Chi tiết sự kiện</h1></div>;
-const MapPage = () => (
-  <div className="p-6">
-    <h1 className="text-2xl font-bold">Bản đồ điểm xanh</h1>
-  </div>
-);
-const LeaderboardPage = () => (
-  <div className="p-6">
-    <h1 className="text-2xl font-bold">Bảng xếp hạng</h1>
-  </div>
-);
-const ForumPage = () => (
-  <div className="p-6">
-    <h1 className="text-2xl font-bold">Forum</h1>
-  </div>
-);
-const ProfilePage = () => (
-  <div className="p-6">
-    <h1 className="text-2xl font-bold">Hồ sơ</h1>
-  </div>
-);
-const LoginPage = () => (
-  <div className="p-6">
-    <h1 className="text-2xl font-bold">Đăng nhập</h1>
-  </div>
-);
-const RegisterPage = () => (
-  <div className="p-6">
-    <h1 className="text-2xl font-bold">Đăng ký</h1>
-  </div>
-);
-const NotFoundPage = () => (
-  <div className="p-6">
-    <h1 className="text-2xl font-bold">404 - Không tìm thấy</h1>
-  </div>
-);
-
-// Import feature components (Replace placeholders later)
+import { AppShell } from '../components/layout';
+import { EventList } from '../features/events';
+import EventDetail from '../features/events/components/EventDetail';
 import { HomePage } from '../features/home';
-// import EventsPage from '../pages/EventsPage';
-// ...
+import MapExplorerPage from '../features/map/components/MapExplorerPage';
+import Leaderboard from '../features/gamification/components/Leaderboard';
+import { LogInPage, RegisterPage } from '../features/auth';
+import { OrgProfilePage, UserProfilePage } from '../features/profile';
+import { CheckInPage } from '../features/checkin';
+
+const ProfilePage = () => {
+  const role = localStorage.getItem('role');
+  return role === 'ORGANIZER' ? <OrgProfilePage /> : <UserProfilePage />;
+};
+
+const MapPage = () => (
+  <div className="px-6 py-10">
+    <div className="mx-auto max-w-7xl">
+      <MapExplorerPage />
+    </div>
+  </div>
+);
+
+const LeaderboardPage = () => (
+  <div className="px-6 py-10">
+    <Leaderboard />
+  </div>
+);
+
+const NotFoundPage = () => <div className="p-8 text-ink">404 - Not found</div>;
 
 export const AppRoutes = () => {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Public Routes - No Layout */}
-        <Route path="/events" element={<EventList />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-
-        <Route path="/" element={
-          <div className="min-h-screen bg-white flex flex-col">
-            <Header />
-            <main className="flex-1 overflow-x-hidden">
-              <HomePage />
-            </main>
-            <Footer />
-          </div>
-        } />
-
-        {/* Protected Routes - With MainLayout */}
-        <Route element={<MainLayout />}>
-          <Route path="events-old" element={<EventsPage />} />
-          <Route path="events/:id" element={<EventDetail />} />
-          <Route path="map" element={<MapPage />} />
-          <Route path="leaderboard" element={<LeaderboardPage />} />
-          <Route path="forum" element={<ForumPage />} />
-          <Route path="profile" element={<ProfilePage />} />
-        </Route>
-
-
-        {/* 404 */}
-        <Route path="*" element={<NotFoundPage />} />
+        <Route path="/" element={<AppShell contentClassName="overflow-x-hidden"><HomePage /></AppShell>} />
+        <Route path="/events" element={<AppShell><EventList /></AppShell>} />
+        <Route path="/events/:id" element={<AppShell><EventDetail /></AppShell>} />
+        <Route path="/login" element={<AppShell><LogInPage /></AppShell>} />
+        <Route path="/register" element={<AppShell><RegisterPage /></AppShell>} />
+        <Route path="/profile" element={<AppShell><ProfilePage /></AppShell>} />
+        <Route path="/map" element={<AppShell contentClassName="overflow-hidden"><MapPage /></AppShell>} />
+        <Route path="/leaderboard" element={<AppShell><LeaderboardPage /></AppShell>} />
+        <Route path="/checkin/:eventId" element={<AppShell><CheckInPage /></AppShell>} />
+        <Route path="*" element={<AppShell><NotFoundPage /></AppShell>} />
       </Routes>
     </BrowserRouter>
   );

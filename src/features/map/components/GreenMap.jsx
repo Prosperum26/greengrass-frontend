@@ -1,49 +1,94 @@
-// Green Map Component (Leaflet integration placeholder)
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+import { mapApi } from '../../../api';
+
+const defaultCenter = [10.8803, 106.8023];
+
+const baseIcon = new L.Icon({
+  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+});
+
+const selectedIcon = new L.Icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-orange.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+});
+
+const FlyToLocation = ({ center }) => {
+  const map = useMap();
+  useEffect(() => {
+    map.flyTo(center, 14, { duration: 0.8 });
+  }, [map, center]);
+  return null;
+};
 
 export const GreenMap = ({ 
-  center = [10.869778, 106.802583], // ĐHQG-HCM coordinates
-  markers = [],
-  onMarkerClick,
-  userLocation,
-  showRoute,
+  center = defaultCenter,
+  markers: markersProp,
+  selectedId,
+  onSelect,
 }) => {
-  const mapRef = useRef(null);
+  const [markers, setMarkers] = useState([]);
+  const [selected, setSelected] = useState(null);
+  useEffect(() => {
+    if (markersProp) return;
+    const loadEcoPoints = async () => {
+      try {
+        const { data } = await mapApi.getEcoPoints();
+        const points = Array.isArray(data) ? data : data?.data || [];
+        setMarkers(points);
+      } catch {
+        setMarkers([]);
+      }
+    };
+    void loadEcoPoints();
+  }, [markersProp]);
 
   useEffect(() => {
-    // Leaflet map initialization will go here
-    // For now, this is a placeholder structure
-    console.log('Map initialized with center:', center);
-  }, [center]);
+    if (!markersProp) return;
+    setMarkers(markersProp);
+  }, [markersProp]);
+
+  useEffect(() => {
+    if (!selectedId) return;
+    const found = markers.find((m) => m.id === selectedId);
+    if (found) setSelected(found);
+  }, [markers, selectedId]);
+
+  const mapCenter = useMemo(() => {
+    if (selected) return [selected.latitude, selected.longitude];
+    return center;
+  }, [center, selected]);
 
   return (
-    <div className="relative w-full h-full min-h-[400px] rounded-xl overflow-hidden bg-green-50">
-      {/* Map placeholder - replace with actual Leaflet map */}
-      <div className="absolute inset-0 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
-            <svg className="w-8 h-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 7m0 13V7m0 0L9.5 4.786" />
-            </svg>
-          </div>
-          <p className="text-gray-600 font-medium">Bản đồ Điểm Xanh</p>
-          <p className="text-sm text-gray-400 mt-1">Leaflet map integration</p>
-          <p className="text-xs text-gray-400 mt-1">
-            Center: {center[0].toFixed(4)}, {center[1].toFixed(4)}
-          </p>
-        </div>
-      </div>
-      
-      {/* User location indicator */}
-      {userLocation && (
-        <div className="absolute bottom-4 right-4 bg-white rounded-lg shadow-md p-3">
-          <p className="text-sm font-medium text-gray-700">Vị trí của bạn</p>
-          <p className="text-xs text-gray-500">
-            {userLocation.lat.toFixed(4)}, {userLocation.lng.toFixed(4)}
-          </p>
-        </div>
-      )}
-    </div>
+    <MapContainer center={mapCenter} zoom={13} className="h-full w-full">
+      <FlyToLocation center={mapCenter} />
+      <TileLayer attribution='&copy; OpenStreetMap contributors' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+      {markers.map((point) => (
+        <Marker
+          key={point.id}
+          position={[point.latitude, point.longitude]}
+          icon={selected?.id === point.id ? selectedIcon : baseIcon}
+          eventHandlers={{
+            click: () => {
+              setSelected(point);
+              onSelect?.(point);
+            },
+          }}
+        >
+          <Popup>
+            <div>
+              <strong>{point.name || point.title || 'Eco Point'}</strong>
+              <p>{point.type || point.category || 'Green collection point'}</p>
+            </div>
+          </Popup>
+        </Marker>
+      ))}
+    </MapContainer>
   );
 };
 

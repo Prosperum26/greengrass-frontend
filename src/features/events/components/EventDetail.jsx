@@ -1,134 +1,136 @@
-import React, { useState } from 'react';
-import { QRScanner } from '../../checkin/components/QRScanner';
-import './EventDetail.css';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { eventsApi } from '../../../api';
 
 export const EventDetail = () => {
-  const [showQR, setShowQR] = useState(false);
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [event, setEvent] = useState(null);
+  const [participants, setParticipants] = useState([]);
+  const [checkedIn, setCheckedIn] = useState([]);
+  const [qrToken, setQrToken] = useState('');
+  const [activeTab, setActiveTab] = useState('participants');
+  const [error, setError] = useState('');
+
+  const role = localStorage.getItem('role');
+  const isOrganizer = role === 'ORGANIZER';
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const [eventRes, participantsRes] = await Promise.all([
+          eventsApi.getById(id),
+          eventsApi.getParticipants(id),
+        ]);
+        setEvent(eventRes.data);
+        setParticipants(participantsRes.data);
+      } catch (err) {
+        setError(err.response?.data?.message || 'Failed to load event');
+      }
+    };
+    void load();
+  }, [id]);
+
+  useEffect(() => {
+    if (!isOrganizer) return;
+    const loadOrganizerData = async () => {
+      try {
+        const [checkedInRes, qrRes] = await Promise.all([
+          eventsApi.getCheckedIn(id),
+          eventsApi.getQrCode(id),
+        ]);
+        setCheckedIn(checkedInRes.data);
+        setQrToken(qrRes.data?.qrToken || '');
+      } catch {
+        // optional organizer data
+      }
+    };
+    void loadOrganizerData();
+  }, [id, isOrganizer]);
+
+  const canRegister = useMemo(() => role === 'STUDENT', [role]);
+
+  const onRegister = async () => {
+    try {
+      await eventsApi.register(id);
+      alert('Event registration completed');
+    } catch (err) {
+      alert(err.response?.data?.message || 'Registration failed');
+    }
+  };
+
+  const onExportCsv = () => {
+    window.open(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/events/${id}/export`, '_blank');
+  };
+
+  if (!event && !error) return <div className="min-h-screen bg-surface p-8 text-ink">Loading...</div>;
+
   return (
-    <div className="event-detail-container">
-      {showQR && <QRScanner onClose={() => setShowQR(false)} />}
-      {/* 1. Header */}
-      <header className="site-header">
-        <div className="logo-text">
-          Green<span className="logo-highlight">Grass</span>
-        </div>
-        <nav className="main-nav">
-          <a href="#about" className="nav-link">About Us</a>
-          <a href="#report" className="nav-link">Report</a>
-        </nav>
-        <button className="btn-login">username</button>
-      </header>
+    <div className="min-h-screen bg-surface p-4 md:p-10">
+      <div className="mx-auto max-w-5xl rounded-2xl bg-surface-high p-6 text-ink shadow-[0_24px_70px_rgba(33,26,20,0.10)]">
+        <button onClick={() => navigate('/events')} className="mb-4 rounded-xl bg-surface-highest px-3 py-2 text-sm font-medium hover:bg-surface-high">
+          Back
+        </button>
+        {error && <p className="mb-3 text-accent-hover">{error}</p>}
+        {event && (
+          <>
+            <h1 className="text-3xl font-semibold font-display tracking-tight">{event.title}</h1>
+            <p className="mt-3 text-ink/70">{event.description}</p>
+            <div className="mt-4 grid gap-2 text-sm text-ink/60 md:grid-cols-2">
+              <p>Status: {event.status}</p>
+              <p>Location: {event.location}</p>
+              <p>Start: {new Date(event.startTime).toLocaleString()}</p>
+              <p>End: {new Date(event.endTime).toLocaleString()}</p>
+            </div>
 
-      {/* 2. Main Content */}
-      <main className="event-detail-main">
-        <h1 className="event-detail-title">Sự kiện 1</h1>
-        <br></br>
-        <p className="event-detail-org">Đơn vị tổ chức</p>
+            {canRegister && (
+              <button onClick={onRegister} className="mt-5 rounded-xl bg-accent px-5 py-2 text-white hover:bg-accent-hover shadow-[0_20px_50px_rgba(33,26,20,0.10)]">
+                Register Event
+              </button>
+            )}
+          </>
+        )}
 
-        {/* Action Bar */}
-        <div className="event-action-bar" align="center">
-          <div className="action-item">
-            <div className="action-icon">📍</div>
-            <span className="action-label">Explore</span>
+        <section className="mt-8">
+          <h2 className="mb-3 text-xl font-semibold font-display">Participants</h2>
+          <div className="space-y-2">
+            {participants.map((item) => (
+              <div key={item.userId} className="rounded-xl bg-surface-highest p-4 text-sm shadow-[0_16px_44px_rgba(33,26,20,0.06)]">
+                {item.fullName} - {item.status}
+              </div>
+            ))}
           </div>
-          <div className="action-item">
-            <div className="action-icon">🔖</div>
-            <span className="action-label">Join</span>
-          </div>
-          <div className="action-item" onClick={() => setShowQR(true)} style={{ cursor: 'pointer' }}>
-            <div className="action-icon">📷</div>
-            <span className="action-label">QR Scanning</span>
-          </div>
-        </div>
+        </section>
 
-        {/* Description Body */}
-        <div className="event-description-box">
-          [Mô tả sơ qua]: Excepteur efficient emerging, minim veniam enim aute carefully curated Ginza conversation exquisite perfect nostrud nisi intricate Content. Qui international first-class nulla ut. Punctual adipisicing, essential lovely queen tempor eiusmod irure. Exclusive izakaya charming Scandinavian impeccable aute quality of life soft power pariatur Melbourne occaecat discerning. Qui wardrobe aliquip, et Porter destination Toto remarkable officia Helsinki excepteur Basset hound. Zürich sleepy perfect consectetur.
-        </div>
-
-        {/* Info Box */}
-        <div className="event-info-block">
-          <p>Thời gian:</p>
-          <p>Địa điểm:</p>
-          <p>Đơn vị tổ chức:</p>
-        </div>
-
-        {/* Image Grid */}
-        <div className="event-image-grid">
-          <img 
-            src="https://images.unsplash.com/photo-1543157145-f78c636d023d" 
-            alt="Event Reference 1" 
-          />
-          <img 
-            src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085" 
-            alt="Event Reference 2" 
-          />
-        </div>
-
-        {/* Notes & Gifts */}
-        <div className="event-notes">
-          <p>Lưu ý:</p>
-          <ul>
-            <li>Nên đem theo ....</li>
-          </ul>
-          <p>Quà tặng: 1 bó rau má</p>
-          <p style={{ marginTop: '1.5rem', marginBottom: '0.5rem' }}>Map:</p>
-        </div>
-
-        {/* Map Image Dummy */}
-        <div className="event-map-container">
-          <img 
-            src="https://images.unsplash.com/photo-1473449176378-0056cb04c3c6?q=80&w=2000&auto=format&fit=crop" 
-            alt="Map Preview" 
-            className="event-map-img"
-          />
-        </div>
-      </main>
-
-      {/* 3. Participants Section */}
-      <section className="event-participants-section">
-        <div className="participants-inner">
-          <h2 className="participants-title">Danh sách tham gia</h2>
-          <div className="participants-list">
-            <div className="participant-item">
-              <div className="participant-avatar">A</div>
-              <span className="participant-name">User X</span>
+        {isOrganizer && (
+          <section className="mt-8">
+            <div className="mb-3 flex gap-2">
+              {['participants', 'checkin', 'qr', 'export'].map((tab) => (
+                <button key={tab} onClick={() => setActiveTab(tab)} className={`rounded-xl px-3 py-2 text-sm font-medium ${activeTab === tab ? 'bg-primary text-white' : 'bg-surface-highest text-ink hover:bg-surface-high'}`}>
+                  {tab.toUpperCase()}
+                </button>
+              ))}
             </div>
-            <div className="participant-item">
-              <div className="participant-avatar">A</div>
-              <span className="participant-name">User X</span>
-            </div>
-            <div className="participant-item">
-              <div className="participant-avatar">A</div>
-              <span className="participant-name">User X</span>
-            </div>
-            <div className="participant-item">
-              <div className="participant-avatar">A</div>
-              <span className="participant-name">User X</span>
-            </div>
-            <div className="participant-item">
-              <div className="participant-avatar">A</div>
-              <span className="participant-name">User X</span>
-            </div>
-            <div className="participant-item">
-              <div className="participant-avatar">A</div>
-              <span className="participant-name">User X</span>
-            </div>
-          </div>
-        </div>
-      </section>
 
-      {/* 4. Footer */}
-      <footer className="site-footer">
-        <div>
-          <div className="logo-text">
-            Green<span className="logo-highlight" style={{color: '#3A5E27'}}>Grass</span>
-          </div>
-          <p style={{ marginTop: "0.5rem", opacity: 0.7, fontSize: "0.9rem" }}>
-            © 2026 GreenGrass System. All rights reserved.
-          </p>
-        </div>
-      </footer>
+            {activeTab === 'checkin' && checkedIn.map((item) => (
+              <div key={item.userId} className="mb-3 rounded-xl bg-surface-highest p-4 text-sm shadow-[0_16px_44px_rgba(33,26,20,0.06)]">
+                {item.userId} - {item.status} - {item.checkInTime ? new Date(item.checkInTime).toLocaleString() : '-'}
+              </div>
+            ))}
+            {activeTab === 'qr' && (
+              <div className="rounded-xl bg-surface-highest p-4">
+                <p className="mb-2 text-sm text-ink/60">Dynamic QR token</p>
+                <code className="block overflow-x-auto text-secondary">{qrToken || 'No token available'}</code>
+              </div>
+            )}
+            {activeTab === 'export' && (
+              <button onClick={onExportCsv} className="rounded-xl bg-accent px-4 py-2 text-white hover:bg-accent-hover">
+                Export CSV
+              </button>
+            )}
+          </section>
+        )}
+      </div>
     </div>
   );
 };

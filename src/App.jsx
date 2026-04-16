@@ -37,19 +37,10 @@
 // export default App;
 
 import React from 'react';
-import { BrowserRouter } from 'react-router-dom';
-// Thay đường dẫn này cho đúng với chỗ bạn lưu file nhé
-import { UserProfilePage, OrgProfilePage } from './features/profile';
+import AppRoutes from './routes/AppRoutes';
 
 const App = () => {
-  return (
-    // Bọc cái này vào là thẻ <Link> bên trong sẽ hết khóc
-    <BrowserRouter>
-      <OrgProfilePage />
-    </BrowserRouter>
-  );
-};
+  return <AppRoutes />;
 };
 
-export default App;
 export default App;

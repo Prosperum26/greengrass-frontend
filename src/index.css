@@ -2,6 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  html {
+    font-family: theme('fontFamily.sans');
+  }
+
+  body {
+    @apply bg-surface text-ink;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: theme('fontFamily.display');
+    color: theme('colors.ink.DEFAULT');
+  }
+}
+
 :root {
   --text: #6b6375;
   --text-h: #08060d;

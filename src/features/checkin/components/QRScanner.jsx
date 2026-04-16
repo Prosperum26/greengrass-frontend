@@ -1,125 +1,107 @@
-// QR Scanner Component — with modal overlay + camera logic
-import { useState, useRef } from 'react';
-import './QRScanner.css';
+import { useEffect, useRef, useState } from 'react';
+import { BrowserMultiFormatReader } from '@zxing/browser';
+import { NotFoundException } from '@zxing/library';
 
-export const QRScanner = ({ onClose, onScan, onError }) => {
+export const QRScanner = ({ onScan, onError, className = '' }) => {
   const [isScanning, setIsScanning] = useState(false);
   const [hasCamera, setHasCamera] = useState(true);
   const videoRef = useRef(null);
+  const readerRef = useRef(null);
 
-  // ── Camera helpers ───────────────────────────────────────────
+  useEffect(() => {
+    readerRef.current = new BrowserMultiFormatReader();
+    return () => {
+      try {
+        readerRef.current?.reset?.();
+      } catch {
+        // ignore
+      }
+    };
+  }, []);
+
+  const stopScanning = () => {
+    try {
+      readerRef.current?.reset?.();
+    } catch {
+      // ignore
+    }
+    setIsScanning(false);
+  };
+
   const startScanning = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment' },
-      });
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-      }
+      const video = videoRef.current;
+      if (!video) return;
+
       setIsScanning(true);
-    } catch (err) {
+      const devices = await BrowserMultiFormatReader.listVideoInputDevices();
+      if (!devices?.length) {
+        setHasCamera(false);
+        onError?.('Không tìm thấy camera');
+        return;
+      }
+
+      const preferredDeviceId = devices[devices.length - 1].deviceId;
+      await readerRef.current.decodeFromVideoDevice(preferredDeviceId, video, (result, err) => {
+        if (result) {
+          onScan?.(result.getText());
+          stopScanning();
+          return;
+        }
+        if (err && !(err instanceof NotFoundException)) {
+          onError?.('Quét QR thất bại');
+        }
+      });
+    } catch {
       setHasCamera(false);
       onError?.('Không thể truy cập camera');
     }
   };
 
-  const stopScanning = () => {
-    if (videoRef.current?.srcObject) {
-      videoRef.current.srcObject.getTracks().forEach((track) => track.stop());
-    }
-    setIsScanning(false);
-  };
-
-  // Placeholder for QR detection — integrate with jsQR or similar library
-  const handleScan = (data) => {
-    if (data) {
-      onScan?.(data);
-      stopScanning();
-    }
-  };
-
-  // Close & stop camera at the same time
-  const handleClose = () => {
-    stopScanning();
-    onClose?.();
-  };
-
-  // ── Backdrop click ───────────────────────────────────────────
-  const handleBackdropClick = (e) => {
-    if (e.target === e.currentTarget) handleClose();
-  };
-
-  // ── Render ───────────────────────────────────────────────────
   return (
-    <div className="qr-overlay" onClick={handleBackdropClick}>
-      <div
-        className="qr-modal"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="qr-modal-title"
-      >
-        {/* Close button */}
-        <button className="qr-modal-close" onClick={handleClose} aria-label="Đóng">
-          ✕
-        </button>
-
-        <h2 className="qr-modal-title" id="qr-modal-title">
-          📷 QR Check-in
-        </h2>
-
-        {/* Camera / error area */}
-        {!hasCamera ? (
-          <div className="qr-error-box">
-            <p className="qr-error-title">Không thể truy cập camera</p>
-            <p className="qr-error-sub">Vui lòng cấp quyền camera và thử lại</p>
-          </div>
-        ) : (
-          <div className="qr-video-container">
-            {isScanning ? (
-              <video ref={videoRef} autoPlay playsInline muted />
-            ) : (
-              <div className="qr-idle-placeholder">
-                <svg
-                  width="64"
-                  height="64"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={1.5}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm7-16v1m0 14v1M4 12h1m14 0h1m-8-4h.01M12 12h4.01"
-                  />
-                </svg>
-                <p>Quét mã QR</p>
-                <small>Đưa mã QR vào khung hình</small>
+    <section className={`w-full ${className}`}>
+      <div className="rounded-3xl bg-ink overflow-hidden shadow-[0_20px_60px_rgba(33,26,20,0.16)]">
+        <div className="relative aspect-square">
+          {hasCamera ? (
+            <>
+              <video ref={videoRef} autoPlay playsInline muted className="h-full w-full object-cover opacity-80" />
+              <div className="absolute inset-0 border-[40px] border-black/40" />
+              <div className="absolute left-1/2 top-1/2 h-48 w-48 -translate-x-1/2 -translate-y-1/2 rounded-2xl border-2 border-dashed border-secondary/70">
+                <div className="absolute inset-0 rounded-2xl border-2 border-primary/70 animate-pulse" />
               </div>
-            )}
-          </div>
-        )}
-
-        {/* Action buttons */}
-        {hasCamera && (
-          <div className="qr-modal-actions">
-            {isScanning ? (
-              <button className="qr-btn qr-btn-secondary" onClick={stopScanning}>
-                Dừng quét
-              </button>
-            ) : (
-              <button className="qr-btn qr-btn-primary" onClick={startScanning}>
-                Bắt đầu quét
-              </button>
-            )}
-          </div>
-        )}
-
-        <p className="qr-modal-subtitle">
-          Quét mã QR này để xác nhận<br />tham gia sự kiện của bạn.
-        </p>
+            </>
+          ) : (
+            <div className="h-full w-full flex items-center justify-center text-white/80">
+              Camera unavailable
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+
+      <div className="mt-4 flex gap-3">
+        {isScanning ? (
+          <button
+            type="button"
+            onClick={stopScanning}
+            className="flex-1 rounded-2xl bg-surface-highest px-4 py-3 text-sm font-bold text-primary hover:bg-surface-high"
+          >
+            Stop scanning
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={startScanning}
+            className="flex-1 rounded-2xl bg-primary px-4 py-3 text-sm font-bold text-white shadow-[0_18px_48px_rgba(33,26,20,0.10)]"
+          >
+            Start scanning
+          </button>
+        )}
+      </div>
+
+      <p className="mt-3 text-center text-xs font-medium text-ink/60">
+        Align the QR code within the frame.
+      </p>
+    </section>
   );
 };
 
