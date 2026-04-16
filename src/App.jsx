@@ -1,15 +1,53 @@
-// GreenGrass App - Entry point
-import { AppRoutes } from './routes';
-import { ErrorBoundary } from './components/common';
-import { ChatWidget } from './features/chatbot';
+// // code này chạy với file cũ của t mới được
 
-function App() {
+// import React from 'react';
+// import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+
+// // Import các trang Auth
+// import { LoginForm, RegisterPage, ForgotPasswordPage } from './features/auth'; 
+// import HomePage from './features/testing(Binh)/HomePage';
+
+// // Import trang Profile bạn vừa làm (nhớ trỏ đúng đường dẫn nha)
+// import UserProfilePage from './features/profile/components/UserProfilePage'; 
+
+// const App = () => {
+//   return (
+//     <BrowserRouter>
+//       <div className="w-full min-h-screen bg-[#fafafa]">
+//         <Routes>
+//           <Route path="/" element={<HomePage />} />
+//           <Route path="/login" element={<LoginForm />} />
+//           <Route path="/register" element={<RegisterPage />} />
+//           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+
+//           {/* ĐÂY RỒI! Khai báo đường dẫn cho Profile */}
+//           {/* 1. Link để xem profile người khác (có cái mã uid ở đuôi) */}
+//           <Route path="/profile/:uid" element={<UserProfilePage />} />
+
+//           {/* 2. Link để xem profile của chính mình */}
+//           <Route path="/profile/me" element={<UserProfilePage />} />
+
+//           <Route path="*" element={<Navigate to="/login" replace />} />
+//         </Routes>
+//       </div>
+//     </BrowserRouter>
+//   );
+// };
+
+// export default App;
+
+import React from 'react';
+import { BrowserRouter } from 'react-router-dom';
+// Thay đường dẫn này cho đúng với chỗ bạn lưu file nhé
+import { UserProfilePage, OrgProfilePage } from './features/profile';
+
+const App = () => {
   return (
-    <ErrorBoundary>
-      <AppRoutes />
-      <ChatWidget />
-    </ErrorBoundary>
+    // Bọc cái này vào là thẻ <Link> bên trong sẽ hết khóc
+    <BrowserRouter>
+      <OrgProfilePage />
+    </BrowserRouter>
   );
-}
+};
 
-export default App
+export default App;
