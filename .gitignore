@@ -32,3 +32,6 @@ dist-ssr
 
 # Vite đặc thù
 *.local
+
+./testing(Binh)
+src/features/testing(Binh)/HomePage.jsx

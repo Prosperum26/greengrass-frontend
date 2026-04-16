@@ -86,6 +86,7 @@ export const AppRoutes = () => {
           <Route path="profile" element={<ProfilePage />} />
         </Route>
 
+
         {/* 404 */}
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
