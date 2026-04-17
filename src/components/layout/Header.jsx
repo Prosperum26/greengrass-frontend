@@ -31,7 +31,6 @@ export const Header = () => {
             <Link to="/events" className="font-medium text-white/75 hover:text-primary-light">Events</Link>
             <Link to="/map" className="font-medium text-white/75 hover:text-primary-light">Map</Link>
             <Link to="/leaderboard" className="font-medium text-white/75 hover:text-primary-light">Leaderboard</Link>
-            <Link to="/profile" className="font-medium text-white/75 hover:text-primary-light">Profile</Link>
           </nav>
           
           {/* User Actions */}
