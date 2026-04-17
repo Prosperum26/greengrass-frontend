@@ -59,10 +59,25 @@ export const useAuth = () => {
     setIsLoading(true);
     setError(null);
     try {
+      const payload =
+        userData.accountType === 'ORGANIZER'
+          ? {
+              email: userData.email,
+              password: userData.password,
+              fullName: userData.fullName,
+              organizationName: userData.organizationName,
+              description: userData.description,
+            }
+          : {
+              email: userData.email,
+              password: userData.password,
+              fullName: userData.fullName,
+            };
+
       const { data } =
         userData.accountType === 'ORGANIZER'
-          ? await authApi.registerOrganizerRequest(userData)
-          : await authApi.registerStudent(userData);
+          ? await authApi.registerOrganizerRequest(payload)
+          : await authApi.registerStudent(payload);
 
       if (data.accessToken && data.refreshToken) {
         localStorage.setItem('accessToken', data.accessToken);

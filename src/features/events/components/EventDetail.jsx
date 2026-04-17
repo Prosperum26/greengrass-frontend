@@ -22,8 +22,8 @@ export const EventDetail = () => {
           eventsApi.getById(id),
           eventsApi.getParticipants(id),
         ]);
-        setEvent(eventRes.data);
-        setParticipants(participantsRes.data);
+        setEvent(eventRes.data?.data || null);
+        setParticipants(participantsRes.data?.data?.participants || []);
       } catch (err) {
         setError(err.response?.data?.message || 'Failed to load event');
       }
@@ -39,7 +39,7 @@ export const EventDetail = () => {
           eventsApi.getCheckedIn(id),
           eventsApi.getQrCode(id),
         ]);
-        setCheckedIn(checkedInRes.data);
+        setCheckedIn(checkedInRes.data || []);
         setQrToken(qrRes.data?.qrToken || '');
       } catch {
         // optional organizer data
@@ -57,10 +57,6 @@ export const EventDetail = () => {
     } catch (err) {
       alert(err.response?.data?.message || 'Registration failed');
     }
-  };
-
-  const onExportCsv = () => {
-    window.open(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/events/${id}/export`, '_blank');
   };
 
   if (!event && !error) return <div className="min-h-screen bg-surface p-8 text-ink">Loading...</div>;
@@ -94,9 +90,10 @@ export const EventDetail = () => {
         <section className="mt-8">
           <h2 className="mb-3 text-xl font-semibold font-display">Participants</h2>
           <div className="space-y-2">
+            {participants.length === 0 && <p className="text-sm text-ink/60">No participants yet.</p>}
             {participants.map((item) => (
               <div key={item.userId} className="rounded-xl bg-surface-highest p-4 text-sm shadow-[0_16px_44px_rgba(33,26,20,0.06)]">
-                {item.fullName} - {item.status}
+                {item.fullName || item.email || item.userId} - {item.status}
               </div>
             ))}
           </div>
@@ -105,13 +102,16 @@ export const EventDetail = () => {
         {isOrganizer && (
           <section className="mt-8">
             <div className="mb-3 flex gap-2">
-              {['participants', 'checkin', 'qr', 'export'].map((tab) => (
+              {['participants', 'checkin', 'qr'].map((tab) => (
                 <button key={tab} onClick={() => setActiveTab(tab)} className={`rounded-xl px-3 py-2 text-sm font-medium ${activeTab === tab ? 'bg-primary text-white' : 'bg-surface-highest text-ink hover:bg-surface-high'}`}>
                   {tab.toUpperCase()}
                 </button>
               ))}
             </div>
 
+            {activeTab === 'checkin' && checkedIn.length === 0 && (
+              <p className="text-sm text-ink/60">No check-ins yet.</p>
+            )}
             {activeTab === 'checkin' && checkedIn.map((item) => (
               <div key={item.userId} className="mb-3 rounded-xl bg-surface-highest p-4 text-sm shadow-[0_16px_44px_rgba(33,26,20,0.06)]">
                 {item.userId} - {item.status} - {item.checkInTime ? new Date(item.checkInTime).toLocaleString() : '-'}
@@ -122,11 +122,6 @@ export const EventDetail = () => {
                 <p className="mb-2 text-sm text-ink/60">Dynamic QR token</p>
                 <code className="block overflow-x-auto text-secondary">{qrToken || 'No token available'}</code>
               </div>
-            )}
-            {activeTab === 'export' && (
-              <button onClick={onExportCsv} className="rounded-xl bg-accent px-4 py-2 text-white hover:bg-accent-hover">
-                Export CSV
-              </button>
             )}
           </section>
         )}

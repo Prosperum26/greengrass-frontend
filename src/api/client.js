@@ -11,6 +11,14 @@ const apiClient = axios.create({
 
 const getAccessToken = () => localStorage.getItem('accessToken');
 const getRefreshToken = () => localStorage.getItem('refreshToken');
+const isProtectedPath = () => {
+  const path = window.location.pathname;
+  return (
+    path.startsWith('/profile') ||
+    path.startsWith('/organizer') ||
+    path.startsWith('/checkin')
+  );
+};
 
 apiClient.interceptors.request.use(
   (config) => {
@@ -43,7 +51,9 @@ apiClient.interceptors.response.use(
 
       if (!refreshToken || !userId) {
         localStorage.clear();
-        window.location.href = '/login';
+        if (isProtectedPath()) {
+          window.location.href = '/login';
+        }
         return Promise.reject(error);
       }
 
@@ -73,7 +83,9 @@ apiClient.interceptors.response.use(
         return apiClient(originalRequest);
       } catch (refreshError) {
         localStorage.clear();
-        window.location.href = '/login';
+        if (isProtectedPath()) {
+          window.location.href = '/login';
+        }
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;

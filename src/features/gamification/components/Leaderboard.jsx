@@ -9,7 +9,7 @@ export const Leaderboard = () => {
   useEffect(() => {
     const load = async () => {
       const { data } = await pointsApi.getLeaderboard({ limit: 20, timeframe });
-      setEntries(data?.users || []);
+      setEntries(Array.isArray(data) ? data : []);
     };
     void load();
   }, [timeframe]);

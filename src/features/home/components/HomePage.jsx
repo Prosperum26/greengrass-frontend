@@ -31,7 +31,7 @@ export const HomePage = () => {
 
         const items = eventsRes.data?.data?.items || [];
         setFeaturedEvents(items.map((event, idx) => ({ ...event, verified: idx < 2 })));
-        setLeaderboard(leaderboardRes.data?.users || []);
+        setLeaderboard(Array.isArray(leaderboardRes.data) ? leaderboardRes.data : []);
       } catch (err) {
         setError(err.response?.data?.message || 'Cannot load homepage data');
       } finally {

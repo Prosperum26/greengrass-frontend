@@ -5,13 +5,19 @@ import EventDetail from '../features/events/components/EventDetail';
 import { HomePage } from '../features/home';
 import MapExplorerPage from '../features/map/components/MapExplorerPage';
 import Leaderboard from '../features/gamification/components/Leaderboard';
-import { LogInPage, RegisterPage } from '../features/auth';
+import { ForgotPasswordPage, LogInPage, RegisterPage } from '../features/auth';
 import { OrgProfilePage, UserProfilePage } from '../features/profile';
 import { CheckInPage } from '../features/checkin';
+import { Navigate } from 'react-router-dom';
+import PrivateRoute from './PrivateRoute';
+import RoleRoute from './RoleRoute';
 
 const ProfilePage = () => {
   const role = localStorage.getItem('role');
-  return role === 'ORGANIZER' ? <OrgProfilePage /> : <UserProfilePage />;
+  if (role === 'ORGANIZER') {
+    return <Navigate to="/organizer/profile" replace />;
+  }
+  return <UserProfilePage />;
 };
 
 const MapPage = () => (
@@ -39,10 +45,23 @@ export const AppRoutes = () => {
         <Route path="/events/:id" element={<AppShell><EventDetail /></AppShell>} />
         <Route path="/login" element={<AppShell><LogInPage /></AppShell>} />
         <Route path="/register" element={<AppShell><RegisterPage /></AppShell>} />
-        <Route path="/profile" element={<AppShell><ProfilePage /></AppShell>} />
+        <Route path="/forgot-password" element={<AppShell><ForgotPasswordPage /></AppShell>} />
+        <Route path="/profile" element={<AppShell><PrivateRoute><ProfilePage /></PrivateRoute></AppShell>} />
+        <Route
+          path="/organizer/profile"
+          element={
+            <AppShell>
+              <PrivateRoute>
+                <RoleRoute allowedRoles={['ORGANIZER']} redirectTo="/profile">
+                  <OrgProfilePage />
+                </RoleRoute>
+              </PrivateRoute>
+            </AppShell>
+          }
+        />
         <Route path="/map" element={<AppShell contentClassName="overflow-hidden"><MapPage /></AppShell>} />
         <Route path="/leaderboard" element={<AppShell><LeaderboardPage /></AppShell>} />
-        <Route path="/checkin/:eventId" element={<AppShell><CheckInPage /></AppShell>} />
+        <Route path="/checkin/:eventId" element={<AppShell><PrivateRoute><CheckInPage /></PrivateRoute></AppShell>} />
         <Route path="*" element={<AppShell><NotFoundPage /></AppShell>} />
       </Routes>
     </BrowserRouter>
