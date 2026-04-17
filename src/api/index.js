@@ -6,3 +6,4 @@ export * from './users';
 export * from './checkin';
 export * from './points';
 export * from './map';
+export * from './admin';

@@ -1,10 +1,16 @@
 import { useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../features/auth/hooks/useAuth';
 
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/');
+  };
 
   const avatarText = useMemo(() => {
     const name = user?.fullName || user?.name || user?.email || '';
@@ -51,14 +57,43 @@ export const Header = () => {
                 </Link>
               </div>
             ) : (
-              <Link
-                to="/profile"
-                className="flex h-8 w-8 items-center justify-center rounded-full bg-[#3D362B] hover:ring-2 hover:ring-[#859448]/40"
-                aria-label="Profile"
-                title="Profile"
-              >
-                <span className="text-sm font-medium text-white">{avatarText}</span>
-              </Link>
+              <div className="relative group">
+                <Link
+                  to="/profile"
+                  className="flex h-8 w-8 items-center justify-center rounded-full bg-[#3D362B] hover:ring-2 hover:ring-[#859448]/40"
+                  aria-label="Profile"
+                  title="Profile"
+                >
+                  <span className="text-sm font-medium text-white">{avatarText}</span>
+                </Link>
+                
+                {/* Dropdown Menu */}
+                <div className="absolute right-0 pt-2 w-48 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                  <div className="bg-[#2a241c] border border-[#859448]/20 rounded-xl shadow-lg py-1">
+                    {user?.role === 'ADMIN' ? (
+                      <Link
+                        to="/admin/organizer-requests"
+                        className="block px-4 py-2 text-sm text-red-500 font-bold hover:bg-[#3D362B] transition-colors"
+                      >
+                        Duyệt đơn đăng kí
+                      </Link>
+                    ) : (
+                      <Link
+                        to="/profile"
+                        className="block px-4 py-2 text-sm text-white/75 hover:bg-[#3D362B] hover:text-[#859448] transition-colors"
+                      >
+                        Hồ sơ của tôi
+                      </Link>
+                    )}
+                    <button
+                      onClick={handleLogout}
+                      className="block w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-[#3D362B] transition-colors"
+                    >
+                      Đăng xuất
+                    </button>
+                  </div>
+                </div>
+              </div>
             )}
           </div>
         </div>

@@ -11,6 +11,7 @@ import { CheckInPage } from '../features/checkin';
 import { Navigate } from 'react-router-dom';
 import PrivateRoute from './PrivateRoute';
 import RoleRoute from './RoleRoute';
+import OrganizerRequestsPage from '../pages/Admin/OrganizerRequestsPage';
 
 const ProfilePage = () => {
   const role = localStorage.getItem('role');
@@ -62,6 +63,18 @@ export const AppRoutes = () => {
         <Route path="/map" element={<AppShell contentClassName="overflow-hidden"><MapPage /></AppShell>} />
         <Route path="/leaderboard" element={<AppShell><LeaderboardPage /></AppShell>} />
         <Route path="/checkin/:eventId" element={<AppShell><PrivateRoute><CheckInPage /></PrivateRoute></AppShell>} />
+        <Route
+          path="/admin/organizer-requests"
+          element={
+            <AppShell>
+              <PrivateRoute>
+                <RoleRoute allowedRoles={['ADMIN']} redirectTo="/">
+                  <OrganizerRequestsPage />
+                </RoleRoute>
+              </PrivateRoute>
+            </AppShell>
+          }
+        />
         <Route path="*" element={<AppShell><NotFoundPage /></AppShell>} />
       </Routes>
     </BrowserRouter>
