@@ -12,4 +12,7 @@ export const eventsApi = {
   getQrCode: (eventId) => apiClient.get(`/events/${eventId}/qr`),
   checkIn: (eventId, payload) => apiClient.post(`/events/${eventId}/check-in`, payload),
   exportParticipants: (eventId) => apiClient.get(`/events/${eventId}/export`, { responseType: 'blob' }),
+  addGalleryImage: (eventId, formData) => apiClient.post(`/events/${eventId}/gallery`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  }),
 };

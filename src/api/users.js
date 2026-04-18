@@ -7,4 +7,7 @@ export const usersApi = {
   getPublicProfile: (id) => apiClient.get(`/users/${id}/profile`),
   getMyEvents: () => apiClient.get('/users/me/events'),
   getMyPoints: () => apiClient.get('/users/me/points'),
+  uploadAvatar: (formData) => apiClient.post('/users/me/avatar', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  }),
 };

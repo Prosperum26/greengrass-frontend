@@ -7,6 +7,9 @@ const CreateEventPage = () => {
   const navigate = useNavigate();
   const { createEvent, isLoading, error: apiError } = useEvents();
 
+  const [coverImage, setCoverImage] = useState(null);
+  const [coverPreview, setCoverPreview] = useState(null);
+
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -21,6 +24,28 @@ const CreateEventPage = () => {
 
   const [errors, setErrors] = useState({});
   const [toast, setToast] = useState(null);
+
+  const handleImageSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) {
+      setCoverImage(null);
+      setCoverPreview(null);
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      showToast('File quá lớn. Vui lòng chọn ảnh < 5MB', 'error');
+      return;
+    }
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      showToast('Định dạng ảnh không hợp lệ.', 'error');
+      return;
+    }
+
+    setCoverImage(file);
+    setCoverPreview(URL.createObjectURL(file));
+  };
 
   const showToast = (message, type = 'success') => {
     setToast({ message, type });
@@ -96,14 +121,20 @@ const CreateEventPage = () => {
     if (!validate()) return;
 
     try {
-      const payload = {
-        ...formData,
-        latitude: parseFloat(formData.latitude),
-        longitude: parseFloat(formData.longitude),
-        points: parseInt(formData.points, 10),
-        startTime: new Date(formData.startTime).toISOString(),
-        endTime: new Date(formData.endTime).toISOString(),
-      };
+      const payload = new FormData();
+      payload.append('title', formData.title);
+      payload.append('description', formData.description);
+      payload.append('location', formData.location);
+      payload.append('latitude', formData.latitude);
+      payload.append('longitude', formData.longitude);
+      payload.append('startTime', new Date(formData.startTime).toISOString());
+      payload.append('endTime', new Date(formData.endTime).toISOString());
+      payload.append('points', formData.points);
+      payload.append('qrSecret', formData.qrSecret);
+      
+      if (coverImage) {
+        payload.append('coverImage', coverImage);
+      }
 
       const result = await createEvent(payload);
       showToast('Tạo sự kiện thành công!', 'success');
@@ -146,6 +177,32 @@ const CreateEventPage = () => {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="w-full">
+            <label className="block text-xs font-semibold tracking-wider text-white/70 mb-2 uppercase">Ảnh Bìa Sự Kiện (Tùy chọn)</label>
+            <div className="relative rounded-2xl border-2 border-dashed border-[#3A5E27]/40 bg-[#3D362B]/50 hover:bg-[#3D362B] transition-colors p-4 flex flex-col items-center justify-center min-h-[200px] cursor-pointer" onClick={() => document.getElementById('cover-upload').click()}>
+              <input 
+                id="cover-upload" 
+                type="file" 
+                className="hidden" 
+                accept="image/jpeg,image/png,image/webp" 
+                onChange={handleImageSelect}
+              />
+              {coverPreview ? (
+                <div className="w-full relative group">
+                  <img src={coverPreview} alt="Cover Preview" className="w-full h-48 object-cover rounded-xl" />
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl flex items-center justify-center">
+                    <span className="text-white font-bold">Thay đổi ảnh</span>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center text-white/60">
+                  <span className="text-4xl mb-2 block">📸</span>
+                  <p className="font-semibold">Nhấn để chọn ảnh</p>
+                  <p className="text-xs mt-1">JPG, PNG, WEBP (Max 5MB)</p>
+                </div>
+              )}
+            </div>
+          </div>
           <Input
             label="Tên sự kiện *"
             name="title"

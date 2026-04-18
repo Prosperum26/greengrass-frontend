@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { eventsApi } from '../../../api';
 
@@ -11,6 +11,8 @@ export const EventDetail = () => {
   const [qrToken, setQrToken] = useState('');
   const [activeTab, setActiveTab] = useState('participants');
   const [error, setError] = useState('');
+  const [uploadingGallery, setUploadingGallery] = useState(false);
+  const fileInputRef = useRef(null);
 
   const role = localStorage.getItem('role');
   const isOrganizer = role === 'ORGANIZER';
@@ -59,6 +61,37 @@ export const EventDetail = () => {
     }
   };
 
+  const handleGalleryUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert('File quá lớn. Vui lòng chọn ảnh < 5MB');
+      return;
+    }
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      alert('Định dạng ảnh không hợp lệ.');
+      return;
+    }
+
+    setUploadingGallery(true);
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+      const res = await eventsApi.addGalleryImage(id, formData);
+      setEvent(prev => ({
+        ...prev,
+        galleryImages: res.data?.data?.galleryImages || [...(prev.galleryImages || []), res.data.url]
+      }));
+    } catch (err) {
+      alert(err.response?.data?.message || 'Lỗi tải ảnh lên');
+    } finally {
+      setUploadingGallery(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
   if (!event && !error) return <div className="min-h-screen bg-surface p-8 text-ink">Loading...</div>;
 
   return (
@@ -70,6 +103,9 @@ export const EventDetail = () => {
         {error && <p className="mb-3 text-accent-hover">{error}</p>}
         {event && (
           <>
+            {event.coverImageUrl && (
+              <img src={event.coverImageUrl} alt={event.title} loading="lazy" className="w-full h-64 object-cover rounded-2xl mb-6 shadow-md" />
+            )}
             <h1 className="text-3xl font-semibold font-display tracking-tight">{event.title}</h1>
             <p className="mt-3 text-ink/70">{event.description}</p>
             <div className="mt-4 grid gap-2 text-sm text-ink/60 md:grid-cols-2">
@@ -102,7 +138,7 @@ export const EventDetail = () => {
         {isOrganizer && (
           <section className="mt-8">
             <div className="mb-3 flex gap-2">
-              {['participants', 'checkin', 'qr'].map((tab) => (
+              {['participants', 'checkin', 'qr', 'gallery'].map((tab) => (
                 <button key={tab} onClick={() => setActiveTab(tab)} className={`rounded-xl px-3 py-2 text-sm font-medium ${activeTab === tab ? 'bg-primary text-white' : 'bg-surface-highest text-ink hover:bg-surface-high'}`}>
                   {tab.toUpperCase()}
                 </button>
@@ -121,6 +157,39 @@ export const EventDetail = () => {
               <div className="rounded-xl bg-surface-highest p-4">
                 <p className="mb-2 text-sm text-ink/60">Dynamic QR token</p>
                 <code className="block overflow-x-auto text-secondary">{qrToken || 'No token available'}</code>
+              </div>
+            )}
+            {activeTab === 'gallery' && (
+              <div className="rounded-xl bg-surface-highest p-4">
+                <div className="flex justify-between items-center mb-4">
+                  <p className="text-sm text-ink/60">Event Gallery</p>
+                  <div>
+                    <input 
+                      type="file" 
+                      ref={fileInputRef} 
+                      className="hidden" 
+                      accept="image/jpeg,image/png,image/webp" 
+                      onChange={handleGalleryUpload} 
+                    />
+                    <button 
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={uploadingGallery}
+                      className="rounded-lg bg-surface px-4 py-2 text-sm font-medium hover:bg-surface-high disabled:opacity-50"
+                    >
+                      {uploadingGallery ? 'Uploading...' : '+ Add Image'}
+                    </button>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {(!event.galleryImages || event.galleryImages.length === 0) && (
+                    <p className="text-sm text-ink/40 col-span-full">No images in gallery yet.</p>
+                  )}
+                  {event.galleryImages?.map((url, idx) => (
+                    <div key={idx} className="aspect-square rounded-xl overflow-hidden bg-surface-low border border-surface-highest">
+                      <img src={url} alt={`gallery-${idx}`} className="w-full h-full object-cover" />
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </section>

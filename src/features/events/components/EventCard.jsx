@@ -4,18 +4,22 @@ const getStatusColor = (status) => {
 };
 
 export const EventCard = ({ event, onRegister, onDetail, compact = false }) => {
-  const { title, description, location, points, status, verified, startTime } = event;
+  const { title, description, location, points, status, verified, startTime, coverImageUrl } = event;
   const dateText = startTime ? new Date(startTime).toLocaleString() : null;
 
   return (
     <article className="group rounded-3xl bg-surface-low p-4 transition-all duration-300 hover:bg-surface-high shadow-[0_18px_48px_rgba(33,26,20,0.06)]">
       <div className="relative mb-5 aspect-[16/10] overflow-hidden rounded-2xl bg-gradient-to-br from-primary/10 via-surface-highest to-secondary/10">
-        <div className="absolute inset-0 opacity-60">
-          <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-secondary/20 blur-2xl" />
-          <div className="absolute -left-10 -bottom-10 h-40 w-40 rounded-full bg-primary/20 blur-2xl" />
-        </div>
+        {coverImageUrl ? (
+          <img src={coverImageUrl} alt={title} loading="lazy" className="absolute inset-0 w-full h-full object-cover z-0" />
+        ) : (
+          <div className="absolute inset-0 opacity-60 z-0">
+            <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-secondary/20 blur-2xl" />
+            <div className="absolute -left-10 -bottom-10 h-40 w-40 rounded-full bg-primary/20 blur-2xl" />
+          </div>
+        )}
 
-        <div className="absolute left-4 top-4 flex gap-2">
+        <div className="absolute left-4 top-4 flex gap-2 z-10">
           {verified && (
             <span className="rounded-lg bg-white/90 px-2.5 py-1 text-[10px] font-extrabold text-primary backdrop-blur">
               VERIFIED

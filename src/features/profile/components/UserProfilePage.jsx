@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { pointsApi, usersApi } from '../../../api';
 import { ImpactPill } from '../../../components/eco';
@@ -9,6 +9,37 @@ const UserProfilePage = () => {
   const [points, setPoints] = useState(null);
   const [rank, setRank] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const fileInputRef = useRef(null);
+
+  const handleAvatarSelect = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert('File quá lớn. Vui lòng chọn ảnh < 5MB');
+      return;
+    }
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      alert('Định dạng ảnh không hợp lệ. Vui lòng chọn JPG, PNG hoặc WEBP');
+      return;
+    }
+
+    setUploadingAvatar(true);
+    try {
+      const formData = new FormData();
+      formData.append('avatar', file);
+      
+      const res = await usersApi.uploadAvatar(formData);
+      setUser(prev => ({ ...prev, avatarUrl: res.data.avatarUrl || res.data }));
+    } catch (err) {
+      alert(err.response?.data?.message || 'Lỗi khi upload avatar');
+    } finally {
+      setUploadingAvatar(false);
+      if (fileInputRef.current) fileInputRef.current.value = ''; // Reset input
+    }
+  };
 
   useEffect(() => {
     const load = async () => {
@@ -45,17 +76,35 @@ const UserProfilePage = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           <div className="lg:col-span-4 space-y-8">
             <div className="relative">
-              <div className="aspect-square rounded-[2rem] overflow-hidden bg-surface-highest shadow-[0_24px_70px_rgba(33,26,20,0.10)]">
+              <input 
+                type="file" 
+                ref={fileInputRef} 
+                onChange={handleAvatarSelect} 
+                accept="image/jpeg,image/png,image/webp" 
+                className="hidden" 
+              />
+              <div 
+                className="aspect-square rounded-[2rem] overflow-hidden bg-surface-highest shadow-[0_24px_70px_rgba(33,26,20,0.10)] relative group cursor-pointer"
+                onClick={() => fileInputRef.current?.click()}
+              >
                 {user.avatarUrl ? (
-                  <img src={user.avatarUrl} alt="avatar" className="w-full h-full object-cover" />
+                  <img src={user.avatarUrl} alt="avatar" className="w-full h-full object-cover transition-opacity group-hover:opacity-75" />
                 ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center">
+                  <div className="w-full h-full bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center transition-opacity group-hover:opacity-75">
                     <span className="text-6xl font-black text-secondary">{(user.fullName?.[0] || 'U').toUpperCase()}</span>
+                  </div>
+                )}
+                <div className="absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 bg-black/40 transition-opacity">
+                  <span className="text-white font-bold tracking-wide">Thay đổi</span>
+                </div>
+                {uploadingAvatar && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-surface/80">
+                    <span className="text-primary font-bold animate-pulse">Đang tải...</span>
                   </div>
                 )}
               </div>
 
-              <div className="absolute -bottom-4 -right-4 rounded-2xl bg-primary px-6 py-3 text-white shadow-[0_24px_70px_rgba(33,26,20,0.12)]">
+              <div className="absolute -bottom-4 -right-4 rounded-2xl bg-primary px-6 py-3 text-white shadow-[0_24px_70px_rgba(33,26,20,0.12)] z-10 pointer-events-none">
                 <div className="flex items-center gap-2">
                   <span className="text-lg font-bold font-display">Eco-Level {ecoLevel}</span>
                 </div>
