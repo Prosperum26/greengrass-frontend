@@ -1,25 +1,22 @@
 import React from 'react';
-import ImpactPill from './ImpactPill';
 
 export const MapPreviewCard = ({ title = 'Active Zones', liveCount = 0, onExpand }) => {
   return (
-    <section className="rounded-2xl bg-surface-low p-4 shadow-[0_18px_48px_rgba(33,26,20,0.06)]">
-      <div className="mb-4 flex items-center justify-between">
-        <h3 className="text-xs font-bold uppercase tracking-widest text-primary">{title}</h3>
-        <ImpactPill tone="secondary">{liveCount} Live</ImpactPill>
+    <section className="bg-surface-container-low rounded-2xl p-4 overflow-hidden">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-sm font-bold uppercase tracking-widest text-primary">{title}</h3>
+        <span className="bg-secondary-container text-[#5b6922] text-[10px] font-bold px-2 py-0.5 rounded-full">
+          {liveCount} Live
+        </span>
       </div>
-
-      <div className="relative h-48 overflow-hidden rounded-xl bg-surface-dim">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-secondary/10" />
-        <div className="absolute left-1/3 top-1/4 h-3 w-3 rounded-full bg-secondary ring-4 ring-secondary/25" />
-        <div className="absolute bottom-1/3 right-1/4 h-3 w-3 rounded-full bg-accent ring-4 ring-accent/25" />
+      <div className="relative h-48 rounded-xl overflow-hidden bg-surface-dim">
+        <img className="w-full h-full object-cover grayscale brightness-90" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDnddt8gFuHaq3ri3nlOJDreNhAgW4KMnoOXr0bXOviKhoMOjVafNUQt4qXpoyeXb_1X1oF-dwLZYjKuIHfDLD4oWsF-tt8fro-hRIBpazg0n7xLvkKDOHX__xGgEGDhtnwu1AW7LkAo_Vh5aid5Eu0c8G_oKAYcLDF7LO9w3S7D2SbfL6cpFvgVSX1FrHB7qeMaqrrglfT1HMpOOR3HPIt-CnaOhdO436dr-j0TsHTpH5llhiATdqe_O6Be10j3lgn0mOgXfLlAIc" alt="Map" />
+        <div className="absolute inset-0 bg-primary/10"></div>
+        <div className="absolute top-1/4 left-1/3 w-3 h-3 bg-secondary rounded-full ring-4 ring-secondary/30 animate-pulse"></div>
+        <div className="absolute bottom-1/3 right-1/4 w-3 h-3 bg-[#F75A0D] rounded-full ring-4 ring-[#F75A0D]/30 animate-pulse"></div>
       </div>
-
-      <button
-        type="button"
-        onClick={onExpand}
-        className="mt-4 w-full rounded-xl bg-surface-highest py-2 text-xs font-bold text-primary transition hover:bg-surface-high"
-      >
+      <button onClick={onExpand} className="w-full mt-4 py-2 text-xs font-bold text-primary hover:bg-primary/5 rounded-lg transition-all flex items-center justify-center gap-2">
+        <span className="material-symbols-outlined text-sm">map</span>
         Expand Ecosystem Map
       </button>
     </section>

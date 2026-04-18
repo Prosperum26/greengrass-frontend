@@ -1,87 +1,82 @@
-const getStatusColor = (status) => {
-  if (status === 'ONGOING') return 'bg-[#F75A0D]';
-  return 'bg-[#859448]';
-};
+import React from 'react';
 
-export const EventCard = ({ event, onRegister, onDetail, compact = false }) => {
-  const { title, description, location, points, status, verified, startTime, coverImageUrl } = event;
+export const EventCard = ({ event, onRegister, onDetail }) => {
+  const { title, location, points, status, verified, startTime, coverImageUrl } = event;
   const dateText = startTime ? new Date(startTime).toLocaleString() : null;
 
   return (
-    <article className="group rounded-3xl bg-surface-low p-4 transition-all duration-300 hover:bg-surface-high shadow-[0_18px_48px_rgba(33,26,20,0.06)]">
-      <div className="relative mb-5 aspect-[16/10] overflow-hidden rounded-2xl bg-gradient-to-br from-primary/10 via-surface-highest to-secondary/10">
-        {coverImageUrl ? (
-          <img src={coverImageUrl} alt={title} loading="lazy" className="absolute inset-0 w-full h-full object-cover z-0" />
-        ) : (
-          <div className="absolute inset-0 opacity-60 z-0">
-            <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-secondary/20 blur-2xl" />
-            <div className="absolute -left-10 -bottom-10 h-40 w-40 rounded-full bg-primary/20 blur-2xl" />
-          </div>
-        )}
-
-        <div className="absolute left-4 top-4 flex gap-2 z-10">
-          {verified && (
-            <span className="rounded-lg bg-white/90 px-2.5 py-1 text-[10px] font-extrabold text-primary backdrop-blur">
-              VERIFIED
-            </span>
+    <article className="bg-surface-container-low rounded-3xl p-4 group hover:bg-surface-container-high transition-all duration-300 flex flex-col justify-between">
+      <div>
+        <div className="relative aspect-[16/10] rounded-2xl overflow-hidden mb-5">
+          {coverImageUrl ? (
+            <img src={coverImageUrl} alt={title} loading="lazy" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+          ) : (
+            <div className="w-full h-full bg-gradient-to-br from-primary/10 via-surface-container-highest to-secondary/10 flex items-center justify-center">
+              <span className="material-symbols-outlined text-4xl text-primary/30">image</span>
+            </div>
           )}
-          <span className="rounded-lg bg-primary px-2.5 py-1 text-[10px] font-extrabold text-white">
-            {points} PTS
-          </span>
+
+          <div className="absolute top-4 left-4 flex gap-2">
+            {verified && (
+              <span className="bg-white/90 backdrop-blur text-primary text-[10px] font-extrabold px-2.5 py-1 rounded-lg flex items-center gap-1">
+                <span className="material-symbols-outlined text-[14px]" style={{fontVariationSettings: "'FILL' 1"}}>verified</span>
+                VERIFIED
+              </span>
+            )}
+            <span className="bg-primary/90 backdrop-blur text-white text-[10px] font-extrabold px-2.5 py-1 rounded-lg">
+              {points} PTS
+            </span>
+          </div>
+          
+          <div className="absolute bottom-4 right-4">
+             <span className={`${status === 'ONGOING' ? 'bg-[#F75A0D]' : 'bg-primary-container'} rounded-full px-3 py-1 text-[10px] font-bold text-white uppercase tracking-widest backdrop-blur-md`}>
+                {status || 'UPCOMING'}
+              </span>
+          </div>
         </div>
 
-        <div className="absolute bottom-4 right-4">
-          <span className={`${status === 'ONGOING' ? 'bg-accent' : 'bg-primary-light'} rounded-full px-3 py-1 text-[10px] font-bold text-white uppercase tracking-widest`}>
-            {status}
-          </span>
+        <div className="px-2 pb-2">
+          <div className="flex justify-between items-start mb-3 gap-2">
+            <h3 className="text-lg font-extrabold text-primary leading-snug group-hover:text-[#F75A0D] transition-colors cursor-pointer" onClick={() => onDetail?.(event.id)}>
+              {title}
+            </h3>
+            <button type="button" className="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors flex-shrink-0">
+              bookmark
+            </button>
+          </div>
+
+          <div className="space-y-2 mb-6">
+            {dateText && (
+              <div className="flex items-center gap-2 text-on-surface-variant/80 text-xs font-semibold">
+                <span className="material-symbols-outlined text-base">calendar_today</span>
+                {dateText}
+              </div>
+            )}
+            <div className="flex items-center gap-2 text-on-surface-variant/80 text-xs font-semibold">
+              <span className="material-symbols-outlined text-base">location_on</span>
+              <span className="line-clamp-1">{location}</span>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="px-2 pb-2">
-        <div className="mb-3 flex items-start justify-between gap-3">
-          <h3 className="text-lg font-extrabold text-primary leading-snug group-hover:text-accent transition-colors">
-            {title}
-          </h3>
-          <button type="button" className="text-ink/40 hover:text-primary" aria-label="Bookmark">
-            ⌁
-          </button>
-        </div>
-
-        {!compact && (
-          <p className="mb-4 text-sm text-ink/60 line-clamp-2">{description}</p>
-        )}
-
-        <div className="space-y-2 mb-6">
-          {dateText && (
-            <div className="flex items-center gap-2 text-ink/60 text-xs font-semibold">
-              <span>📅</span>
-              <span>{dateText}</span>
-            </div>
-          )}
-          <div className="flex items-center gap-2 text-ink/60 text-xs font-semibold">
-            <span>📍</span>
-            <span className="line-clamp-1">{location}</span>
-          </div>
-        </div>
-
-        <div className="flex gap-3">
-          {onRegister && (
-            <button
-              type="button"
-              onClick={() => onRegister(event.id)}
-              className="flex-1 rounded-xl bg-accent py-3 text-sm font-bold tracking-wide text-white transition hover:shadow-[0_18px_48px_rgba(247,90,13,0.18)]"
-            >
-              Join Event
-            </button>
-          )}
+      <div className="px-2 pt-2 gap-3 flex flex-col">
+        {onRegister && (
           <button
             type="button"
-            onClick={() => onDetail?.(event.id)}
-            className="rounded-xl bg-surface-highest px-4 py-3 text-sm font-bold text-primary hover:bg-primary/10"
+            onClick={() => onRegister(event.id)}
+            className="w-full bg-[#F75A0D] text-white py-3 rounded-xl font-bold text-sm tracking-wide hover:shadow-lg hover:-translate-y-0.5 transition-all"
           >
-            Details
+            Join Event
           </button>
-        </div>
+        )}
+        <button
+          type="button"
+          onClick={() => onDetail?.(event.id)}
+          className="w-full bg-surface-container-highest text-primary py-3 rounded-xl font-bold text-sm tracking-wide hover:bg-primary/10 transition-colors"
+        >
+          Details
+        </button>
       </div>
     </article>
   );

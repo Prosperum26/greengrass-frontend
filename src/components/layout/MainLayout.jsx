@@ -1,19 +1,15 @@
-// Main Layout Component
+import React from 'react';
 import Header from './Header';
-import Sidebar from './Sidebar';
-import Footer from './Footer';
+import MobileNav from './MobileNav';
 
-export const MainLayout = ({ children }) => {
+export const MainLayout = ({ children, hidePadding = false }) => {
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen flex flex-col font-body bg-background text-on-surface">
       <Header />
-      <div className="flex flex-1">
-        <Sidebar />
-        <main className="flex-1 p-6 overflow-y-auto">
-          {children}
-        </main>
+      <div className={`flex-grow ${hidePadding ? '' : 'pt-24 pb-20 px-6 max-w-7xl mx-auto flex gap-8 w-full'}`}>
+        {children}
       </div>
-      <Footer />
+      <MobileNav />
     </div>
   );
 };

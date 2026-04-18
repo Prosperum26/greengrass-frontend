@@ -8,15 +8,24 @@
   }
 
   body {
-    @apply bg-surface text-ink;
+    @apply bg-background text-on-surface antialiased;
   }
 
-  h1,
-  h2,
-  h3 {
+  h1, h2, h3 {
     font-family: theme('fontFamily.display');
-    color: theme('colors.ink.DEFAULT');
+    color: theme('colors.on-surface');
   }
+}
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+.organic-gradient {
+  background: linear-gradient(15deg, #234612 0%, #3a5e27 100%);
+}
+.glass-nav {
+  background: rgba(37, 30, 24, 0.95);
+  backdrop-filter: blur(12px);
 }
 
 :root {
