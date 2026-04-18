@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AppShell } from '../components/layout';
-import { EventList } from '../features/events';
+import { EventList, CreateEventPage } from '../features/events';
 import EventDetail from '../features/events/components/EventDetail';
 import { HomePage } from '../features/home';
 import MapExplorerPage from '../features/map/components/MapExplorerPage';
@@ -55,6 +55,18 @@ export const AppRoutes = () => {
               <PrivateRoute>
                 <RoleRoute allowedRoles={['ORGANIZER']} redirectTo="/profile">
                   <OrgProfilePage />
+                </RoleRoute>
+              </PrivateRoute>
+            </AppShell>
+          }
+        />
+        <Route
+          path="/organizer/events/create"
+          element={
+            <AppShell>
+              <PrivateRoute>
+                <RoleRoute allowedRoles={['ORGANIZER']} redirectTo="/profile">
+                  <CreateEventPage />
                 </RoleRoute>
               </PrivateRoute>
             </AppShell>

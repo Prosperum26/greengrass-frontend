@@ -4,6 +4,7 @@ import apiClient from './client';
 export const eventsApi = {
   getAll: (params) => apiClient.get('/events', { params }),
   getById: (id) => apiClient.get(`/events/${id}`),
+  create: (payload) => apiClient.post('/events', payload),
   register: (eventId) => apiClient.post(`/events/${eventId}/register`),
   getParticipants: (eventId) => apiClient.get(`/events/${eventId}/participants`),
   getCheckedIn: (eventId) => apiClient.get(`/events/${eventId}/checked-in`),

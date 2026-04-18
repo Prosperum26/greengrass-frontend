@@ -66,6 +66,20 @@ export const useEvents = () => {
     }
   }, []);
 
+  const createEvent = useCallback(async (eventData) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const { data } = await eventsApi.create(eventData);
+      return data;
+    } catch (err) {
+      setError(err.response?.data?.message || 'Không thể tạo sự kiện');
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
   return {
     events,
     selectedEvent,
@@ -75,6 +89,7 @@ export const useEvents = () => {
     fetchEventById,
     registerEvent,
     cancelRegistration,
+    createEvent,
   };
 };
 
