@@ -15,6 +15,7 @@ const EventDetail = lazy(() => import('../features/events/components/EventDetail
 const CreateEventPage = lazy(() => import('../features/events/components/CreateEventPage'));
 const MapExplorerPage = lazy(() => import('../features/map/components/MapExplorerPage'));
 const Leaderboard = lazy(() => import('../features/gamification/components/Leaderboard'));
+const EcomaPage = lazy(() => import('../features/chatbot/components/EcomaPage'));
 const ForgotPasswordPage = lazy(() => import('../features/auth/components/ForgotPasswordPage'));
 const LogInPage = lazy(() => import('../features/auth/components/LogInPage'));
 const RegisterPage = lazy(() => import('../features/auth/components/RegisterPage'));
@@ -58,6 +59,14 @@ const LeaderboardPage = () => (
   <div className="px-6 py-10">
     <Suspense fallback={<LoadingFallback />}>
       <Leaderboard />
+    </Suspense>
+  </div>
+);
+
+const EcomaRoutePage = () => (
+  <div className="px-6 py-8">
+    <Suspense fallback={<LoadingFallback />}>
+      <EcomaPage />
     </Suspense>
   </div>
 );
@@ -115,6 +124,7 @@ export const AppRoutes = () => {
         {/* Feature routes */}
         <Route path="/map" element={<AppShell contentClassName="overflow-hidden"><MapPage /></AppShell>} />
         <Route path="/leaderboard" element={<AppShell><LeaderboardPage /></AppShell>} />
+        <Route path="/ecoma" element={<AppShell><EcomaRoutePage /></AppShell>} />
         {/* <Route path="/checkin/:eventId" element={<AppShell><PrivateRoute><Suspense fallback={<LoadingFallback />}><CheckInPage /></Suspense></PrivateRoute></AppShell>} /> */}
         
         {/* Admin routes */}

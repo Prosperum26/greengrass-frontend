@@ -13,6 +13,7 @@ const RegisterPage = () => {
     });
     const { register: registerUser, isLoading, error: apiError } = useAuthContext();
     const navigate = useNavigate();
+    const fieldBaseClass = 'w-full rounded-xl border border-ink/10 bg-white/80 px-4 py-3 text-ink placeholder:text-ink/45 outline-none transition focus:ring-2';
 
     const onSubmit = async (data) => {
         if (accountType === 'ORGANIZER' && !data.organizationName) {
@@ -62,9 +63,10 @@ const RegisterPage = () => {
                             id="email"
                             type="email"
                             {...register('email')}
-                            className={`w-full rounded-xl bg-surface-highest px-4 py-3 text-ink outline-none focus:ring-2 ${
+                            className={`${fieldBaseClass} ${
                                 errors.email ? 'ring-2 ring-accent' : 'focus:ring-primary/35'
                             }`}
+                            placeholder="you@example.com"
                         />
                         {errors.email && <p className="text-sm text-accent-hover mt-1">{errors.email.message}</p>}
                     </div>
@@ -75,11 +77,17 @@ const RegisterPage = () => {
                             id="password"
                             type="password"
                             {...register('password')}
-                            className={`w-full rounded-xl bg-surface-highest px-4 py-3 text-ink outline-none focus:ring-2 ${
+                            className={`${fieldBaseClass} ${
                                 errors.password ? 'ring-2 ring-accent' : 'focus:ring-primary/35'
                             }`}
+                            placeholder="Enter your password"
                         />
                         {errors.password && <p className="text-sm text-accent-hover mt-1">{errors.password.message}</p>}
+                        {!errors.password && (
+                          <p className="mt-1 text-xs text-ink/55">
+                            At least 8 chars, gồm chữ hoa, chữ thường, số và ký tự đặc biệt (@$!%*?&).
+                          </p>
+                        )}
                     </div>
 
                     <div className="flex flex-col gap-1 items-start">
@@ -88,9 +96,10 @@ const RegisterPage = () => {
                             id="passwordConfirm"
                             type="password"
                             {...register('passwordConfirm')}
-                            className={`w-full rounded-xl bg-surface-highest px-4 py-3 text-ink outline-none focus:ring-2 ${
+                            className={`${fieldBaseClass} ${
                                 errors.passwordConfirm ? 'ring-2 ring-accent' : 'focus:ring-primary/35'
                             }`}
+                            placeholder="Confirm your password"
                         />
                         {errors.passwordConfirm && <p className="text-sm text-accent-hover mt-1">{errors.passwordConfirm.message}</p>}
                     </div>
@@ -101,9 +110,10 @@ const RegisterPage = () => {
                             id="fullName"
                             type="text"
                             {...register('fullName')}
-                            className={`w-full rounded-xl bg-surface-highest px-4 py-3 text-ink outline-none focus:ring-2 ${
+                            className={`${fieldBaseClass} ${
                                 errors.fullName ? 'ring-2 ring-accent' : 'focus:ring-primary/35'
                             }`}
+                            placeholder="Your full name"
                         />
                         {errors.fullName && <p className="text-sm text-accent-hover mt-1">{errors.fullName.message}</p>}
                     </div>
@@ -115,9 +125,10 @@ const RegisterPage = () => {
                           <input 
                             id="organizationName"
                             {...register('organizationName')} 
-                            className={`w-full rounded-xl bg-surface-highest px-4 py-3 text-ink outline-none focus:ring-2 ${
+                            className={`${fieldBaseClass} ${
                                 errors.organizationName ? 'ring-2 ring-accent' : 'focus:ring-primary/35'
                             }`}
+                            placeholder="Organization name"
                           />
                           {errors.organizationName && <p className="text-sm text-accent-hover mt-1">{errors.organizationName.message}</p>}
                         </div>
@@ -126,10 +137,11 @@ const RegisterPage = () => {
                           <textarea 
                             id="description"
                             {...register('description')} 
-                            className={`w-full rounded-xl bg-surface-highest px-4 py-3 text-ink outline-none focus:ring-2 ${
+                            className={`${fieldBaseClass} ${
                                 errors.description ? 'ring-2 ring-accent' : 'focus:ring-primary/35'
                             }`}
                             rows="3"
+                            placeholder="Tell us about your organization and activities"
                           />
                           {errors.description && <p className="text-sm text-accent-hover mt-1">{errors.description.message}</p>}
                         </div>
@@ -148,36 +160,6 @@ const RegisterPage = () => {
                         className={`mt-4 w-full rounded-xl py-3.5 text-sm font-medium text-white transition-colors ${isLoading || isSubmitting ? 'cursor-not-allowed bg-primary-light/60' : 'bg-primary hover:bg-primary-light'} shadow-[0_20px_50px_rgba(33,26,20,0.10)]`}
                     >
                         {isLoading || isSubmitting ? 'Đang xử lý...' : accountType === 'ORGANIZER' ? 'Submit organizer request' : 'Register'}
-                    </button>
-                </form>
-
-                <div className="mt-6 flex flex-col items-start gap-2">
-                    <Link to="/login" className="text-sm text-ink/60 underline underline-offset-4 hover:text-ink">
-                        Already have an account?
-                    </Link>
-                </div>
-            </div>
-        </div>
-    );
-};
-
-export default RegisterPage;
-                        </div>
-                      </>
-                    )}
-
-                    {(formError || apiError) && (
-                        <p className="text-left text-sm font-medium text-accent-hover">
-                            {formError || apiError}
-                        </p>
-                    )}
-
-                    <button
-                        type="submit"
-                        disabled={isLoading}
-                        className={`mt-4 w-full rounded-xl py-3.5 text-sm font-medium text-white transition-colors ${isLoading ? 'cursor-not-allowed bg-primary-light/60' : 'bg-primary hover:bg-primary-light'} shadow-[0_20px_50px_rgba(33,26,20,0.10)]`}
-                    >
-                        {isLoading ? 'Đang xử lý...' : accountType === 'ORGANIZER' ? 'Submit organizer request' : 'Register'}
                     </button>
                 </form>
 

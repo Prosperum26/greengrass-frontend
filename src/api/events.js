@@ -2,9 +2,12 @@
 import apiClient from './client';
 
 export const eventsApi = {
-  getAll: (params) => apiClient.get('/events', { params }),
+  getAll: (params, options = {}) => apiClient.get('/events', { params, ...options }),
   getById: (id) => apiClient.get(`/events/${id}`),
-  create: (payload) => apiClient.post('/events', payload),
+  create: (payload) =>
+    apiClient.post('/events', payload, payload instanceof FormData ? {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    } : undefined),
   register: (eventId) => apiClient.post(`/events/${eventId}/register`),
   getParticipants: (eventId) => apiClient.get(`/events/${eventId}/participants`),
   getCheckedIn: (eventId) => apiClient.get(`/events/${eventId}/checked-in`),

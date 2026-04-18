@@ -57,8 +57,8 @@ const OrganizerRequestsPage = () => {
     <div className="mx-auto max-w-5xl px-4 py-8 relative">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
-          <h1 className="text-3xl font-display font-bold text-white tracking-tight">Quản lý Đơn Đăng Ký</h1>
-          <p className="text-white/60 mt-1">Duyệt hoặc từ chối đơn đăng ký tài khoản Organizer</p>
+          <h1 className="text-3xl font-display font-bold text-primary tracking-tight">Quản lý Đơn Đăng Ký</h1>
+          <p className="text-ink/70 mt-1">Duyệt hoặc từ chối đơn đăng ký tài khoản Organizer</p>
         </div>
         
         <select 

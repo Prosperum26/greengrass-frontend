@@ -13,7 +13,7 @@ export const EventList = () => {
   useEffect(() => {
     const loadEvents = async () => {
       try {
-        const { data } = await eventsApi.getAll({ page: 1, limit: 30 });
+        const { data } = await eventsApi.getAll({ page: 1, limit: 30 }, { skipAuth: true });
         setEvents(data?.data?.items || []);
       } catch (err) {
         setError(err.response?.data?.message || "Failed to load events");

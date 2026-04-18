@@ -21,6 +21,9 @@ const selectedIcon = new L.Icon({
 const FlyToLocation = ({ center }) => {
   const map = useMap();
   useEffect(() => {
+    if (!Array.isArray(center) || center.length !== 2) return;
+    const [lat, lng] = center;
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
     map.flyTo(center, 14, { duration: 0.8 });
   }, [map, center]);
   return null;
@@ -38,9 +41,15 @@ export const GreenMap = ({
     if (markersProp) return;
     const loadEcoPoints = async () => {
       try {
-        const { data } = await mapApi.getEcoPoints();
+        const { data } = await mapApi.getMarkers();
         const points = Array.isArray(data) ? data : data?.data || [];
-        setMarkers(points);
+        setMarkers(
+          points.map((point) => ({
+            ...point,
+            latitude: point.latitude ?? point.lat,
+            longitude: point.longitude ?? point.lng,
+          })),
+        );
       } catch {
         setMarkers([]);
       }
@@ -50,7 +59,13 @@ export const GreenMap = ({
 
   useEffect(() => {
     if (!markersProp) return;
-    setMarkers(markersProp);
+    setMarkers(
+      markersProp.map((point) => ({
+        ...point,
+        latitude: point.latitude ?? point.lat,
+        longitude: point.longitude ?? point.lng,
+      })),
+    );
   }, [markersProp]);
 
   useEffect(() => {
@@ -60,15 +75,38 @@ export const GreenMap = ({
   }, [markers, selectedId]);
 
   const mapCenter = useMemo(() => {
-    if (selected) return [selected.latitude, selected.longitude];
+    if (
+      selected &&
+      Number.isFinite(selected.latitude) &&
+      Number.isFinite(selected.longitude)
+    ) {
+      return [selected.latitude, selected.longitude];
+    }
+    if (
+      Array.isArray(center) &&
+      center.length === 2 &&
+      Number.isFinite(center[0]) &&
+      Number.isFinite(center[1])
+    ) {
+      return center;
+    }
     return center;
   }, [center, selected]);
 
+  const validMarkers = useMemo(
+    () =>
+      markers.filter(
+        (point) =>
+          Number.isFinite(point.latitude) && Number.isFinite(point.longitude),
+      ),
+    [markers],
+  );
+
   return (
-    <MapContainer center={mapCenter} zoom={13} className="h-full w-full">
+    <MapContainer center={mapCenter || defaultCenter} zoom={13} className="h-full w-full z-0">
       <FlyToLocation center={mapCenter} />
       <TileLayer attribution='&copy; OpenStreetMap contributors' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-      {markers.map((point) => (
+      {validMarkers.map((point) => (
         <Marker
           key={point.id}
           position={[point.latitude, point.longitude]}

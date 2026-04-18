@@ -12,6 +12,8 @@ export const HomePage = () => {
   const { addError } = useError();
   
   const [featuredEvents, setFeaturedEvents] = useState([]);
+  const [liveEventCount, setLiveEventCount] = useState(0);
+  const [upcomingEventCount, setUpcomingEventCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [keywordInput, setKeywordInput] = useState('');
   const [status, setStatus] = useState('ALL');
@@ -23,15 +25,29 @@ export const HomePage = () => {
     const loadData = async () => {
       setLoading(true);
       try {
-        const eventsRes = await eventsApi.getAll({
-          limit: 6,
-          page: 1,
-          keyword: debouncedKeyword || undefined,
-          status: status === 'ALL' ? undefined : status,
-        });
+        const [eventsRes, liveRes, upcomingRes] = await Promise.all([
+          eventsApi.getAll({
+            limit: 6,
+            page: 1,
+            keyword: debouncedKeyword || undefined,
+            status: status === 'ALL' ? undefined : status,
+          }, { skipAuth: true }),
+          eventsApi.getAll({
+            limit: 1,
+            page: 1,
+            status: 'ONGOING',
+          }, { skipAuth: true }),
+          eventsApi.getAll({
+            limit: 1,
+            page: 1,
+            status: 'UPCOMING',
+          }, { skipAuth: true }),
+        ]);
 
         const items = eventsRes.data?.data?.items || [];
         setFeaturedEvents(items.map((event, idx) => ({ ...event, verified: idx < 2 })));
+        setLiveEventCount(liveRes.data?.data?.pagination?.total || 0);
+        setUpcomingEventCount(upcomingRes.data?.data?.pagination?.total || 0);
       } catch (err) {
         const message = getErrorMessage(err);
         addError(message, { type: 'error' });
@@ -66,7 +82,11 @@ export const HomePage = () => {
       {/* Main Container replacing Sidebar setup */}
       <div className="flex gap-8">
         <aside className="hidden lg:flex flex-col gap-8 w-72 flex-shrink-0">
-          <MapPreviewCard liveCount={12} onExpand={() => navigate('/map')} />
+          <MapPreviewCard
+            liveCount={liveEventCount}
+            upcomingCount={upcomingEventCount}
+            onExpand={() => navigate('/map')}
+          />
           <FilterHub
             keyword={keywordInput}
             onKeywordChange={setKeywordInput}

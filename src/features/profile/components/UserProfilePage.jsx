@@ -3,6 +3,10 @@ import { Link } from 'react-router-dom';
 import { pointsApi, usersApi } from '../../../api';
 import { ImpactPill } from '../../../components/eco';
 
+const EVENT_MILESTONES = [1, 5, 10, 20, 35, 50];
+const POINT_MILESTONES = [50, 100, 200, 300, 400, 500];
+const MAX_POINT_MILESTONE = POINT_MILESTONES[POINT_MILESTONES.length - 1];
+
 const UserProfilePage = () => {
   const [user, setUser] = useState(null);
   const [events, setEvents] = useState([]);
@@ -67,12 +71,25 @@ const UserProfilePage = () => {
   if (loading) return <div className="min-h-screen bg-surface p-6 text-ink">Loading profile...</div>;
   if (!user) return <div className="min-h-screen bg-surface p-6 text-ink">No user profile</div>;
 
-  const monthlyGoal = 85;
+  const totalPoints = user.totalPoints ?? 0;
   const ecoLevel = Math.max(1, Math.floor(user.totalPoints / 100) + 1);
+  const totalEventsJoined = events.length;
+  const currentMilestone =
+    EVENT_MILESTONES.filter((m) => totalEventsJoined >= m).at(-1) ?? 0;
+  const nextMilestone = EVENT_MILESTONES.find((m) => totalEventsJoined < m) ?? null;
+  const milestoneProgress = nextMilestone
+    ? ((totalEventsJoined - currentMilestone) / (nextMilestone - currentMilestone)) * 100
+    : 100;
+  const nextPointMilestone =
+    POINT_MILESTONES.find((m) => totalPoints < m) ?? null;
+  const totalPointProgress = Math.max(
+    0,
+    Math.min(100, (totalPoints / MAX_POINT_MILESTONE) * 100),
+  );
 
   return (
-    <div className="min-h-screen bg-surface">
-      <div className="mx-auto max-w-7xl p-6 lg:p-12">
+    <div className="min-h-screen bg-surface text-ink">
+      <div className="mx-auto max-w-7xl p-6 lg:p-12 text-ink">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           <div className="lg:col-span-4 space-y-8">
             <div className="relative">
@@ -112,69 +129,127 @@ const UserProfilePage = () => {
             </div>
 
             <div className="space-y-2 pt-2">
-              <h1 className="text-4xl font-extrabold tracking-tight font-display">{user.fullName}</h1>
-              <p className="text-ink/60 font-medium leading-relaxed">
+              <h1 className="text-4xl font-extrabold tracking-tight font-display text-primary">{user.fullName}</h1>
+              <p className="text-ink font-medium leading-relaxed">
                 {user.bio || 'Dedicated eco-hero. Transforming the campus one action at a time.'}
               </p>
             </div>
 
-            <div className="rounded-[2rem] bg-surface-low p-6 space-y-4 shadow-[0_18px_48px_rgba(33,26,20,0.06)]">
+            <div className="rounded-[2rem] bg-surface-highest p-6 space-y-4 shadow-[0_18px_48px_rgba(33,26,20,0.06)]">
               <div className="flex justify-between items-end">
                 <div>
-                  <span className="uppercase text-xs tracking-widest text-ink/60 font-bold">Monthly Goal</span>
-                  <h3 className="text-2xl font-display font-bold text-primary">{monthlyGoal}% Growing</h3>
+                  <span className="uppercase text-xs tracking-widest text-ink/90 font-bold">Point Milestone</span>
+                  <h3 className="text-2xl font-display font-bold text-primary">
+                    {nextPointMilestone
+                      ? `Next: ${nextPointMilestone} pts`
+                      : 'Top milestone reached'}
+                  </h3>
                 </div>
-                <span className="text-secondary text-4xl">✳</span>
+                <span className="text-secondary text-3xl">🏁</span>
               </div>
-              <div className="relative h-4 w-full bg-surface-highest rounded-full overflow-hidden">
-                <div className="absolute inset-y-0 left-0 bg-gradient-to-br from-primary to-primary-light rounded-full" style={{ width: `${monthlyGoal}%` }} />
+              <div className="relative pt-8">
+                <div className="relative h-3 w-full bg-surface-low rounded-full overflow-hidden">
+                  <div
+                    className="absolute inset-y-0 left-0 bg-gradient-to-r from-primary to-secondary rounded-full"
+                    style={{
+                      width: `${totalPointProgress}%`,
+                    }}
+                  />
+                </div>
+                {POINT_MILESTONES.map((milestone) => {
+                  const unlocked = totalPoints >= milestone;
+                  const isMax = milestone === MAX_POINT_MILESTONE;
+                  const position = (milestone / MAX_POINT_MILESTONE) * 100;
+                  return (
+                    <div
+                      key={milestone}
+                      className="absolute top-0 -translate-x-1/2"
+                      style={{ left: `${position}%` }}
+                    >
+                      <p
+                        className={`mb-1 text-center text-[10px] font-bold ${
+                          unlocked ? 'text-secondary' : 'text-ink/65'
+                        }`}
+                      >
+                        {milestone}
+                      </p>
+                      <div
+                        className={`mx-auto rounded-full border-2 ${
+                          unlocked
+                            ? 'bg-secondary border-secondary'
+                            : 'bg-surface border-ink/30'
+                        } ${isMax ? 'h-5 w-5' : 'h-3.5 w-3.5'}`}
+                      />
+                    </div>
+                  );
+                })}
               </div>
-              <p className="text-sm text-ink/60 italic">Keep going—your streak is compounding.</p>
+              <p className="text-sm text-ink/90">
+                {nextPointMilestone
+                  ? `${Math.max(nextPointMilestone - totalPoints, 0)} points to unlock next milestone`
+                  : 'You unlocked all configured point milestones.'}
+              </p>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="rounded-3xl bg-surface-highest p-5 shadow-[0_16px_44px_rgba(33,26,20,0.06)]">
                 <span className="text-3xl font-black text-primary">{user.totalPoints.toLocaleString()}</span>
-                <p className="text-[10px] font-bold uppercase tracking-wider text-ink/50">Impact Points</p>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-ink/90">Impact Points</p>
               </div>
               <div className="rounded-3xl bg-surface-highest p-5 shadow-[0_16px_44px_rgba(33,26,20,0.06)]">
                 <div className="flex items-center gap-2">
-                  <span className="text-xl">🔥</span>
-                  <span className="text-3xl font-black text-ink">{user.currentStreak}</span>
+                  <span className="text-xl">🎯</span>
+                  <span className="text-3xl font-black text-ink">{totalEventsJoined}</span>
                 </div>
-                <p className="text-[10px] font-bold uppercase tracking-wider text-ink/50">Day Streak</p>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-ink/90">Events Joined</p>
               </div>
             </div>
           </div>
 
           <div className="lg:col-span-8 space-y-12">
             <section>
-              <h2 className="mb-6 text-2xl font-extrabold font-display">Green Streak Activity</h2>
-              <div className="grid grid-cols-7 gap-2 md:gap-4">
-                {Array.from({ length: 7 }).map((_, idx) => {
-                  const active = idx < Math.min(user.currentStreak, 6);
-                  const today = idx === 6;
-                  return (
-                    <div
-                      key={idx}
-                      className={`aspect-square rounded-xl flex items-center justify-center ${
-                        today
-                          ? 'bg-surface-highest text-ink/40'
-                          : active
-                            ? 'bg-secondary/20 text-secondary'
-                            : 'bg-surface-highest text-ink/30'
-                      }`}
-                    >
-                      {today ? <span className="text-xs font-bold">Today</span> : active ? '✓' : ''}
-                    </div>
-                  );
-                })}
+              <h2 className="mb-6 text-2xl font-extrabold font-display text-primary">Event Milestones</h2>
+              <div className="rounded-[2rem] bg-surface-highest p-6 shadow-[0_18px_48px_rgba(33,26,20,0.06)]">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <p className="text-sm font-semibold text-ink/90">
+                    {nextMilestone
+                      ? `Next milestone: ${nextMilestone} events (${Math.max(nextMilestone - totalEventsJoined, 0)} to go)`
+                      : 'You reached the top milestone (50 events)!'}
+                  </p>
+                  <p className="text-xs font-bold uppercase tracking-wider text-ink/75">
+                    {totalEventsJoined} total events
+                  </p>
+                </div>
+                <div className="mt-4 h-3 w-full overflow-hidden rounded-full bg-surface-low">
+                  <div
+                    className="h-full rounded-full bg-gradient-to-r from-primary to-secondary transition-all"
+                    style={{ width: `${Math.max(0, Math.min(100, milestoneProgress))}%` }}
+                  />
+                </div>
+                <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+                  {EVENT_MILESTONES.map((milestone) => {
+                    const unlocked = totalEventsJoined >= milestone;
+                    return (
+                      <div
+                        key={milestone}
+                        className={`rounded-xl px-3 py-3 text-center ${
+                          unlocked ? 'bg-secondary/20 text-secondary' : 'bg-surface-low text-ink/70'
+                        }`}
+                      >
+                        <p className="text-base font-black">{milestone}</p>
+                        <p className="text-[10px] font-bold uppercase tracking-wider">
+                          {unlocked ? 'Unlocked' : 'Locked'}
+                        </p>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             </section>
 
             <section>
               <div className="mb-6 flex items-center justify-between">
-                <h2 className="text-2xl font-extrabold font-display">Earned Badges</h2>
+                <h2 className="text-2xl font-extrabold font-display text-primary">Earned Badges</h2>
                 <button type="button" className="text-primary font-bold text-sm hover:underline">View All</button>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
@@ -188,14 +263,14 @@ const UserProfilePage = () => {
                       )}
                     </div>
                     <p className="font-display font-bold text-sm">{badge.name}</p>
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-ink/50">Unlocked</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-ink/90">Unlocked</span>
                   </div>
                 ))}
               </div>
             </section>
 
             <section>
-              <h2 className="mb-8 text-2xl font-extrabold font-display">Environmental Journey</h2>
+              <h2 className="mb-8 text-2xl font-extrabold font-display text-primary">Environmental Journey</h2>
               <div className="relative space-y-0">
                 <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-surface-highest" />
                 {events.slice(0, 6).map((item) => (
@@ -204,7 +279,7 @@ const UserProfilePage = () => {
                       <span className="text-xl font-black">♻</span>
                     </div>
                     <div className="pt-2 min-w-0">
-                      <p className="text-xs font-bold uppercase tracking-widest text-ink/50 mb-1">
+                      <p className="text-xs font-bold uppercase tracking-widest text-ink/90 mb-1">
                         {new Date(item.registeredAt).toLocaleDateString()}
                       </p>
                       <Link to={`/events/${item.event.id}`} className="block">
@@ -212,7 +287,7 @@ const UserProfilePage = () => {
                           {item.event.title}
                         </h4>
                       </Link>
-                      <p className="mt-1 text-sm text-ink/60 leading-relaxed line-clamp-2">
+                      <p className="mt-1 text-sm text-ink/90 leading-relaxed line-clamp-2">
                         {item.event.description}
                       </p>
                       <div className="mt-4 flex gap-2 flex-wrap">

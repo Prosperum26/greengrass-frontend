@@ -1,12 +1,17 @@
 import React from 'react';
 
-export const MapPreviewCard = ({ title = 'Active Zones', liveCount = 0, onExpand }) => {
+export const MapPreviewCard = ({
+  title = 'Active Zones',
+  liveCount = 0,
+  upcomingCount = 0,
+  onExpand,
+}) => {
   return (
     <section className="bg-surface-container-low rounded-2xl p-4 overflow-hidden">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-bold uppercase tracking-widest text-primary">{title}</h3>
-        <span className="bg-secondary-container text-[#5b6922] text-[10px] font-bold px-2 py-0.5 rounded-full">
-          {liveCount} Live
+        <span className="bg-secondary-container text-[#5b6922] text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap">
+          {liveCount} Live / {upcomingCount} Soon
         </span>
       </div>
       <div className="relative h-48 rounded-xl overflow-hidden bg-surface-dim">

@@ -8,6 +8,7 @@ import { loginSchema } from '../../../utils/validationSchemas';
 const LoginPage = () => {
     const { login, isLoading, error: apiError } = useAuthContext();
     const navigate = useNavigate();
+    const fieldBaseClass = 'w-full rounded-xl border border-ink/10 bg-white/80 px-4 py-3 text-ink placeholder:text-ink/45 outline-none transition focus:ring-2';
     
     const {
         register,
@@ -42,7 +43,7 @@ const LoginPage = () => {
                             type="email"
                             placeholder="Nhập email của bạn"
                             {...register('email')}
-                            className={`w-full rounded-xl bg-surface-highest px-4 py-3 text-ink outline-none focus:ring-2 ${
+                            className={`${fieldBaseClass} ${
                                 errors.email ? 'ring-2 ring-accent' : 'focus:ring-primary/35'
                             }`}
                         />
@@ -58,7 +59,7 @@ const LoginPage = () => {
                             type="password"
                             placeholder="Nhập mật khẩu"
                             {...register('password')}
-                            className={`w-full rounded-xl bg-surface-highest px-4 py-3 text-ink outline-none focus:ring-2 ${
+                            className={`${fieldBaseClass} ${
                                 errors.password ? 'ring-2 ring-accent' : 'focus:ring-primary/35'
                             }`}
                         />

@@ -36,6 +36,13 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
+  const normalizeErrorMessage = useCallback((err, fallback) => {
+    const raw = err?.response?.data?.message;
+    if (Array.isArray(raw)) return raw.join(' ');
+    if (typeof raw === 'string' && raw.trim()) return raw;
+    return fallback;
+  }, []);
+
   // Clear all auth data
   const clearAuth = useCallback(() => {
     localStorage.clear();
@@ -82,14 +89,14 @@ export const AuthProvider = ({ children }) => {
         setUser(me.data);
         return me.data;
       } catch (err) {
-        const errorMsg = err.response?.data?.message || 'Đăng nhập thất bại';
+        const errorMsg = normalizeErrorMessage(err, 'Đăng nhập thất bại');
         setError(errorMsg);
         throw err;
       } finally {
         setIsLoading(false);
       }
     },
-    [setTokens]
+    [setTokens, normalizeErrorMessage]
   );
 
   const register = useCallback(
@@ -119,18 +126,21 @@ export const AuthProvider = ({ children }) => {
 
         if (data.accessToken && data.refreshToken) {
           setTokens(data.accessToken, data.refreshToken);
+          // Keep auth UI in sync immediately after successful register
+          const me = await usersApi.getMe();
+          setUser(me.data);
         }
 
         return data;
       } catch (err) {
-        const errorMsg = err.response?.data?.message || 'Đăng ký thất bại';
+        const errorMsg = normalizeErrorMessage(err, 'Đăng ký thất bại');
         setError(errorMsg);
         throw err;
       } finally {
         setIsLoading(false);
       }
     },
-    [setTokens]
+    [setTokens, normalizeErrorMessage]
   );
 
   const logout = useCallback(async () => {

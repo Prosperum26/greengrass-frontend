@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { eventsApi } from '../../../api';
+import { eventsApi, usersApi } from '../../../api';
 import { useAuthContext } from '../../../hooks/useAuthContext';
 
 export const EventDetail = () => {
@@ -15,26 +15,51 @@ export const EventDetail = () => {
   const [activeTab, setActiveTab] = useState('participants');
   const [error, setError] = useState('');
   const [uploadingGallery, setUploadingGallery] = useState(false);
+  const [isRegistered, setIsRegistered] = useState(false);
   const fileInputRef = useRef(null);
 
   const role = getRole();
   const isOrganizer = role === 'ORGANIZER';
+  const canViewParticipants = role === 'ORGANIZER' || role === 'ADMIN';
+  const canRegister = role === 'STUDENT';
+  const statusTone = useMemo(() => {
+    const status = event?.status;
+    if (status === 'ONGOING') return 'bg-secondary/20 text-secondary';
+    if (status === 'COMPLETED') return 'bg-ink/10 text-ink/70';
+    return 'bg-accent/20 text-accent-hover';
+  }, [event?.status]);
 
   useEffect(() => {
     const load = async () => {
       try {
-        const [eventRes, participantsRes] = await Promise.all([
-          eventsApi.getById(id),
-          eventsApi.getParticipants(id),
-        ]);
+        const requests = [eventsApi.getById(id)];
+        if (canViewParticipants) {
+          requests.push(eventsApi.getParticipants(id));
+        }
+        if (canRegister) {
+          requests.push(usersApi.getMyEvents());
+        }
+
+        const [eventRes, participantsRes, myEventsRes] = await Promise.all(requests);
         setEvent(eventRes.data?.data || null);
-        setParticipants(participantsRes.data?.data?.participants || []);
+
+        if (canViewParticipants) {
+          setParticipants(participantsRes?.data?.data?.participants || []);
+        }
+
+        if (canRegister) {
+          const rawMyEvents = myEventsRes?.data?.data || myEventsRes?.data || [];
+          const myEvents = Array.isArray(rawMyEvents) ? rawMyEvents : [];
+          setIsRegistered(
+            myEvents.some((item) => item?.id === id || item?.eventId === id),
+          );
+        }
       } catch (err) {
         setError(err.response?.data?.message || 'Failed to load event');
       }
     };
     void load();
-  }, [id]);
+  }, [id, canViewParticipants, canRegister]);
 
   useEffect(() => {
     if (!isOrganizer) return;
@@ -53,15 +78,15 @@ export const EventDetail = () => {
     void loadOrganizerData();
   }, [id, isOrganizer]);
 
-  const canRegister = useMemo(() => role === 'STUDENT', [role]);
-
   const onRegister = async () => {
     try {
       await eventsApi.register(id);
       alert('Event registration completed');
-      // Refetch participants
-      const participantsRes = await eventsApi.getParticipants(id);
-      setParticipants(participantsRes.data?.data?.participants || []);
+      setIsRegistered(true);
+      if (canViewParticipants) {
+        const participantsRes = await eventsApi.getParticipants(id);
+        setParticipants(participantsRes.data?.data?.participants || []);
+      }
     } catch (err) {
       alert(err.response?.data?.message || 'Registration failed');
     }
@@ -72,18 +97,15 @@ export const EventDetail = () => {
     try {
       await eventsApi.cancelRegister(id);
       alert('Registration cancelled successfully');
-      // Refetch participants
-      const participantsRes = await eventsApi.getParticipants(id);
-      setParticipants(participantsRes.data?.data?.participants || []);
+      setIsRegistered(false);
+      if (canViewParticipants) {
+        const participantsRes = await eventsApi.getParticipants(id);
+        setParticipants(participantsRes.data?.data?.participants || []);
+      }
     } catch (err) {
       alert(err.response?.data?.message || 'Cancel registration failed');
     }
   };
-
-  const currentUserId = getUserId();
-  const isRegistered = useMemo(() => {
-    return participants.some(p => p.userId === currentUserId || p.userId === parseInt(currentUserId, 10));
-  }, [participants, currentUserId]);
 
   const handleGalleryUpload = async (e) => {
     const file = e.target.files?.[0];
@@ -120,53 +142,77 @@ export const EventDetail = () => {
 
   return (
     <div className="min-h-screen bg-surface p-4 md:p-10">
-      <div className="mx-auto max-w-5xl rounded-2xl bg-surface-high p-6 text-ink shadow-[0_24px_70px_rgba(33,26,20,0.10)]">
-        <button onClick={() => navigate('/events')} className="mb-4 rounded-xl bg-surface-highest px-3 py-2 text-sm font-medium hover:bg-surface-high">
-          Back
+      <div className="mx-auto max-w-6xl rounded-3xl bg-surface-high p-6 text-ink shadow-[0_24px_70px_rgba(33,26,20,0.10)] md:p-8">
+        <button onClick={() => navigate('/events')} className="mb-5 inline-flex items-center gap-2 rounded-xl bg-surface-highest px-4 py-2 text-sm font-medium hover:bg-surface-high">
+          <span className="material-symbols-outlined text-base">arrow_back</span>
+          Back to events
         </button>
-        {error && <p className="mb-3 text-accent-hover">{error}</p>}
+        {error && <p className="mb-4 rounded-xl bg-accent/10 px-4 py-3 text-accent-hover">{error}</p>}
         {event && (
           <>
-            {event.coverImageUrl && (
-              <img src={event.coverImageUrl} alt={event.title} loading="lazy" className="w-full h-64 object-cover rounded-2xl mb-6 shadow-md" />
-            )}
-            <h1 className="text-3xl font-semibold font-display tracking-tight">{event.title}</h1>
-            <p className="mt-3 text-ink/70">{event.description}</p>
-            <div className="mt-4 grid gap-2 text-sm text-ink/60 md:grid-cols-2">
-              <p>Status: {event.status}</p>
-              <p>Location: {event.location}</p>
-              <p>Start: {new Date(event.startTime).toLocaleString()}</p>
-              <p>End: {new Date(event.endTime).toLocaleString()}</p>
+            <div className="overflow-hidden rounded-2xl border border-surface-highest bg-surface-highest">
+              {event.coverImageUrl ? (
+                <img src={event.coverImageUrl} alt={event.title} loading="lazy" className="h-72 w-full object-cover md:h-80" />
+              ) : (
+                <div className="h-56 w-full bg-gradient-to-br from-primary/15 to-secondary/15 md:h-72" />
+              )}
+            </div>
+
+            <div className="mt-6 flex flex-wrap items-center gap-3">
+              <span className={`rounded-full px-3 py-1 text-xs font-bold tracking-wide ${statusTone}`}>{event.status}</span>
+              <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-bold tracking-wide text-primary">
+                {event.points} points
+              </span>
+            </div>
+
+            <h1 className="mt-4 text-3xl font-semibold font-display tracking-tight text-primary md:text-4xl">{event.title}</h1>
+            <p className="mt-3 max-w-3xl text-ink/75 leading-relaxed">{event.description}</p>
+
+            <div className="mt-6 grid gap-4 md:grid-cols-3">
+              <div className="rounded-2xl bg-surface-highest p-4 shadow-[0_12px_32px_rgba(33,26,20,0.06)]">
+                <p className="text-xs font-semibold uppercase tracking-wide text-ink/45">Location</p>
+                <p className="mt-2 font-medium text-ink">{event.location}</p>
+              </div>
+              <div className="rounded-2xl bg-surface-highest p-4 shadow-[0_12px_32px_rgba(33,26,20,0.06)]">
+                <p className="text-xs font-semibold uppercase tracking-wide text-ink/45">Start time</p>
+                <p className="mt-2 font-medium text-ink">{new Date(event.startTime).toLocaleString()}</p>
+              </div>
+              <div className="rounded-2xl bg-surface-highest p-4 shadow-[0_12px_32px_rgba(33,26,20,0.06)]">
+                <p className="text-xs font-semibold uppercase tracking-wide text-ink/45">End time</p>
+                <p className="mt-2 font-medium text-ink">{new Date(event.endTime).toLocaleString()}</p>
+              </div>
             </div>
 
             {canRegister && !isRegistered && (
-              <button onClick={onRegister} className="mt-5 rounded-xl bg-accent px-5 py-2 text-white hover:bg-accent-hover shadow-[0_20px_50px_rgba(33,26,20,0.10)]">
+              <button onClick={onRegister} className="mt-6 rounded-xl bg-accent px-6 py-3 text-sm font-semibold text-white hover:bg-accent-hover shadow-[0_20px_50px_rgba(33,26,20,0.10)]">
                 Register Event
               </button>
             )}
             {canRegister && isRegistered && (
-              <button onClick={onUnregister} className="mt-5 rounded-xl bg-secondary px-5 py-2 text-white hover:bg-secondary/90 shadow-[0_20px_50px_rgba(33,26,20,0.10)]">
+              <button onClick={onUnregister} className="mt-6 rounded-xl bg-secondary px-6 py-3 text-sm font-semibold text-white hover:bg-secondary/90 shadow-[0_20px_50px_rgba(33,26,20,0.10)]">
                 Cancel Registration
               </button>
             )}
           </>
         )}
 
-        <section className="mt-8">
-          <h2 className="mb-3 text-xl font-semibold font-display">Participants</h2>
-          <div className="space-y-2">
-            {participants.length === 0 && <p className="text-sm text-ink/60">No participants yet.</p>}
-            {participants.map((item) => (
-              <div key={item.userId} className="rounded-xl bg-surface-highest p-4 text-sm shadow-[0_16px_44px_rgba(33,26,20,0.06)]">
-                {item.fullName || item.email || item.userId} - {item.status}
-              </div>
-            ))}
-          </div>
-        </section>
+        {canViewParticipants && (
+          <section className="mt-10">
+            <h2 className="mb-4 text-xl font-semibold font-display">Participants</h2>
+            <div className="space-y-2">
+              {participants.length === 0 && <p className="text-sm text-ink/60">No participants yet.</p>}
+              {participants.map((item) => (
+                <div key={item.userId} className="rounded-xl bg-surface-highest p-4 text-sm shadow-[0_16px_44px_rgba(33,26,20,0.06)]">
+                  {item.fullName || item.email || item.userId} - {item.status}
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
         {isOrganizer && (
-          <section className="mt-8">
-            <div className="mb-3 flex gap-2">
+          <section className="mt-10">
+            <div className="mb-4 flex flex-wrap gap-2">
               {['participants', 'checkin', 'qr', 'gallery'].map((tab) => (
                 <button key={tab} onClick={() => setActiveTab(tab)} className={`rounded-xl px-3 py-2 text-sm font-medium ${activeTab === tab ? 'bg-primary text-white' : 'bg-surface-highest text-ink hover:bg-surface-high'}`}>
                   {tab.toUpperCase()}

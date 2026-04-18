@@ -160,15 +160,15 @@ const CreateEventPage = () => {
       {toast && (
         <div 
           className={`fixed top-20 right-6 z-50 px-6 py-3 rounded-xl shadow-lg transition-all duration-300 ${
-            toast.type === 'success' ? 'bg-[#3A5E27] text-white' : 'bg-accent-hover text-white'
+            toast.type === 'success' ? 'bg-primary text-white' : 'bg-accent-hover text-white'
           }`}
         >
           {toast.message}
         </div>
       )}
 
-      <div className="rounded-2xl bg-[#251E18] p-8 shadow-2xl text-white">
-        <h1 className="mb-6 text-2xl font-bold text-[#E6F0E0]">Tạo Sự Kiện Mới</h1>
+      <div className="rounded-2xl bg-surface-highest p-8 shadow-[0_24px_70px_rgba(33,26,20,0.08)] text-ink">
+        <h1 className="mb-6 text-2xl font-bold text-primary">Tạo Sự Kiện Mới</h1>
         
         {apiError && (
           <div className="mb-6 rounded-xl bg-accent-hover/20 p-4 text-accent-hover">
@@ -178,8 +178,8 @@ const CreateEventPage = () => {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="w-full">
-            <label className="block text-xs font-semibold tracking-wider text-white/70 mb-2 uppercase">Ảnh Bìa Sự Kiện (Tùy chọn)</label>
-            <div className="relative rounded-2xl border-2 border-dashed border-[#3A5E27]/40 bg-[#3D362B]/50 hover:bg-[#3D362B] transition-colors p-4 flex flex-col items-center justify-center min-h-[200px] cursor-pointer" onClick={() => document.getElementById('cover-upload').click()}>
+            <label className="block text-xs font-semibold tracking-wider text-ink/70 mb-2 uppercase">Ảnh Bìa Sự Kiện (Tùy chọn)</label>
+            <div className="relative rounded-2xl border-2 border-dashed border-primary/30 bg-surface-low hover:bg-surface-high transition-colors p-4 flex flex-col items-center justify-center min-h-[200px] cursor-pointer" onClick={() => document.getElementById('cover-upload').click()}>
               <input 
                 id="cover-upload" 
                 type="file" 
@@ -195,7 +195,7 @@ const CreateEventPage = () => {
                   </div>
                 </div>
               ) : (
-                <div className="text-center text-white/60">
+                <div className="text-center text-ink/65">
                   <span className="text-4xl mb-2 block">📸</span>
                   <p className="font-semibold">Nhấn để chọn ảnh</p>
                   <p className="text-xs mt-1">JPG, PNG, WEBP (Max 5MB)</p>
@@ -213,19 +213,19 @@ const CreateEventPage = () => {
           />
 
           <div className="w-full">
-            <label className="block text-xs font-semibold tracking-wider text-white/70 mb-2 uppercase">
+            <label className="block text-xs font-semibold tracking-wider text-ink/70 mb-2 uppercase">
               Mô tả *
             </label>
-            <div className={`rounded-xl bg-[#3D362B] px-4 py-3 transition focus-within:ring-2 focus-within:ring-[#3A5E27]/40 ${errors.description ? 'ring-2 ring-accent-hover/40' : ''}`}>
+            <div className={`rounded-xl bg-surface-low px-4 py-3 transition focus-within:ring-2 focus-within:ring-primary/30 ${errors.description ? 'ring-2 ring-accent-hover/40' : ''}`}>
               <textarea
                 name="description"
                 value={formData.description}
                 onChange={handleChange}
                 rows={4}
-                className="w-full bg-transparent text-white placeholder:text-white/40 outline-none resize-none"
+                className="w-full bg-transparent text-ink placeholder:text-ink/45 outline-none resize-none"
                 placeholder="Mô tả chi tiết về sự kiện..."
               />
-              <div className={`mt-2 h-[2px] w-full rounded-full ${errors.description ? 'bg-accent-hover' : 'bg-[#3A5E27]/25'}`} />
+              <div className={`mt-2 h-[2px] w-full rounded-full ${errors.description ? 'bg-accent-hover' : 'bg-primary/20'}`} />
             </div>
             {errors.description && <p className="mt-2 text-sm text-accent-hover">{errors.description}</p>}
           </div>
@@ -242,7 +242,7 @@ const CreateEventPage = () => {
                   error={errors.location}
                 />
               </div>
-              <Button type="button" variant="secondary" onClick={handleGetLocation} className="mb-2 whitespace-nowrap bg-[#3D362B] hover:bg-[#4D4539] text-white outline-none border-none">
+              <Button type="button" variant="secondary" onClick={handleGetLocation} className="mb-2 whitespace-nowrap bg-surface-low hover:bg-surface-high text-ink outline-none border-none">
                 🔘 Lấy tọa độ
               </Button>
             </div>
@@ -308,11 +308,11 @@ const CreateEventPage = () => {
             />
           </div>
 
-          <div className="flex items-center justify-end gap-4 pt-4 border-t border-white/10">
-            <Button type="button" variant="ghost" onClick={() => navigate(-1)} className="text-white hover:bg-white/10">
+          <div className="flex items-center justify-end gap-4 pt-4 border-t border-ink/10">
+            <Button type="button" variant="ghost" onClick={() => navigate(-1)} className="text-ink hover:bg-surface-low">
               ❌ Hủy
             </Button>
-            <Button type="submit" disabled={isLoading} className="bg-[#3A5E27] hover:bg-[#4E7F35] text-white">
+            <Button type="submit" disabled={isLoading} className="bg-primary hover:bg-primary-light text-white">
               {isLoading ? 'Đang tạo...' : '✅ Tạo sự kiện'}
             </Button>
           </div>
