@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { memo } from 'react';
 
-export const EventCard = ({ event, onRegister, onDetail }) => {
+export const EventCard = memo(({ event, onRegister, onDetail }) => {
   const { title, location, points, status, verified, startTime, coverImageUrl } = event;
   const dateText = startTime ? new Date(startTime).toLocaleString() : null;
 
@@ -29,7 +29,7 @@ export const EventCard = ({ event, onRegister, onDetail }) => {
           </div>
           
           <div className="absolute bottom-4 right-4">
-             <span className={`${status === 'ONGOING' ? 'bg-[#F75A0D]' : 'bg-primary-container'} rounded-full px-3 py-1 text-[10px] font-bold text-white uppercase tracking-widest backdrop-blur-md`}>
+             <span className={`${status === 'ONGOING' ? 'bg-accent' : 'bg-primary-container'} rounded-full px-3 py-1 text-[10px] font-bold text-white uppercase tracking-widest backdrop-blur-md`}>
                 {status || 'UPCOMING'}
               </span>
           </div>
@@ -37,7 +37,7 @@ export const EventCard = ({ event, onRegister, onDetail }) => {
 
         <div className="px-2 pb-2">
           <div className="flex justify-between items-start mb-3 gap-2">
-            <h3 className="text-lg font-extrabold text-primary leading-snug group-hover:text-[#F75A0D] transition-colors cursor-pointer" onClick={() => onDetail?.(event.id)}>
+            <h3 className="text-lg font-extrabold text-primary leading-snug group-hover:text-accent transition-colors cursor-pointer" onClick={() => onDetail?.(event.id)}>
               {title}
             </h3>
             <button type="button" className="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors flex-shrink-0">
@@ -65,7 +65,7 @@ export const EventCard = ({ event, onRegister, onDetail }) => {
           <button
             type="button"
             onClick={() => onRegister(event.id)}
-            className="w-full bg-[#F75A0D] text-white py-3 rounded-xl font-bold text-sm tracking-wide hover:shadow-lg hover:-translate-y-0.5 transition-all"
+            className="w-full bg-accent text-white py-3 rounded-xl font-bold text-sm tracking-wide hover:shadow-lg hover:-translate-y-0.5 transition-all"
           >
             Join Event
           </button>
@@ -80,6 +80,12 @@ export const EventCard = ({ event, onRegister, onDetail }) => {
       </div>
     </article>
   );
-};
+}, (prevProps, nextProps) => {
+  // Custom comparison: return true if props are equal (no re-render needed)
+  return prevProps.event.id === nextProps.event.id &&
+         prevProps.event.title === nextProps.event.title &&
+         typeof prevProps.onDetail === typeof nextProps.onDetail;
+});
 
+EventCard.displayName = 'EventCard';
 export default EventCard;

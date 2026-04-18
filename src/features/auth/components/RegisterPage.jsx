@@ -1,49 +1,35 @@
 import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
+import { useAuthContext } from '../../../hooks/useAuthContext';
+import { registerSchema } from '../../../utils/validationSchemas';
 
 const RegisterPage = () => {
     const [accountType, setAccountType] = useState('STUDENT');
-    const [formData, setFormData] = useState({
-        email: '',
-        password: '',
-        fullName: '',
-        organizationName: '',
-        description: '',
+    const { register, handleSubmit, watch, formState: { errors, isSubmitting } } = useForm({
+        resolver: zodResolver(registerSchema),
+        mode: 'onBlur',
     });
-
-    const [formError, setFormError] = useState('');
-    const { register, isLoading, error: apiError } = useAuth();
+    const { register: registerUser, isLoading, error: apiError } = useAuthContext();
     const navigate = useNavigate();
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
-    };
-
-    const handleRegisterSubmit = async (e) => {
-        e.preventDefault();
-        setFormError('');
-
-        const { email, password, fullName, organizationName } = formData;
-        if (!email || !password || !fullName) {
-            setFormError("Please fill required fields");
+    const onSubmit = async (data) => {
+        if (accountType === 'ORGANIZER' && !data.organizationName) {
+            alert('Organization name is required for organizers');
             return;
         }
-        if (accountType === 'ORGANIZER' && !organizationName) {
-            setFormError("Organization name is required");
-            return;
-        }
+
         try {
-            await register({ ...formData, accountType });
+            await registerUser({ ...data, accountType });
             if (accountType === 'ORGANIZER') {
-                alert('Organizer request submitted. Await approval.');
+                alert('Organizer request submitted. Awaiting admin approval.');
                 navigate('/login');
             } else {
                 navigate('/');
             }
         } catch (err) {
-            console.log("Lỗi đăng ký:", err);
+            console.log("Registration error:", err);
         }
     };
 
@@ -53,51 +39,129 @@ const RegisterPage = () => {
             <h1 className="mb-6 text-center text-3xl font-semibold text-ink font-display tracking-tight">Create account</h1>
 
             <div className="mb-6 flex items-center justify-center gap-3">
-              <button type="button" onClick={() => setAccountType('STUDENT')} className={`rounded-xl px-4 py-2 text-sm font-medium ${accountType === 'STUDENT' ? 'bg-primary text-white' : 'bg-surface-highest text-ink/70'}`}>Register as User</button>
-              <button type="button" onClick={() => setAccountType('ORGANIZER')} className={`rounded-xl px-4 py-2 text-sm font-medium ${accountType === 'ORGANIZER' ? 'bg-accent text-white' : 'bg-surface-highest text-ink/70'}`}>Are you an Organizer?</button>
+              <button 
+                type="button" 
+                onClick={() => setAccountType('STUDENT')} 
+                className={`rounded-xl px-4 py-2 text-sm font-medium transition-colors ${accountType === 'STUDENT' ? 'bg-primary text-white' : 'bg-surface-highest text-ink/70 hover:bg-surface-container-high'}`}
+              >
+                Register as User
+              </button>
+              <button 
+                type="button" 
+                onClick={() => setAccountType('ORGANIZER')} 
+                className={`rounded-xl px-4 py-2 text-sm font-medium transition-colors ${accountType === 'ORGANIZER' ? 'bg-accent text-white' : 'bg-surface-highest text-ink/70 hover:bg-surface-container-high'}`}
+              >
+                Are you an Organizer?
+              </button>
             </div>
 
-                <form onSubmit={handleRegisterSubmit} className="flex flex-col gap-5">
+                <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
                     <div className="flex flex-col gap-1 items-start">
-                        <label className="text-xs font-semibold tracking-widest text-ink/70 uppercase">Email</label>
+                        <label htmlFor="email" className="text-xs font-semibold tracking-widest text-ink/70 uppercase">Email</label>
                         <input
+                            id="email"
                             type="email"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            className="w-full rounded-xl bg-surface-highest px-4 py-3 text-ink outline-none focus:ring-2 focus:ring-primary/35"
+                            {...register('email')}
+                            className={`w-full rounded-xl bg-surface-highest px-4 py-3 text-ink outline-none focus:ring-2 ${
+                                errors.email ? 'ring-2 ring-accent' : 'focus:ring-primary/35'
+                            }`}
                         />
+                        {errors.email && <p className="text-sm text-accent-hover mt-1">{errors.email.message}</p>}
                     </div>
+
                     <div className="flex flex-col gap-1 items-start">
-                        <label className="text-xs font-semibold tracking-widest text-ink/70 uppercase">Password</label>
+                        <label htmlFor="password" className="text-xs font-semibold tracking-widest text-ink/70 uppercase">Password</label>
                         <input
+                            id="password"
                             type="password"
-                            name="password"
-                            value={formData.password}
-                            onChange={handleChange}
-                            className="w-full rounded-xl bg-surface-highest px-4 py-3 text-ink outline-none focus:ring-2 focus:ring-primary/35"
+                            {...register('password')}
+                            className={`w-full rounded-xl bg-surface-highest px-4 py-3 text-ink outline-none focus:ring-2 ${
+                                errors.password ? 'ring-2 ring-accent' : 'focus:ring-primary/35'
+                            }`}
                         />
+                        {errors.password && <p className="text-sm text-accent-hover mt-1">{errors.password.message}</p>}
                     </div>
+
                     <div className="flex flex-col gap-1 items-start">
-                        <label className="text-xs font-semibold tracking-widest text-ink/70 uppercase">Full Name</label>
+                        <label htmlFor="passwordConfirm" className="text-xs font-semibold tracking-widest text-ink/70 uppercase">Confirm Password</label>
                         <input
-                            type="text"
-                            name="fullName"
-                            value={formData.fullName}
-                            onChange={handleChange}
-                            className="w-full rounded-xl bg-surface-highest px-4 py-3 text-ink outline-none focus:ring-2 focus:ring-primary/35"
+                            id="passwordConfirm"
+                            type="password"
+                            {...register('passwordConfirm')}
+                            className={`w-full rounded-xl bg-surface-highest px-4 py-3 text-ink outline-none focus:ring-2 ${
+                                errors.passwordConfirm ? 'ring-2 ring-accent' : 'focus:ring-primary/35'
+                            }`}
                         />
+                        {errors.passwordConfirm && <p className="text-sm text-accent-hover mt-1">{errors.passwordConfirm.message}</p>}
+                    </div>
+
+                    <div className="flex flex-col gap-1 items-start">
+                        <label htmlFor="fullName" className="text-xs font-semibold tracking-widest text-ink/70 uppercase">Full Name</label>
+                        <input
+                            id="fullName"
+                            type="text"
+                            {...register('fullName')}
+                            className={`w-full rounded-xl bg-surface-highest px-4 py-3 text-ink outline-none focus:ring-2 ${
+                                errors.fullName ? 'ring-2 ring-accent' : 'focus:ring-primary/35'
+                            }`}
+                        />
+                        {errors.fullName && <p className="text-sm text-accent-hover mt-1">{errors.fullName.message}</p>}
                     </div>
 
                     {accountType === 'ORGANIZER' && (
                       <>
                         <div className="flex flex-col gap-1 items-start">
-                          <label className="text-xs font-semibold tracking-widest text-ink/70 uppercase">Organization Name</label>
-                          <input name="organizationName" value={formData.organizationName} onChange={handleChange} className="w-full rounded-xl bg-surface-highest px-4 py-3 text-ink outline-none focus:ring-2 focus:ring-primary/35" />
+                          <label htmlFor="organizationName" className="text-xs font-semibold tracking-widest text-ink/70 uppercase">Organization Name</label>
+                          <input 
+                            id="organizationName"
+                            {...register('organizationName')} 
+                            className={`w-full rounded-xl bg-surface-highest px-4 py-3 text-ink outline-none focus:ring-2 ${
+                                errors.organizationName ? 'ring-2 ring-accent' : 'focus:ring-primary/35'
+                            }`}
+                          />
+                          {errors.organizationName && <p className="text-sm text-accent-hover mt-1">{errors.organizationName.message}</p>}
                         </div>
                         <div className="flex flex-col gap-1 items-start">
-                          <label className="text-xs font-semibold tracking-widest text-ink/70 uppercase">Description</label>
-                          <textarea name="description" value={formData.description} onChange={handleChange} className="w-full rounded-xl bg-surface-highest px-4 py-3 text-ink outline-none focus:ring-2 focus:ring-primary/35" />
+                          <label htmlFor="description" className="text-xs font-semibold tracking-widest text-ink/70 uppercase">Description</label>
+                          <textarea 
+                            id="description"
+                            {...register('description')} 
+                            className={`w-full rounded-xl bg-surface-highest px-4 py-3 text-ink outline-none focus:ring-2 ${
+                                errors.description ? 'ring-2 ring-accent' : 'focus:ring-primary/35'
+                            }`}
+                            rows="3"
+                          />
+                          {errors.description && <p className="text-sm text-accent-hover mt-1">{errors.description.message}</p>}
+                        </div>
+                      </>
+                    )}
+
+                    {apiError && (
+                        <p className="text-left text-sm font-medium text-accent-hover">
+                            {apiError}
+                        </p>
+                    )}
+
+                    <button
+                        type="submit"
+                        disabled={isLoading || isSubmitting}
+                        className={`mt-4 w-full rounded-xl py-3.5 text-sm font-medium text-white transition-colors ${isLoading || isSubmitting ? 'cursor-not-allowed bg-primary-light/60' : 'bg-primary hover:bg-primary-light'} shadow-[0_20px_50px_rgba(33,26,20,0.10)]`}
+                    >
+                        {isLoading || isSubmitting ? 'Đang xử lý...' : accountType === 'ORGANIZER' ? 'Submit organizer request' : 'Register'}
+                    </button>
+                </form>
+
+                <div className="mt-6 flex flex-col items-start gap-2">
+                    <Link to="/login" className="text-sm text-ink/60 underline underline-offset-4 hover:text-ink">
+                        Already have an account?
+                    </Link>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default RegisterPage;
                         </div>
                       </>
                     )}

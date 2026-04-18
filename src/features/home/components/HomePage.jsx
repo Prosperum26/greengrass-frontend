@@ -1,37 +1,46 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { eventsApi } from '../../../api';
+import { useError } from '../../../hooks/useError';
+import { useDebounce } from '../../../hooks/useDebounce';
+import { getErrorMessage } from '../../../utils/errorMessages';
 import { EventCard } from '../../events/components/EventCard';
 import { EcoFab, FilterHub, MapPreviewCard } from '../../../components/eco';
 
 export const HomePage = () => {
   const navigate = useNavigate();
+  const { addError } = useError();
+  
   const [featuredEvents, setFeaturedEvents] = useState([]);
-  const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
-  const [keyword, setKeyword] = useState('');
+  const [keywordInput, setKeywordInput] = useState('');
   const [status, setStatus] = useState('ALL');
+  
+  // Debounce keyword input - API calls only after user stops typing for 500ms
+  const debouncedKeyword = useDebounce(keywordInput, 500);
 
   useEffect(() => {
     const loadData = async () => {
+      setLoading(true);
       try {
         const eventsRes = await eventsApi.getAll({
           limit: 6,
           page: 1,
-          keyword: keyword || undefined,
+          keyword: debouncedKeyword || undefined,
           status: status === 'ALL' ? undefined : status,
         });
 
         const items = eventsRes.data?.data?.items || [];
         setFeaturedEvents(items.map((event, idx) => ({ ...event, verified: idx < 2 })));
       } catch (err) {
-        setError(err.response?.data?.message || 'Cannot load homepage data');
+        const message = getErrorMessage(err);
+        addError(message, { type: 'error' });
       } finally {
         setLoading(false);
       }
     };
     void loadData();
-  }, [keyword, status]);
+  }, [debouncedKeyword, status, addError]);
 
   return (
     <div className="flex-grow space-y-12 w-full">
@@ -42,13 +51,13 @@ export const HomePage = () => {
         </div>
         <div className="relative z-10 max-w-lg space-y-4">
           <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md px-3 py-1 rounded-full border border-white/20">
-            <span className="w-2 h-2 bg-[#F75A0D] rounded-full"></span>
+            <span className="w-2 h-2 bg-accent rounded-full"></span>
             <span className="text-[10px] font-bold uppercase tracking-[0.1em]">Featured Event</span>
           </div>
           <h1 className="text-4xl md:text-5xl font-extrabold leading-tight tracking-tight">The Earth doesn't have a reset button.</h1>
           <p className="text-white/80 font-medium text-lg leading-relaxed">Join green events. Earn points and lead your campus leaderboard.</p>
           <div className="pt-4 flex gap-4">
-            <button onClick={() => navigate('/events')} className="bg-[#F75A0D] text-white px-8 py-3.5 rounded-xl font-bold text-sm shadow-xl shadow-orange-900/20 hover:scale-105 transition-transform">Join Global Action</button>
+            <button onClick={() => navigate('/events')} className="bg-accent text-white px-8 py-3.5 rounded-xl font-bold text-sm shadow-xl shadow-orange-900/20 hover:scale-105 transition-transform">Join Global Action</button>
             <button onClick={() => navigate('/leaderboard')} className="bg-white/10 backdrop-blur-md text-white px-6 py-3.5 rounded-xl font-bold text-sm border border-white/20 hover:bg-white/20 transition-all">Learn More</button>
           </div>
         </div>
@@ -59,8 +68,8 @@ export const HomePage = () => {
         <aside className="hidden lg:flex flex-col gap-8 w-72 flex-shrink-0">
           <MapPreviewCard liveCount={12} onExpand={() => navigate('/map')} />
           <FilterHub
-            keyword={keyword}
-            onKeywordChange={setKeyword}
+            keyword={keywordInput}
+            onKeywordChange={setKeywordInput}
             status={status}
             onStatusChange={setStatus}
           />
@@ -74,8 +83,7 @@ export const HomePage = () => {
             </button>
           </div>
 
-          {loading && <p className="text-on-surface-variant/60">Loading events...</p>}
-          {error && <p className="text-error">{error}</p>}
+          {loading && <p className="text-on-surface-variant/60">Đang tải các sự kiện...</p>}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {featuredEvents.map((event) => (

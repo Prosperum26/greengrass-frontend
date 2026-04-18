@@ -7,16 +7,31 @@ const apiClient = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  timeout: import.meta.env.VITE_API_TIMEOUT ? parseInt(import.meta.env.VITE_API_TIMEOUT) : 10000,
 });
 
-const getAccessToken = () => localStorage.getItem('accessToken');
-const getRefreshToken = () => localStorage.getItem('refreshToken');
+// Token accessors - can be overridden by AuthContext
+let tokenAccessors = {
+  getAccessToken: () => localStorage.getItem('accessToken'),
+  getRefreshToken: () => localStorage.getItem('refreshToken'),
+  getUserId: () => localStorage.getItem('userId'),
+};
+
+export const setTokenAccessors = (accessors) => {
+  tokenAccessors = accessors;
+};
+
+const getAccessToken = () => tokenAccessors.getAccessToken();
+const getRefreshToken = () => tokenAccessors.getRefreshToken();
+const getUserId = () => tokenAccessors.getUserId();
+
 const isProtectedPath = () => {
   const path = window.location.pathname;
   return (
     path.startsWith('/profile') ||
     path.startsWith('/organizer') ||
-    path.startsWith('/checkin')
+    path.startsWith('/checkin') ||
+    path.startsWith('/admin')
   );
 };
 
@@ -47,7 +62,7 @@ apiClient.interceptors.response.use(
 
     if (status === 401 && !originalRequest?._retry) {
       const refreshToken = getRefreshToken();
-      const userId = localStorage.getItem('userId');
+      const userId = getUserId();
 
       if (!refreshToken || !userId) {
         localStorage.clear();

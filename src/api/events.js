@@ -15,4 +15,5 @@ export const eventsApi = {
   addGalleryImage: (eventId, formData) => apiClient.post(`/events/${eventId}/gallery`, formData, {
     headers: { 'Content-Type': 'multipart/form-data' }
   }),
+  cancelRegister: (eventId) => apiClient.delete(`/events/${eventId}/register`),
 };

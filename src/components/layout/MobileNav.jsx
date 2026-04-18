@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 export const MobileNav = () => {
   return (
     <div className="md:hidden fixed bottom-0 left-0 right-0 h-16 glass-nav border-t border-white/10 flex items-center justify-around px-4 z-50">
-      <Link to="/events" className="flex flex-col items-center text-[#F75A0D]">
+      <Link to="/events" className="flex flex-col items-center text-accent">
         <span className="material-symbols-outlined" style={{fontVariationSettings: "'FILL' 1"}}>explore</span>
         <span className="text-[10px] font-bold mt-0.5">Explore</span>
       </Link>

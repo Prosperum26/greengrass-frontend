@@ -10,7 +10,7 @@ export const EcoFab = ({ label = 'Quick Join nearest event', onClick }) => {
       </div>
       <button
         onClick={onClick}
-        className="w-16 h-16 bg-[#F75A0D] text-white rounded-2xl shadow-[0_16px_32px_rgba(247,90,13,0.3)] flex items-center justify-center hover:scale-110 active:scale-95 transition-all"
+        className="w-16 h-16 bg-accent text-white rounded-2xl shadow-[0_16px_32px_rgba(247,90,13,0.3)] flex items-center justify-center hover:scale-110 active:scale-95 transition-all"
       >
         <span className="material-symbols-outlined text-3xl" style={{fontVariationSettings: "'FILL' 1"}}>bolt</span>
       </button>

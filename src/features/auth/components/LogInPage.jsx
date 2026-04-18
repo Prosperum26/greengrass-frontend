@@ -1,30 +1,32 @@
-import React, { useState } from 'react';
-import { useAuth } from '../hooks/useAuth';
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useAuthContext } from '../../../hooks/useAuthContext';
 import { useNavigate, Link } from 'react-router-dom';
+import { loginSchema } from '../../../utils/validationSchemas';
 
 const LoginPage = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [formError, setFormError] = useState('');
-
-    const { login, isLoading, error: apiError } = useAuth();
+    const { login, isLoading, error: apiError } = useAuthContext();
     const navigate = useNavigate();
+    
+    const {
+        register,
+        handleSubmit,
+        formState: { errors, isSubmitting },
+    } = useForm({
+        resolver: zodResolver(loginSchema),
+        mode: 'onBlur',
+    });
 
-    const handleLoginSubmit = async (e) => {
-        e.preventDefault();
-        setFormError('');
-
-        if (!email || !password) {
-            setFormError("Vui lòng nhập đầy đủ Email và Password");
-            return;
-        }
+    const onSubmit = async (data) => {
         try {
-            await login({ email, password });
+            await login(data);
             navigate('/');
         } catch (err) {
             console.log("Đã có lỗi xảy ra:", err);
         }
     };
+
     return (
         <div className="flex min-h-screen items-center justify-center bg-surface px-4 py-12">
             <div className="w-full max-w-[520px] rounded-2xl bg-surface-high p-8 shadow-[0_32px_80px_rgba(33,26,20,0.10)]">
@@ -32,41 +34,51 @@ const LoginPage = () => {
                 Log In
             </h1>
 
-                <form onSubmit={handleLoginSubmit} className="flex flex-col gap-5">
+                <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
                     <div className="flex flex-col gap-1 items-start">
-                        <label className="text-xs font-semibold tracking-widest text-ink/70 uppercase">Email</label>
+                        <label htmlFor="email" className="text-xs font-semibold tracking-widest text-ink/70 uppercase">Email</label>
                         <input
+                            id="email"
                             type="email"
                             placeholder="Nhập email của bạn"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            className="w-full rounded-xl bg-surface-highest px-4 py-3 text-ink outline-none focus:ring-2 focus:ring-primary/35"
+                            {...register('email')}
+                            className={`w-full rounded-xl bg-surface-highest px-4 py-3 text-ink outline-none focus:ring-2 ${
+                                errors.email ? 'ring-2 ring-accent' : 'focus:ring-primary/35'
+                            }`}
                         />
+                        {errors.email && (
+                            <p className="text-sm text-accent-hover mt-1">{errors.email.message}</p>
+                        )}
                     </div>
 
                     <div className="flex flex-col gap-1 items-start">
-                        <label className="text-xs font-semibold tracking-widest text-ink/70 uppercase">Password</label>
+                        <label htmlFor="password" className="text-xs font-semibold tracking-widest text-ink/70 uppercase">Password</label>
                         <input
+                            id="password"
                             type="password"
                             placeholder="Nhập mật khẩu"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            className="w-full rounded-xl bg-surface-highest px-4 py-3 text-ink outline-none focus:ring-2 focus:ring-primary/35"
+                            {...register('password')}
+                            className={`w-full rounded-xl bg-surface-highest px-4 py-3 text-ink outline-none focus:ring-2 ${
+                                errors.password ? 'ring-2 ring-accent' : 'focus:ring-primary/35'
+                            }`}
                         />
+                        {errors.password && (
+                            <p className="text-sm text-accent-hover mt-1">{errors.password.message}</p>
+                        )}
                     </div>
 
-                    {(formError || apiError) && (
-                        <p className="text-left text-sm text-accent-hover">
-                            {formError || apiError}
+                    {apiError && (
+                        <p className="text-left text-sm text-accent-hover font-medium">
+                            {apiError}
                         </p>
                     )}
 
                     <button
                         type="submit"
-                        disabled={isLoading}
-                        className={`mt-2 w-full rounded-xl py-3 text-sm font-medium text-white transition-colors ${isLoading ? 'cursor-not-allowed bg-primary-light/60' : 'bg-primary hover:bg-primary-light'} shadow-[0_20px_50px_rgba(33,26,20,0.10)]`}
+                        disabled={isLoading || isSubmitting}
+                        className={`mt-2 w-full rounded-xl py-3 text-sm font-medium text-white transition-colors ${isLoading || isSubmitting ? 'cursor-not-allowed bg-primary-light/60' : 'bg-primary hover:bg-primary-light'} shadow-[0_20px_50px_rgba(33,26,20,0.10)]`}
                     >
-                        {isLoading ? 'Đang xử lý...' : 'Student / Organizer Sign In'}
+                        {isLoading || isSubmitting ? 'Đang xử lý...' : 'Student / Organizer Sign In'}
                     </button>
                 </form>
 

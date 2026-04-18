@@ -1,10 +1,11 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, memo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../features/auth/hooks/useAuth';
+import { useAuthContext } from '../../hooks/useAuthContext';
 
-export const Header = () => {
-  const { user, isAuthenticated, logout } = useAuth();
+export const Header = memo(() => {
+  const { user, isAuthenticated, logout, getRole } = useAuthContext();
   const navigate = useNavigate();
+  const role = getRole();
 
   const handleLogout = async () => {
     await logout();
@@ -35,7 +36,7 @@ export const Header = () => {
 
       <div className="flex items-center gap-6">
         <div className="hidden md:flex items-center gap-6">
-          <Link to="/events" className="text-[#F75A0D] font-bold text-sm tracking-wide">Explore</Link>
+          <Link to="/events" className="text-accent font-bold text-sm tracking-wide">Explore</Link>
           <Link to="/profile" className="text-white/80 hover:bg-white/10 transition-colors text-sm px-3 py-1 rounded-full">My Impact</Link>
           <Link to="/leaderboard" className="text-white/80 hover:bg-white/10 transition-colors text-sm px-3 py-1 rounded-full">Resources</Link>
         </div>
@@ -48,7 +49,7 @@ export const Header = () => {
           {!isAuthenticated ? (
              <div className="flex items-center gap-3 text-sm font-bold">
                 <Link to="/login" className="text-white/80 hover:text-white transition-colors">Login</Link>
-                <Link to="/register" className="bg-[#F75A0D] py-1.5 px-4 rounded-full hover:bg-opacity-90 transition-all text-white">Sign Up</Link>
+                <Link to="/register" className="bg-accent py-1.5 px-4 rounded-full hover:bg-opacity-90 transition-all text-white">Sign Up</Link>
              </div>
           ) : (
             <div className="relative group">
@@ -58,8 +59,8 @@ export const Header = () => {
               
               <div className="absolute right-0 pt-3 w-48 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                 <div className="bg-[#2a241c] border border-white/10 rounded-xl shadow-lg py-1 overflow-hidden">
-                  {user?.role === 'ADMIN' ? (
-                    <Link to="/admin/organizer-requests" className="block px-4 py-2 text-sm text-[#F75A0D] font-bold hover:bg-white/5 transition-colors">
+                  {role === 'ADMIN' ? (
+                    <Link to="/admin/organizer-requests" className="block px-4 py-2 text-sm text-accent font-bold hover:bg-white/5 transition-colors">
                       Pending Approvals
                     </Link>
                   ) : (
@@ -78,6 +79,7 @@ export const Header = () => {
       </div>
     </nav>
   );
-};
+});
 
+Header.displayName = 'Header';
 export default Header;

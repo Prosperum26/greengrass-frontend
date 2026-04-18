@@ -1,10 +1,13 @@
 import React, { useEffect, useMemo, useState, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { eventsApi } from '../../../api';
+import { useAuthContext } from '../../../hooks/useAuthContext';
 
 export const EventDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { getUserId, getRole } = useAuthContext();
+  
   const [event, setEvent] = useState(null);
   const [participants, setParticipants] = useState([]);
   const [checkedIn, setCheckedIn] = useState([]);
@@ -14,7 +17,7 @@ export const EventDetail = () => {
   const [uploadingGallery, setUploadingGallery] = useState(false);
   const fileInputRef = useRef(null);
 
-  const role = localStorage.getItem('role');
+  const role = getRole();
   const isOrganizer = role === 'ORGANIZER';
 
   useEffect(() => {
@@ -56,10 +59,31 @@ export const EventDetail = () => {
     try {
       await eventsApi.register(id);
       alert('Event registration completed');
+      // Refetch participants
+      const participantsRes = await eventsApi.getParticipants(id);
+      setParticipants(participantsRes.data?.data?.participants || []);
     } catch (err) {
       alert(err.response?.data?.message || 'Registration failed');
     }
   };
+
+  const onUnregister = async () => {
+    if (!window.confirm('Are you sure you want to cancel your registration?')) return;
+    try {
+      await eventsApi.cancelRegister(id);
+      alert('Registration cancelled successfully');
+      // Refetch participants
+      const participantsRes = await eventsApi.getParticipants(id);
+      setParticipants(participantsRes.data?.data?.participants || []);
+    } catch (err) {
+      alert(err.response?.data?.message || 'Cancel registration failed');
+    }
+  };
+
+  const currentUserId = getUserId();
+  const isRegistered = useMemo(() => {
+    return participants.some(p => p.userId === currentUserId || p.userId === parseInt(currentUserId, 10));
+  }, [participants, currentUserId]);
 
   const handleGalleryUpload = async (e) => {
     const file = e.target.files?.[0];
@@ -115,9 +139,14 @@ export const EventDetail = () => {
               <p>End: {new Date(event.endTime).toLocaleString()}</p>
             </div>
 
-            {canRegister && (
+            {canRegister && !isRegistered && (
               <button onClick={onRegister} className="mt-5 rounded-xl bg-accent px-5 py-2 text-white hover:bg-accent-hover shadow-[0_20px_50px_rgba(33,26,20,0.10)]">
                 Register Event
+              </button>
+            )}
+            {canRegister && isRegistered && (
+              <button onClick={onUnregister} className="mt-5 rounded-xl bg-secondary px-5 py-2 text-white hover:bg-secondary/90 shadow-[0_20px_50px_rgba(33,26,20,0.10)]">
+                Cancel Registration
               </button>
             )}
           </>
