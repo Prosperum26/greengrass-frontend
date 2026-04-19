@@ -1,14 +1,29 @@
 // useGeolocation Hook
 import { useState, useEffect, useCallback } from 'react';
 
+const GEOLOCATION_UNSUPPORTED_MESSAGE = 'TrĂ¬nh duyá»‡t khĂ´ng há»— trá»£ Ä‘á»‹nh vá»‹';
+const GEOLOCATION_FAILED_MESSAGE = 'KhĂ´ng thá»ƒ láº¥y vá»‹ trĂ­';
+const GEOLOCATION_OPTIONS = {
+  enableHighAccuracy: true,
+  timeout: 10000,
+  maximumAge: 60000,
+};
+
 export const useGeolocation = () => {
   const [location, setLocation] = useState(null);
-  const [error, setError] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(() =>
+    typeof navigator !== 'undefined' && !navigator.geolocation
+      ? GEOLOCATION_UNSUPPORTED_MESSAGE
+      : null,
+  );
+  const [isLoading, setIsLoading] = useState(() =>
+    typeof navigator !== 'undefined' && !!navigator.geolocation,
+  );
 
   const getLocation = useCallback(() => {
-    if (!navigator.geolocation) {
-      setError('Trình duyệt không hỗ trợ định vị');
+    if (typeof navigator === 'undefined' || !navigator.geolocation) {
+      setError(GEOLOCATION_UNSUPPORTED_MESSAGE);
+      setIsLoading(false);
       return;
     }
 
@@ -20,19 +35,20 @@ export const useGeolocation = () => {
           lng: position.coords.longitude,
           accuracy: position.coords.accuracy,
         });
+        setError(null);
         setIsLoading(false);
       },
       (err) => {
-        setError(err.message || 'Không thể lấy vị trí');
+        setError(err.message || GEOLOCATION_FAILED_MESSAGE);
         setIsLoading(false);
       },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+      GEOLOCATION_OPTIONS,
     );
   }, []);
 
   const watchLocation = useCallback(() => {
-    if (!navigator.geolocation) {
-      setError('Trình duyệt không hỗ trợ định vị');
+    if (typeof navigator === 'undefined' || !navigator.geolocation) {
+      setError(GEOLOCATION_UNSUPPORTED_MESSAGE);
       return null;
     }
 
@@ -43,15 +59,35 @@ export const useGeolocation = () => {
           lng: position.coords.longitude,
           accuracy: position.coords.accuracy,
         });
+        setError(null);
       },
-      (err) => setError(err.message),
-      { enableHighAccuracy: true }
+      (err) => setError(err.message || GEOLOCATION_FAILED_MESSAGE),
+      { enableHighAccuracy: true },
     );
   }, []);
 
   useEffect(() => {
-    getLocation();
-  }, [getLocation]);
+    if (typeof navigator === 'undefined' || !navigator.geolocation) {
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setLocation({
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+          accuracy: position.coords.accuracy,
+        });
+        setError(null);
+        setIsLoading(false);
+      },
+      (err) => {
+        setError(err.message || GEOLOCATION_FAILED_MESSAGE);
+        setIsLoading(false);
+      },
+      GEOLOCATION_OPTIONS,
+    );
+  }, []);
 
   return {
     location,

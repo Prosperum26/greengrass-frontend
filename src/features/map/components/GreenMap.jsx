@@ -35,15 +35,15 @@ export const GreenMap = ({
   selectedId,
   onSelect,
 }) => {
-  const [markers, setMarkers] = useState([]);
-  const [selected, setSelected] = useState(null);
+  const [fetchedMarkers, setFetchedMarkers] = useState([]);
+  const [internalSelectedId, setInternalSelectedId] = useState(null);
   useEffect(() => {
     if (markersProp) return;
     const loadEcoPoints = async () => {
       try {
         const { data } = await mapApi.getMarkers();
         const points = Array.isArray(data) ? data : data?.data || [];
-        setMarkers(
+        setFetchedMarkers(
           points.map((point) => ({
             ...point,
             latitude: point.latitude ?? point.lat,
@@ -51,28 +51,26 @@ export const GreenMap = ({
           })),
         );
       } catch {
-        setMarkers([]);
+        setFetchedMarkers([]);
       }
     };
     void loadEcoPoints();
   }, [markersProp]);
 
-  useEffect(() => {
-    if (!markersProp) return;
-    setMarkers(
-      markersProp.map((point) => ({
+  const markers = useMemo(() => {
+    if (!markersProp) return fetchedMarkers;
+    return markersProp.map((point) => ({
         ...point,
         latitude: point.latitude ?? point.lat,
         longitude: point.longitude ?? point.lng,
-      })),
-    );
-  }, [markersProp]);
+      }));
+  }, [fetchedMarkers, markersProp]);
 
-  useEffect(() => {
-    if (!selectedId) return;
-    const found = markers.find((m) => m.id === selectedId);
-    if (found) setSelected(found);
-  }, [markers, selectedId]);
+  const activeSelectedId = selectedId ?? internalSelectedId;
+  const selected = useMemo(
+    () => markers.find((marker) => marker.id === activeSelectedId) ?? null,
+    [activeSelectedId, markers],
+  );
 
   const mapCenter = useMemo(() => {
     if (
@@ -113,7 +111,7 @@ export const GreenMap = ({
           icon={selected?.id === point.id ? selectedIcon : baseIcon}
           eventHandlers={{
             click: () => {
-              setSelected(point);
+              setInternalSelectedId(point.id);
               onSelect?.(point);
             },
           }}

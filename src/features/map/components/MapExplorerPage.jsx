@@ -4,6 +4,10 @@ import GreenMap from './GreenMap';
 
 const WALKING_SPEED_KMH = 4.8;
 const BIKING_SPEED_KMH = 15;
+const GEOLOCATION_UNSUPPORTED_MESSAGE =
+  'Trình duyệt không hỗ trợ định vị..';
+const GEOLOCATION_PERMISSION_MESSAGE =
+  'Chưa bật quyền vị trí, thời gian di chuyển đang ước tính.';
 
 const toRadians = (value) => (value * Math.PI) / 180;
 
@@ -38,7 +42,11 @@ export const MapExplorerPage = () => {
     ecoStations: false,
   });
   const [userLocation, setUserLocation] = useState(null);
-  const [locationError, setLocationError] = useState('');
+  const [locationError, setLocationError] = useState(() =>
+    typeof navigator !== 'undefined' && !navigator.geolocation
+      ? GEOLOCATION_UNSUPPORTED_MESSAGE
+      : '',
+  );
   const [nearbyMarkers, setNearbyMarkers] = useState([]);
 
   useEffect(() => {
@@ -63,15 +71,12 @@ export const MapExplorerPage = () => {
         setMarkers([]);
       }
     };
+
     void load();
   }, []);
 
   useEffect(() => {
-    // Check geolocation support - set error if not available
-    if (!navigator.geolocation) {
-      setLocationError('Trình duyệt không hỗ trợ định vị.');
-      return;
-    }
+    if (typeof navigator === 'undefined' || !navigator.geolocation) return;
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -82,7 +87,7 @@ export const MapExplorerPage = () => {
         setLocationError('');
       },
       () => {
-        setLocationError('Chưa bật quyền vị trí, thời gian di chuyển đang ước tính.');
+        setLocationError(GEOLOCATION_PERMISSION_MESSAGE);
       },
       { enableHighAccuracy: true, timeout: 5000 },
     );
@@ -90,6 +95,7 @@ export const MapExplorerPage = () => {
 
   useEffect(() => {
     if (!userLocation) return;
+
     const loadNearby = async () => {
       try {
         const { data } = await mapApi.getNearby({
@@ -109,6 +115,7 @@ export const MapExplorerPage = () => {
         setNearbyMarkers([]);
       }
     };
+
     void loadNearby();
   }, [userLocation]);
 
@@ -127,12 +134,14 @@ export const MapExplorerPage = () => {
     if (!userLocation || !selected?.latitude || !selected?.longitude) {
       return null;
     }
+
     const distanceKm = getDistanceKm(
       userLocation.latitude,
       userLocation.longitude,
       selected.latitude,
       selected.longitude,
     );
+
     return {
       distanceKm,
       walkingMinutes: toMinutes(distanceKm, WALKING_SPEED_KMH),
@@ -155,72 +164,75 @@ export const MapExplorerPage = () => {
         />
       </div>
 
-      <div className="pointer-events-none absolute left-0 top-0 bottom-0 z-10 w-full md:w-[340px] p-4 md:p-5 flex flex-col gap-4">
-        <div className="pointer-events-auto rounded-2xl bg-surface/85 p-4 backdrop-blur-xl shadow-[24px_0_38px_rgba(33,26,20,0.05)]">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-base font-bold text-primary font-display">Route Suggestion</h2>
-            <span className="rounded px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-secondary/15 text-secondary">Eco-Path</span>
+      <div className="pointer-events-none absolute left-0 top-0 bottom-0 z-10 flex w-full flex-col gap-4 p-4 md:w-[340px] md:p-5">
+        <div className="pointer-events-auto rounded-2xl bg-surface/85 p-4 shadow-[24px_0_38px_rgba(33,26,20,0.05)] backdrop-blur-xl">
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="font-display text-base font-bold text-primary">Route Suggestion</h2>
+            <span className="rounded bg-secondary/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-secondary">Eco-Path</span>
           </div>
           <p className="mb-3 text-xs text-ink/60">
-            {locationError || 'Ước tính dựa trên vị trí hiện tại của bạn.'}
+            {locationError || 'Æ¯á»›c tĂ­nh dá»±a trĂªn vá»‹ trĂ­ hiá»‡n táº¡i cá»§a báº¡n.'}
           </p>
           <div className="space-y-3">
             <div className="flex items-center gap-4 rounded-xl bg-surface-low p-3">
-              <div className="rounded-lg bg-primary px-2 py-2 text-white">🚶</div>
+              <div className="rounded-lg bg-primary px-2 py-2 text-white">đŸ¶</div>
               <div className="flex-1">
-                <p className="text-xs text-ink/60 font-medium">Walking Distance</p>
+                <p className="text-xs font-medium text-ink/60">Walking Distance</p>
                 <p className="text-sm font-bold text-ink">
                   {routeStats ? `${routeStats.walkingMinutes} mins` : '-'}
                 </p>
               </div>
-              <div className="text-secondary font-bold text-sm">
+              <div className="text-sm font-bold text-secondary">
                 {routeStats ? formatDistance(routeStats.distanceKm) : '-'}
               </div>
             </div>
             <div className="flex items-center gap-4 rounded-xl bg-surface-low p-3 ring-2 ring-primary/10">
-              <div className="rounded-lg bg-primary px-2 py-2 text-white">🚲</div>
+              <div className="rounded-lg bg-primary px-2 py-2 text-white">đŸ²</div>
               <div className="flex-1">
-                <p className="text-xs text-ink/60 font-medium">Biking Distance</p>
+                <p className="text-xs font-medium text-ink/60">Biking Distance</p>
                 <p className="text-sm font-bold text-ink">
                   {routeStats ? `${routeStats.bikingMinutes} mins` : '-'}
                 </p>
               </div>
-              <div className="text-secondary font-bold text-sm">
+              <div className="text-sm font-bold text-secondary">
                 {routeStats ? formatDistance(routeStats.distanceKm) : '-'}
               </div>
             </div>
           </div>
-          <button type="button" className="mt-4 w-full rounded-xl bg-primary py-2.5 text-sm font-bold text-white shadow-[0_18px_48px_rgba(33,26,20,0.08)]">
+          <button
+            type="button"
+            className="mt-4 w-full rounded-xl bg-primary py-2.5 text-sm font-bold text-white shadow-[0_18px_48px_rgba(33,26,20,0.08)]"
+          >
             {selected ? `Navigate to ${selected.name || selected.title}` : 'Start Navigation'}
           </button>
         </div>
 
-        <div className="pointer-events-auto rounded-2xl bg-surface/85 p-4 backdrop-blur-xl shadow-[24px_0_38px_rgba(33,26,20,0.05)]">
-          <h3 className="text-[10px] font-bold uppercase tracking-widest text-ink/60 mb-4">Map Layers</h3>
+        <div className="pointer-events-auto rounded-2xl bg-surface/85 p-4 shadow-[24px_0_38px_rgba(33,26,20,0.05)] backdrop-blur-xl">
+          <h3 className="mb-4 text-[10px] font-bold uppercase tracking-widest text-ink/60">Map Layers</h3>
           <div className="grid grid-cols-1 gap-2">
-            <label className="flex items-center gap-3 rounded-lg p-2 hover:bg-surface-highest cursor-pointer transition-colors">
-              <input checked={enabledLayers.events} onChange={() => toggleLayer('events')} className="rounded text-primary focus:ring-primary/30 border-transparent bg-surface-highest" type="checkbox" />
+            <label className="flex cursor-pointer items-center gap-3 rounded-lg p-2 transition-colors hover:bg-surface-highest">
+              <input checked={enabledLayers.events} onChange={() => toggleLayer('events')} className="rounded border-transparent bg-surface-highest text-primary focus:ring-primary/30" type="checkbox" />
               <span className="text-sm font-medium">Events ({markers.length})</span>
             </label>
-            <label className="flex items-center gap-3 rounded-lg p-2 text-ink/50 cursor-not-allowed">
-              <input checked={enabledLayers.recycling} onChange={() => toggleLayer('recycling')} className="rounded text-primary focus:ring-primary/30 border-transparent bg-surface-highest" type="checkbox" />
+            <label className="flex cursor-not-allowed items-center gap-3 rounded-lg p-2 text-ink/50">
+              <input checked={enabledLayers.recycling} onChange={() => toggleLayer('recycling')} className="rounded border-transparent bg-surface-highest text-primary focus:ring-primary/30" type="checkbox" />
               <span className="text-sm font-medium">Recycling Points (coming soon)</span>
             </label>
-            <label className="flex items-center gap-3 rounded-lg p-2 text-ink/50 cursor-not-allowed">
-              <input checked={enabledLayers.ecoStations} onChange={() => toggleLayer('ecoStations')} className="rounded text-primary focus:ring-primary/30 border-transparent bg-surface-highest" type="checkbox" />
+            <label className="flex cursor-not-allowed items-center gap-3 rounded-lg p-2 text-ink/50">
+              <input checked={enabledLayers.ecoStations} onChange={() => toggleLayer('ecoStations')} className="rounded border-transparent bg-surface-highest text-primary focus:ring-primary/30" type="checkbox" />
               <span className="text-sm font-medium">Eco Stations (coming soon)</span>
             </label>
           </div>
         </div>
       </div>
 
-      <aside className="absolute right-0 top-0 bottom-0 z-20 w-full md:w-[320px] bg-surface shadow-[ -32px_0_48px_rgba(33,26,20,0.10)] overflow-y-auto">
-        <div className="p-6 space-y-6">
+      <aside className="absolute right-0 top-0 bottom-0 z-20 w-full overflow-y-auto bg-surface shadow-[ -32px_0_48px_rgba(33,26,20,0.10)] md:w-[320px]">
+        <div className="space-y-6 p-6">
           <div>
-            <span className="inline-flex rounded px-2 py-1 text-[10px] font-extrabold uppercase tracking-widest bg-accent text-white">
+            <span className="inline-flex rounded bg-accent px-2 py-1 text-[10px] font-extrabold uppercase tracking-widest text-white">
               Selected
             </span>
-            <h2 className="mt-3 text-2xl font-bold font-display text-ink leading-tight">
+            <h2 className="font-display mt-3 text-2xl font-bold leading-tight text-ink">
               {selected?.name || selected?.title || 'Eco Point'}
             </h2>
             <p className="mt-2 text-sm text-ink/60">
@@ -230,17 +242,17 @@ export const MapExplorerPage = () => {
 
           <div className="grid grid-cols-2 gap-4">
             <div className="rounded-2xl bg-surface-low p-4">
-              <p className="text-[10px] uppercase tracking-wider font-bold text-ink/50">Latitude</p>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-ink/50">Latitude</p>
               <p className="text-sm font-bold">{selected?.latitude?.toFixed?.(4) ?? selected?.lat?.toFixed?.(4) ?? '-'}</p>
             </div>
             <div className="rounded-2xl bg-surface-low p-4">
-              <p className="text-[10px] uppercase tracking-wider font-bold text-ink/50">Longitude</p>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-ink/50">Longitude</p>
               <p className="text-sm font-bold">{selected?.longitude?.toFixed?.(4) ?? selected?.lng?.toFixed?.(4) ?? '-'}</p>
             </div>
           </div>
 
           <div>
-            <h3 className="text-sm font-bold uppercase tracking-widest mb-3">Nearby Points</h3>
+            <h3 className="mb-3 text-sm font-bold uppercase tracking-widest">Nearby Points</h3>
             <div className="space-y-3">
               {(nearbyMarkers.length > 0 ? nearbyMarkers : markers).slice(0, 6).map((p) => (
                 <button
