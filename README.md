@@ -10,7 +10,7 @@ Dự án frontend của Greengrass - Ứng dụng web xây dựng bằng React v
 - UI ở tất cả các file chưa hoàn thiện 100%, về cơ bản tui sẽ fix lại file CSS của nó sau (để đẹp hơn, of course)
 - Những file không được nêu trên có thể bỏ qua khi merge code. Xin cảm ơn :>
 
-*From Quỳnh*
+*From Quỳnh :>*
 ---
 
 ## 📋 Mục lục
