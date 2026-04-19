@@ -1,431 +1,296 @@
 # Greengrass Frontend
 
-Dự án frontend của Greengrass - Ứng dụng web xây dựng bằng React và Vite.
+<p align="center">
+  <img src="/favicon.svg" alt="Greengrass Logo" width="80" height="80">
+</p>
 
----
-## Lưu ý khi merge branch event-ui:
+<p align="center">
+  <strong>Environmental Events Platform - Frontend</strong>
+</p>
 
-- ./styles/globals.css đã được chỉnh sửa để scale toàn màn hình, khi merge nhớ lưu lại code của file này để màn hình có thể scale hoàn chỉnh
-- Branch này chỉ thay đổi nội dung ở các file của ./features/events/components và ./features/checkin/components (sẽ không impliment thêm gì ở branch chechin-ui nữa)
-- UI ở tất cả các file chưa hoàn thiện 100%, về cơ bản tui sẽ fix lại file CSS của nó sau (để đẹp hơn, of course)
-- Những file không được nêu trên có thể bỏ qua khi merge code. Xin cảm ơn :>
-
-*From Quỳnh*
----
-
-## 📋 Mục lục
-
-- [Giới thiệu](#giới-thiệu)
-- [Công nghệ sử dụng](#công-nghệ-sử-dụng)
-- [Yêu cầu hệ thống](#yêu-cầu-hệ-thống)
-- [Bắt đầu](#bắt-đầu)
-- [Cấu trúc dự án](#cấu-trúc-dự-án)
-- [Tailwind CSS](#tailwind-css)
-- [VS Code Extensions](#vs-code-extensions)
-- [Lưu ý khi phát triển](#lưu-ý-khi-phát-triển)
-- [Xử lý lỗi](#xử-lý-lỗi)
+<p align="center">
+  <a href="#tech-stack">Tech Stack</a> •
+  <a href="#features">Features</a> •
+  <a href="#getting-started">Getting Started</a> •
+  <a href="#deployment">Deployment</a> •
+  <a href="#contributing">Contributing</a>
+</p>
 
 ---
 
-## 🌟 Giới thiệu
+## Overview
 
-Dự án Greengrass Frontend là giao diện người dùng của ứng dụng Greengrass, được xây dựng với mục tiêu:
+Greengrass Frontend is a modern React application for an environmental events platform. It provides a seamless user experience for discovering, registering, and participating in eco-friendly events with gamification features.
 
-- Giao diện hiện đại, responsive
-- Hiệu suất cao với Vite
-- Dễ dàng bảo trì và mở rộng
+### Key Capabilities
 
----
-
-## 🛠 Công nghệ sử dụng
-
-| Công nghệ    | Phiên bản | Mô tả                   |
-| ------------ | --------- | ----------------------- |
-| React        | ^19.2.4   | Thư viện UI             |
-| Vite         | ^8.0.4    | Build tool & dev server |
-| Tailwind CSS | ^3.4.19   | CSS framework           |
-| Yarn         | 1.x       | Package manager         |
-| ESLint       | ^9.39.4   | Linting                 |
+- **Event Discovery**: Browse and search environmental events with map integration
+- **Event Management**: Create, register, and manage event participation
+- **QR Check-in**: Scan QR codes for event attendance verification
+- **Gamification**: Earn points, badges, and track leaderboard rankings
+- **Real-time Features**: Live notifications and updates
+- **Responsive Design**: Optimized for all device sizes
 
 ---
 
-## ⚙️ Yêu cầu hệ thống
+## Tech Stack
 
-Trước khi bắt đầu, hãy đảm bảo máy của bạn đã cài đặt:
-
-- **Node.js** >= 18.0.0
-- **Yarn** v1.x
-
-Kiểm tra phiên bản đã cài đặt:
-
-```bash
-node -v
-yarn -v
-```
-
----
-
-## 🚀 Bắt đầu
-
-### 1. Clone repository
-
-```bash
-git clone <repository-url>
-cd greengrass-frontend
-```
-
-### 2. Cài đặt dependencies
-
-```bash
-yarn install
-```
-
-> **Lưu ý:** Luôn sử dụng `yarn` thay vì `npm` hoặc `pnpm` để tránh xung đột dependencies.
-
-### 3. Kiểm tra Node.js version
-
-```bash
-node -v  # Yêu cầu >= 18.0.0
-```
-
-### 4. Chạy dev server
-
-```bash
-yarn dev
-```
-
-### 5. Tạo file môi trường (.env)
-
-```bash
-cp .env.example .env
-```
-
-Chỉnh sửa `.env` với API URL của backend:
-
-```env
-VITE_API_URL=http://localhost:3000/api
-```
-
-### 6. Mở trình duyệt
-
-Truy cập: http://localhost:5173
+| Category        | Technology              | Version |
+| --------------- | ----------------------- | ------- |
+| **Framework**   | React                   | ^19.2.4 |
+| **Build Tool**  | Vite                    | ^8.0.4  |
+| **Styling**     | Tailwind CSS            | ^3.4.19 |
+| **Routing**     | React Router DOM        | ^7.14.0 |
+| **HTTP Client** | Axios                   | ^1.15.0 |
+| **Forms**       | React Hook Form         | ^7.72.1 |
+| **Validation**  | Zod                     | ^4.3.6  |
+| **Maps**        | Leaflet + React Leaflet | ^5.0.0  |
+| **QR Scanner**  | @zxing/browser          | ^0.1.5  |
+| **Linting**     | ESLint                  | ^9.39.4 |
 
 ---
 
-## 📦 Dependencies chính
-
-Dự án sử dụng các thư viện sau:
-
-| Package          | Version | Mục đích     |
-| ---------------- | ------- | ------------ |
-| react            | ^19.2.4 | Core library |
-| react-router-dom | ^7.x    | Routing      |
-| axios            | ^1.x    | HTTP client  |
-| tailwindcss      | ^3.4.19 | Styling      |
-| vite             | ^8.0.4  | Build tool   |
-
-Cài thêm dependencies nếu thiếu:
-
-```bash
-yarn add react-router-dom axios
-```
-
----
-
-## 🔧 Troubleshooting
-
-### Lỗi `'vite' is not recognized`
-
-Chạy lại `yarn install`:
-
-```bash
-yarn install
-yarn dev
-```
-
-### Lỗi `Failed to resolve import "react-router-dom"`
-
-Cài thiếu dependency, chạy:
-
-```bash
-yarn add react-router-dom axios
-```
-
-### Lỗi `Cannot find module 'axios'`
-
-```bash
-yarn add axios
-```
-
-### Xóa cache và cài lại (nuclear option)
-
-**Windows:**
-
-```powershell
-Remove-Item -Recurse -Force node_modules
-Remove-Item yarn.lock
-yarn install
-yarn dev
-```
-
-**macOS/Linux:**
-
-```bash
-rm -rf node_modules yarn.lock
-yarn install
-yarn dev
-```
-
----
-
-## 📁 Cấu trúc dự án
-
-Dự án sử dụng **Feature-Based Architecture** - code được tổ chức theo tính năng thay vì theo loại file:
+## Project Structure
 
 ```
 greengrass-frontend/
-├── public/                 # Static assets (favicon, icons, images)
+├── public/                 # Static assets
 ├── src/
 │   ├── api/               # API clients & interceptors
-│   │   ├── client.js      # Axios instance
-│   │   ├── auth.js        # Auth APIs
-│   │   ├── events.js      # Event APIs
-│   │   ├── users.js       # User APIs
-│   │   ├── checkin.js     # Check-in APIs
-│   │   └── index.js       # Barrel export
-│   │
+│   │   ├── client.js      # Axios configuration
+│   │   ├── auth.js        # Authentication APIs
+│   │   ├── events.js      # Event management APIs
+│   │   └── ...
 │   ├── components/        # Shared UI components
-│   │   ├── ui/           # Button, Card, Input, Modal, Badge...
-│   │   ├── layout/       # Header, Sidebar, Footer, MainLayout
-│   │   ├── common/       # Loading, ErrorBoundary, EmptyState
-│   │   └── index.js      # Barrel export
-│   │
-│   ├── features/          # Feature modules (mỗi feature độc lập)
-│   │   ├── auth/         # Đăng nhập, đăng ký, Google Auth
-│   │   ├── events/       # Quản lý sự kiện, đăng ký
-│   │   ├── map/          # Bản đồ điểm xanh, GPS
+│   │   ├── ui/           # Button, Card, Input, Modal...
+│   │   ├── layout/       # Header, Sidebar, Footer
+│   │   └── common/       # Toast, Loading, ErrorBoundary
+│   ├── features/          # Feature-based modules
+│   │   ├── auth/         # Login, Register, OAuth
+│   │   ├── events/       # Event listing, details, registration
 │   │   ├── checkin/      # QR scanner, GPS validation
-│   │   ├── gamification/ # Điểm, huy hiệu, bảng xếp hạng
-│   │   ├── profile/      # Hồ sơ cá nhân, lịch sử
-│   │   ├── forum/        # Forum cho ban tổ chức
-│   │   ├── chatbot/      # Trợ lý ảo
-│   │   └── index.js      # Barrel export
-│   │
-│   ├── hooks/            # Shared custom hooks
-│   ├── stores/           # State management (Zustand/Redux)
-│   ├── utils/            # Constants, helpers, validators
-│   ├── routes/           # Route definitions
-│   ├── styles/           # Global styles extension
-│   ├── assets/           # Images, fonts
-│   ├── App.jsx           # Root component
-│   ├── App.css           # Root styles
-│   ├── index.css         # Tailwind + global CSS
-│   └── main.jsx          # Entry point
-│
-├── index.html            # HTML template
-├── tailwind.config.js    # Tailwind config
-├── vite.config.js        # Vite config
-├── eslint.config.js      # ESLint config
-├── package.json          # Dependencies
-└── yarn.lock             # Lockfile
+│   │   ├── gamification/ # Points, badges, leaderboard
+│   │   ├── map/          # Interactive map with markers
+│   │   └── profile/      # User profiles, history
+│   ├── contexts/          # React contexts (Auth, Error)
+│   ├── hooks/             # Custom React hooks
+│   ├── pages/             # Page-level components
+│   ├── routes/            # Route definitions
+│   ├── utils/             # Utilities & constants
+│   └── styles/            # Global styles
+├── .github/workflows/      # CI/CD pipelines
+├── docs/                   # Documentation
+└── ui-prototype/           # Design prototypes
 ```
 
-### Nguyên tắc tổ chức Feature
+### Architecture Principles
 
-Mỗi feature trong `src/features/` tự quản lý:
-
-- `components/` - Components riêng của feature
-- `hooks/` - Custom hooks riêng của feature
-- `stores/` - State management riêng (nếu cần)
-- `index.js` - Public API của feature (chỉ export những gì cần thiết)
-
-Ví dụ import:
-
-```javascript
-// Import từ feature
-import { EventCard, useEvents } from "../features/events";
-import { QRScanner, CheckInButton } from "../features/checkin";
-
-// Import shared components
-import { Button, Card, Modal } from "../components";
-import { useLocalStorage } from "../hooks";
-```
+- **Feature-Based Structure**: Each feature is self-contained with its own components, hooks, and API calls
+- **Component Composition**: Reusable UI components with clear prop interfaces
+- **Context API**: Global state management for auth and error handling
+- **Custom Hooks**: Encapsulated logic for data fetching and form handling
 
 ---
 
-## 🚀 Các tính năng chính (Features)
+## Getting Started
 
-### ✅ Đã có placeholder files
+### Prerequisites
 
-| Feature          | Mô tả                                   | Files chính                                                                                   |
-| ---------------- | --------------------------------------- | --------------------------------------------------------------------------------------------- |
-| **Auth**         | Đăng nhập, đăng ký, Google OAuth        | `features/auth/components/LoginForm.jsx`, `RegisterForm.jsx`, `hooks/useAuth.js`              |
-| **Events**       | Danh sách sự kiện, đăng ký, chi tiết    | `features/events/components/EventCard.jsx`, `EventList.jsx`, `hooks/useEvents.js`             |
-| **Map**          | Bản đồ điểm xanh, định vị GPS           | `features/map/components/GreenMap.jsx`, `hooks/useGeolocation.js`                             |
-| **Check-in**     | QR scanner, GPS validation, upload ảnh  | `features/checkin/components/QRScanner.jsx`, `CheckInButton.jsx`, `hooks/useCheckIn.js`       |
-| **Gamification** | Điểm rèn luyện, huy hiệu, bảng xếp hạng | `features/gamification/components/PointsDisplay.jsx`, `Leaderboard.jsx`, `hooks/usePoints.js` |
-| **Profile**      | Hồ sơ cá nhân, lịch sử tham gia         | `features/profile/components/ProfileHeader.jsx`                                               |
-| **Forum**        | Forum cho ban tổ chức                   | `features/forum/components/ForumList.jsx`                                                     |
-| **Chatbot**      | Trợ lý ảo gợi ý sự kiện                 | `features/chatbot/components/ChatWidget.jsx`                                                  |
+- **Node.js** >= 18.0.0
+- **Yarn** 1.x (recommended) or npm
 
-### 🔧 Công nghệ tích hợp
-
-- **QR Code**: `jsQR` hoặc `@zxing/library` (cần cài đặt thêm)
-- **Maps**: Leaflet.js với OpenStreetMap (cần cài đặt: `leaflet`, `react-leaflet`)
-- **Real-time**: Socket.IO cho check-in live (cần cài đặt: `socket.io-client`)
-- **Camera**: MediaDevices API cho QR scanner và upload ảnh minh chứng
-
----
-
-## 🎨 Tailwind CSS
-
-Tailwind CSS v3 đã được cấu hình sẵn trong dự án.
-
-### Các file cấu hình:
-
-- `tailwind.config.js` - Định nghĩa theme, colors, fonts
-- `postcss.config.js` - Tích hợp Tailwind với PostCSS
-- `src/index.css` - Import Tailwind directives
-
-### Sử dụng trong CSS:
-
-```css
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-```
-
-> **Lưu ý:** IDE có thể báo warning "Unknown at rule @tailwind" nhưng đây là bình thường - Tailwind sẽ xử lý các directive này khi build.
-
----
-
-## 🧩 VS Code Extensions khuyến nghị
-
-Cài đặt các extension sau để có trải nghiệm phát triển tốt nhất:
-
-| Extension                                  | Mục đích                      |
-| ------------------------------------------ | ----------------------------- |
-| **ES7+ React/Redux/React-Native snippets** | Snippets React                |
-| **Tailwind CSS IntelliSense**              | Autocomplete Tailwind classes |
-| **Prettier - Code: formatter**             | Format code tự động           |
-| **ESLint**                                 | Linting và fix lỗi            |
-| **Auto Rename Tag**                        | Tự động đổi tên tag đóng/mở   |
-| **Path Intellisense**                      | Autocomplete đường dẫn file   |
-
----
-
-## 📝 Lưu ý khi phát triển
-
-### Quy tắc chung
-
-- **Luôn dùng Yarn**: Không mix `npm` với `yarn` trong cùng dự án
-- **Naming convention**: PascalCase cho components, camelCase cho functions/hooks
-- **CSS**: Ưu tiên dùng Tailwind classes thay vì viết CSS thuần
-
-### Kiến trúc Feature-Based
-
-1. **Mỗi feature là một module độc lập** trong `src/features/{feature-name}/`
-   - Chứa components, hooks, stores riêng của feature đó
-   - Export qua `index.js` để giấu implementation details
-
-2. **Shared components** trong `src/components/`
-   - Chỉ chứa UI components chung, không chứa business logic
-   - Phải reusable giữa các features
-
-3. **API Layer** trong `src/api/`
-   - Mỗi domain có file riêng (auth.js, events.js, users.js...)
-   - Dùng `client.js` để cấu hình axios interceptors (token, error handling)
-
-4. **Import pattern**:
-
-   ```javascript
-   // Import từ feature → dùng barrel export
-   import { EventCard, useEvents } from "../features/events";
-
-   // Import shared → từ components, hooks, utils
-   import { Button, Card } from "../components";
-   import { formatDate } from "../utils";
-   ```
-
-### Thêm feature mới
+### Installation
 
 ```bash
-# Tạo cấu trúc cho feature mới
-mkdir -p src/features/{feature-name}/components
-mkdir -p src/features/{feature-name}/hooks
+# Clone the repository
+git clone <repository-url>
+cd greengrass-frontend
 
-# Tạo files
-# - components/FeatureComponent.jsx
-# - hooks/useFeature.js
-# - index.js (barrel export)
+# Install dependencies
+yarn install
+
+# Copy environment file
+cp .env.example .env
 ```
 
-### Ví dụ tạo Feature mới
+### Development
 
-```javascript
-// src/features/myfeature/index.js
-export { default as MyComponent } from "./components/MyComponent";
-export { default as useMyFeature } from "./hooks/useMyFeature";
+```bash
+# Start dev server
+yarn dev
 
-// Import ở file khác
-import { MyComponent, useMyFeature } from "../features/myfeature";
+# Run linter
+yarn lint
+
+# Build for production
+yarn build
+
+# Preview production build
+yarn preview
 ```
+
+### Environment Variables
+
+Create a `.env` file based on `.env.example`:
+
+```env
+# Required
+VITE_API_URL=http://localhost:3000        # Backend API URL
+VITE_APP_NAME=GreenGrass                    # App name
+
+# Optional
+VITE_API_TIMEOUT=10000                      # API timeout (ms)
+VITE_DEBUG=false                           # Debug mode
+VITE_ANALYTICS_ENABLED=false               # Analytics
+```
+
+See `.env.example` for full configuration options.
 
 ---
 
-## 🔧 Xử lý lỗi
+## Deployment
 
-### Dependencies bị lỗi hoặc cần reset
+### Vercel (Recommended)
 
-**macOS/Linux:**
+The project is optimized for Vercel deployment with the following configuration:
+
+```json
+{
+  "buildCommand": "yarn build",
+  "outputDirectory": "dist",
+  "framework": "vite"
+}
+```
+
+#### Deploy Steps
+
+1. **Connect Repository**: Import your GitHub repo to Vercel
+2. **Configure Environment**: Add all environment variables in Vercel dashboard
+3. **Deploy**: Automatic deployment on every push to `main`
+
+#### Environment Variables on Vercel
+
+Set these in Vercel Project Settings:
+
+- `VITE_API_URL` - Production API URL
+- `VITE_APP_ENV` - Set to `production`
+- `VITE_ANALYTICS_ENABLED` - Enable analytics for production
+
+### Other Platforms
+
+The `dist/` folder contains the static build output and can be deployed to:
+
+- Netlify
+- AWS S3 + CloudFront
+- GitHub Pages
+- Any static hosting
+
+---
+
+## CI/CD
+
+### GitHub Actions Workflow
+
+The project includes automated CI/CD pipeline (`.github/workflows/deploy.yml`):
+
+```yaml
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-deploy:
+    steps:
+      - Checkout code
+      - Setup Node.js
+      - Install dependencies
+      - Run linter
+      - Build application
+      - Deploy to Vercel
+```
+
+### Required Secrets
+
+Configure these in GitHub Settings > Secrets:
+
+- `VERCEL_TOKEN` - Vercel API token
+- `VERCEL_ORG_ID` - Vercel organization ID
+- `VERCEL_PROJECT_ID` - Vercel project ID
+
+---
+
+## Development Guidelines
+
+### Code Style
+
+- **Linting**: ESLint with React Hooks and React Refresh plugins
+- **Formatting**: Follow existing code style (2 spaces, single quotes)
+- **Imports**: Use barrel exports from feature `index.js` files
+
+### Naming Conventions
+
+- **Components**: PascalCase (`EventCard.jsx`)
+- **Hooks**: camelCase with `use` prefix (`useEvents.js`)
+- **Utils**: camelCase (`formatDate.js`)
+- **Constants**: UPPER_SNAKE_CASE
+
+### Git Workflow
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed contribution guidelines.
+
+---
+
+## Available Scripts
+
+| Command        | Description                          |
+| -------------- | ------------------------------------ |
+| `yarn dev`     | Start development server (port 5173) |
+| `yarn build`   | Build for production                 |
+| `yarn preview` | Preview production build locally     |
+| `yarn lint`    | Run ESLint                           |
+
+---
+
+## Troubleshooting
+
+### Common Issues
+
+**'vite' is not recognized**
 
 ```bash
-rm -rf node_modules yarn.lock
 yarn install
+yarn dev
 ```
 
-**Windows PowerShell:**
-
-```powershell
-Remove-Item -Recurse -Force node_modules
-Remove-Item yarn.lock
-yarn install
-```
-
-### Port 5173 đang được sử dụng
+**Port 5173 in use**
 
 ```bash
 yarn dev -- --port 3000
 ```
 
-### Lỗi khi cài đặt packages
-
-Đảm bảo Node.js >= 18:
+**Dependencies issues**
 
 ```bash
-node -v
-```
+# Windows
+Remove-Item -Recurse -Force node_modules
+Remove-Item yarn.lock
+yarn install
 
-Nếu cần đổi version Node.js, dùng **nvm** (Windows/Mac/Linux):
-
-```bash
-nvm install 18
-nvm use 18
+# macOS/Linux
+rm -rf node_modules yarn.lock
+yarn install
 ```
 
 ---
 
-## 📜 Scripts có sẵn
+## License
 
-| Script  | Lệnh           | Mô tả                    |
-| ------- | -------------- | ------------------------ |
-| Dev     | `yarn dev`     | Chạy dev server          |
-| Build   | `yarn build`   | Build production         |
-| Preview | `yarn preview` | Preview production build |
-| Lint    | `yarn lint`    | Kiểm tra code với ESLint |
+MIT License - see [LICENSE](./LICENSE) file for details.
 
 ---
 
-## 📄 License
-
-Private - Greengrass Project
+<p align="center">
+  Built with 💚 for a greener planet
+</p>
