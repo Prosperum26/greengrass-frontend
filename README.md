@@ -1,15 +1,6 @@
 # Greengrass Frontend
 
 Dự án frontend của Greengrass - Ứng dụng web xây dựng bằng React và Vite.
-
----
-## Lưu ý khi merge branch event-ui:
-
-- ./styles/globals.css đã được chỉnh sửa để scale toàn màn hình, khi merge nhớ lưu lại code của file này để màn hình có thể scale hoàn chỉnh
-- Branch này chỉ thay đổi nội dung ở các file của ./features/events/components và ./features/checkin/components (sẽ không impliment thêm gì ở branch chechin-ui nữa)
-- Những file không được nêu trên có thể bỏ qua khi merge code. Xin cảm ơn :>
-
-*From Quỳnh :>*
 ---
 
 ## 📋 Mục lục
