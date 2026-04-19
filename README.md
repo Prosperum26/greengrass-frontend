@@ -7,7 +7,6 @@ Dự án frontend của Greengrass - Ứng dụng web xây dựng bằng React v
 
 - ./styles/globals.css đã được chỉnh sửa để scale toàn màn hình, khi merge nhớ lưu lại code của file này để màn hình có thể scale hoàn chỉnh
 - Branch này chỉ thay đổi nội dung ở các file của ./features/events/components và ./features/checkin/components (sẽ không impliment thêm gì ở branch chechin-ui nữa)
-- UI ở tất cả các file chưa hoàn thiện 100%, về cơ bản tui sẽ fix lại file CSS của nó sau (để đẹp hơn, of course)
 - Những file không được nêu trên có thể bỏ qua khi merge code. Xin cảm ơn :>
 
 *From Quỳnh :>*
