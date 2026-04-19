@@ -10,10 +10,29 @@ export default defineConfig(({ mode }) => ({
     sourcemap: mode !== 'production',
     rollupOptions: {
       output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom', 'react-router-dom'],
-          ui: ['leaflet', 'react-leaflet'],
-          utils: ['axios', 'zod', '@hookform/resolvers', 'react-hook-form'],
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (
+              id.includes('react') ||
+              id.includes('scheduler') ||
+              id.includes('react-router-dom')
+            ) {
+              return 'vendor'
+            }
+
+            if (id.includes('leaflet') || id.includes('react-leaflet')) {
+              return 'ui'
+            }
+
+            if (
+              id.includes('axios') ||
+              id.includes('zod') ||
+              id.includes('@hookform/resolvers') ||
+              id.includes('react-hook-form')
+            ) {
+              return 'utils'
+            }
+          }
         },
       },
     },
@@ -26,8 +45,5 @@ export default defineConfig(({ mode }) => ({
   preview: {
     port: 4173,
     host: true,
-  },
-  esbuild: {
-    drop: mode === 'production' ? ['console', 'debugger'] : [],
   },
 }))
