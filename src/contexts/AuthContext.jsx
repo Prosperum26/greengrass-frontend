@@ -1,7 +1,6 @@
-import React, { createContext, useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { authApi, usersApi, setTokenAccessors } from '../api';
-
-export const AuthContext = createContext(null);
+import { AuthContext } from './auth.context';
 
 const decodeJwtPayload = (token) => {
   try {

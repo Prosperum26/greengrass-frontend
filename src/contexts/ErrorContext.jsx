@@ -1,6 +1,5 @@
-import React, { createContext, useCallback, useRef, useState, useEffect } from 'react';
-
-export const ErrorContext = createContext(null);
+import React, { useCallback, useRef, useState, useEffect } from 'react';
+import { ErrorContext } from './error.context';
 
 // Generate unique ID with timestamp for better uniqueness
 const generateId = () => `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;

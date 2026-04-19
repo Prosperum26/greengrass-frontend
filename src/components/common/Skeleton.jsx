@@ -286,10 +286,3 @@ export const ListPageSkeleton = ({ itemCount = 5 }) => (
 
 // ==================== Utility for repeated skeletons ====================
 
-/**
- * Creates an array of repeat count
- * Used internally for mapping
- * @param {number} count - Count of items to repeat
- * @returns {array} Array of indices
- */
-export const createSkeletonArray = (count) => Array(count).fill(0);
