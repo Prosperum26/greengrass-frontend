@@ -11,7 +11,7 @@ const UserProfilePage = () => {
   const [user, setUser] = useState(null);
   const [events, setEvents] = useState([]);
   const [points, setPoints] = useState(null);
-  const [rank, setRank] = useState(null);
+  const [_rank, setRank] = useState(null);
   const [loading, setLoading] = useState(true);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const fileInputRef = useRef(null);
@@ -48,7 +48,7 @@ const UserProfilePage = () => {
   useEffect(() => {
     const load = async () => {
       try {
-        const [userRes, eventsRes, pointsRes, rankRes] = await Promise.all([
+        const [userRes, eventsRes, pointsRes, _rankRes] = await Promise.all([
           usersApi.getMe(),
           usersApi.getMyEvents(),
           pointsApi.getMe(),
@@ -57,7 +57,7 @@ const UserProfilePage = () => {
         setUser(userRes.data);
         setEvents(eventsRes.data || []);
         setPoints(pointsRes.data);
-        setRank(rankRes.data);
+        setRank(_rankRes?.data); // rank data stored but not displayed currently
       } finally {
         setLoading(false);
       }
@@ -65,8 +65,9 @@ const UserProfilePage = () => {
     void load();
   }, []);
 
-  const joinedEvents = useMemo(() => events.filter((item) => item.status !== 'COMPLETED'), [events]);
-  const completedEvents = useMemo(() => events.filter((item) => item.status === 'COMPLETED'), [events]);
+  // Event categorization for future display enhancements
+  const _joinedEvents = useMemo(() => events.filter((item) => item.status !== 'COMPLETED'), [events]);
+  const _completedEvents = useMemo(() => events.filter((item) => item.status === 'COMPLETED'), [events]);
 
   if (loading) return <div className="min-h-screen bg-surface p-6 text-ink">Loading profile...</div>;
   if (!user) return <div className="min-h-screen bg-surface p-6 text-ink">No user profile</div>;

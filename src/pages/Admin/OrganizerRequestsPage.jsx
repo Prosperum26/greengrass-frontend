@@ -8,15 +8,16 @@ const OrganizerRequestsPage = () => {
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  useEffect(() => {
-    loadData(1, statusFilter);
-  }, [statusFilter]);
-
-  const loadData = (page, status) => {
+  // Load data function - declared before useEffect
+  const loadData = React.useCallback((page, status) => {
     const params = { page, limit: 10 };
     if (status !== 'ALL') params.status = status;
     fetchRequests(params);
-  };
+  }, [fetchRequests]);
+
+  useEffect(() => {
+    loadData(1, statusFilter);
+  }, [statusFilter, loadData]);
 
   const handleApprove = async (id) => {
     setIsProcessing(true);

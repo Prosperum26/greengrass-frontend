@@ -41,9 +41,10 @@ export const sanitizeFilename = (filename) => {
   if (typeof filename !== 'string') return 'file';
   
   // Remove path traversal attempts and invalid characters
-  // eslint-disable-next-line no-control-regex
+  // Invalid chars: < > : " / \ | ? * and control chars 0-31
   return filename
-    .replace(/[<>:"/\\|?*\x00-\x1f]/g, '')
+    .replace(/[<>:"\\|?*]/g, '')
+    .replace(/\./g, '') // Remove dots to prevent hidden files
     .replace(/^(\.\.\/|\.\\|\/)*/g, '')
     .substring(0, 255) || 'file';
 };

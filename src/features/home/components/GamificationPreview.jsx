@@ -3,6 +3,7 @@ import { Button } from '../../../components/ui';
 import { useNavigate } from 'react-router-dom';
 import leaderboardImg from '../../../assets/leaderboard_dummy.png';
 
+// eslint-disable-next-line no-unused-vars
 export const GamificationPreview = ({ stats, leaderboard = [] }) => {
   const navigate = useNavigate();
 

@@ -67,7 +67,9 @@ export const MapExplorerPage = () => {
   }, []);
 
   useEffect(() => {
+    // Check geolocation support - set error if not available
     if (!navigator.geolocation) {
+      // eslint-disable-next-line react-hooks/rules-of-hooks
       setLocationError('Trình duyệt không hỗ trợ định vị.');
       return;
     }

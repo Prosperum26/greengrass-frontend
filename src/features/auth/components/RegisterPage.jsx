@@ -7,7 +7,7 @@ import { registerSchema } from '../../../utils/validationSchemas';
 
 const RegisterPage = () => {
     const [accountType, setAccountType] = useState('STUDENT');
-    const { register, handleSubmit, watch, formState: { errors, isSubmitting } } = useForm({
+    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
         resolver: zodResolver(registerSchema),
         mode: 'onBlur',
     });
