@@ -19,4 +19,5 @@ export const eventsApi = {
     headers: { 'Content-Type': 'multipart/form-data' }
   }),
   cancelRegister: (eventId) => apiClient.delete(`/events/${eventId}/register`),
+  delete: (eventId) => apiClient.delete(`/events/${eventId}`),
 };

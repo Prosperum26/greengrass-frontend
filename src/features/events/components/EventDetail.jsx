@@ -2,12 +2,14 @@ import React, { useEffect, useMemo, useState, useRef, useCallback } from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
 import { eventsApi, usersApi } from '../../../api';
 import { useAuthContext } from '../../../hooks/useAuthContext';
+import { useError } from '../../../hooks/useError';
 import { BrowserQRCodeSvgWriter } from '@zxing/browser';
 
 export const EventDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { getUserId, getRole } = useAuthContext();
+  const { addError } = useError();
   
   const [event, setEvent] = useState(null);
   const [participants, setParticipants] = useState([]);
@@ -24,8 +26,8 @@ export const EventDetail = () => {
   const fileInputRef = useRef(null);
   const qrWriterRef = useRef(null);
 
-  const userId = getUserId();
-  const role = getRole();
+  const userId = useMemo(() => getUserId(), [getUserId]);
+  const role = useMemo(() => getRole(), [getRole]);
   const isAdmin = role === 'ADMIN';
   const isOrganizer = role === 'ORGANIZER';
   
@@ -44,14 +46,19 @@ export const EventDetail = () => {
     return 'bg-accent/20 text-accent-hover';
   }, [event?.status]);
 
+  // Cleanup QR URL on unmount or when QR changes
+  useEffect(() => {
+    return () => {
+      if (qrDataUrl) {
+        URL.revokeObjectURL(qrDataUrl);
+      }
+    };
+  }, [qrDataUrl]);
+
   useEffect(() => {
     const load = async () => {
       try {
-        const requests = [eventsApi.getById(id)];
-        
-        // Only fetch participants if admin or event owner
-        // Need to wait for event data first to check ownership
-        const [eventRes] = await Promise.all(requests);
+        const eventRes = await eventsApi.getById(id);
         const eventData = eventRes.data?.data || null;
         setEvent(eventData);
 
@@ -84,11 +91,13 @@ export const EventDetail = () => {
           }
         }
       } catch (err) {
-        setError(err.response?.data?.message || 'Failed to load event');
+        const msg = err.response?.data?.message || 'Failed to load event';
+        setError(msg);
+        addError(msg);
       }
     };
-    void load();
-  }, [id, canRegister, getUserId, getRole]);
+    load();
+  }, [id, canRegister, getUserId, getRole, addError]);
 
   // Initialize QR writer
   useEffect(() => {
@@ -161,14 +170,14 @@ export const EventDetail = () => {
   const onRegister = async () => {
     try {
       await eventsApi.register(id);
-      alert('Event registration completed');
       setIsRegistered(true);
       if (canViewParticipants) {
         const participantsRes = await eventsApi.getParticipants(id);
         setParticipants(participantsRes.data?.data?.participants || []);
       }
     } catch (err) {
-      alert(err.response?.data?.message || 'Registration failed');
+      const msg = err.response?.data?.message || 'Registration failed';
+      addError(msg);
     }
   };
 
@@ -176,14 +185,14 @@ export const EventDetail = () => {
     if (!window.confirm('Are you sure you want to cancel your registration?')) return;
     try {
       await eventsApi.cancelRegister(id);
-      alert('Registration cancelled successfully');
       setIsRegistered(false);
       if (canViewParticipants) {
         const participantsRes = await eventsApi.getParticipants(id);
         setParticipants(participantsRes.data?.data?.participants || []);
       }
     } catch (err) {
-      alert(err.response?.data?.message || 'Cancel registration failed');
+      const msg = err.response?.data?.message || 'Cancel registration failed';
+      addError(msg);
     }
   };
 
@@ -192,12 +201,12 @@ export const EventDetail = () => {
     if (!file) return;
 
     if (file.size > 5 * 1024 * 1024) {
-      alert('File quá lớn. Vui lòng chọn ảnh < 5MB');
+      addError('File quá lớn. Vui lòng chọn ảnh < 5MB');
       return;
     }
     const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
     if (!allowedTypes.includes(file.type)) {
-      alert('Định dạng ảnh không hợp lệ.');
+      addError('Định dạng ảnh không hợp lệ. Chỉ chấp nhận JPG, PNG, WEBP');
       return;
     }
 
@@ -211,7 +220,8 @@ export const EventDetail = () => {
         galleryImages: res.data?.data?.galleryImages || [...(prev.galleryImages || []), res.data.url]
       }));
     } catch (err) {
-      alert(err.response?.data?.message || 'Lỗi tải ảnh lên');
+      const msg = err.response?.data?.message || 'Lỗi tải ảnh lên';
+      addError(msg);
     } finally {
       setUploadingGallery(false);
       if (fileInputRef.current) fileInputRef.current.value = '';
@@ -224,10 +234,10 @@ export const EventDetail = () => {
     setIsDeleting(true);
     try {
       await eventsApi.delete(id);
-      alert('Event deleted successfully');
       navigate('/events');
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to delete event');
+      const msg = err.response?.data?.message || 'Failed to delete event';
+      addError(msg);
       setIsDeleting(false);
     }
   };

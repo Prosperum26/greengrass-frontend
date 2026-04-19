@@ -1,10 +1,6 @@
 # Greengrass Frontend
 
 <p align="center">
-  <img src="/favicon.svg" alt="Greengrass Logo" width="80" height="80">
-</p>
-
-<p align="center">
   <strong>Environmental Events Platform - Frontend</strong>
 </p>
 

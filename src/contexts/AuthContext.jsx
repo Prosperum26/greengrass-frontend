@@ -1,4 +1,4 @@
-import React, { createContext, useCallback, useEffect, useState } from 'react';
+import React, { createContext, useCallback, useEffect, useRef, useState } from 'react';
 import { authApi, usersApi, setTokenAccessors } from '../api';
 
 export const AuthContext = createContext(null);
@@ -18,11 +18,19 @@ export const AuthProvider = ({ children }) => {
   const [error, setError] = useState(null);
   const [isInitialized, setIsInitialized] = useState(false);
 
-  // Retrieve tokens from secure storage (localStorage for now, migrate to cookies later)
-  const getAccessToken = useCallback(() => localStorage.getItem('accessToken'), []);
-  const getRefreshToken = useCallback(() => localStorage.getItem('refreshToken'), []);
-  const getUserId = useCallback(() => localStorage.getItem('userId'), []);
-  const getRole = useCallback(() => localStorage.getItem('role'), []);
+  // Retrieve tokens from secure storage - useRef for stable references
+  const tokenAccessorsRef = useRef({
+    getAccessToken: () => localStorage.getItem('accessToken'),
+    getRefreshToken: () => localStorage.getItem('refreshToken'),
+    getUserId: () => localStorage.getItem('userId'),
+    getRole: () => localStorage.getItem('role'),
+  });
+
+  // Stable accessor functions
+  const getAccessToken = useCallback(() => tokenAccessorsRef.current.getAccessToken(), []);
+  const getRefreshToken = useCallback(() => tokenAccessorsRef.current.getRefreshToken(), []);
+  const getUserId = useCallback(() => tokenAccessorsRef.current.getUserId(), []);
+  const getRole = useCallback(() => tokenAccessorsRef.current.getRole(), []);
 
   // Set tokens in storage
   const setTokens = useCallback((accessToken, refreshToken) => {
@@ -50,32 +58,30 @@ export const AuthProvider = ({ children }) => {
     setError(null);
   }, []);
 
-  // Initialize API client token accessors
+  // Initialize API client token accessors - only once on mount
   useEffect(() => {
-    setTokenAccessors({
-      getAccessToken,
-      getRefreshToken,
-      getUserId,
-    });
-  }, [getAccessToken, getRefreshToken, getUserId]);
+    setTokenAccessors(tokenAccessorsRef.current);
+  }, []);
 
-  // Check user on mount
+  // Check user on mount - run only once
   useEffect(() => {
     const checkUserStatus = async () => {
-      const token = getAccessToken();
+      const token = tokenAccessorsRef.current.getAccessToken();
       if (token) {
         try {
           const { data } = await usersApi.getMe();
           setUser(data);
         } catch {
-          clearAuth();
+          // Clear auth on error but don't call clearAuth to avoid dependency issues
+          localStorage.clear();
+          setUser(null);
         }
       }
       setIsInitialized(true);
     };
 
-    void checkUserStatus();
-  }, [getAccessToken, clearAuth]);
+    checkUserStatus();
+  }, []);
 
   const login = useCallback(
     async (credentials) => {
