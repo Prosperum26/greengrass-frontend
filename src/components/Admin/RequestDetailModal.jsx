@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const RequestDetailModal = ({ request, onClose, onApprove, onReject, isProcessing }) => {
+const RequestDetailModal = ({ request, onClose, onApprove, onReject, onDelete, isProcessing }) => {
   const [rejectReason, setRejectReason] = useState('');
   const [showRejectInput, setShowRejectInput] = useState(false);
 
@@ -59,7 +59,7 @@ const RequestDetailModal = ({ request, onClose, onApprove, onReject, isProcessin
                   onClick={() => setShowRejectInput(true)}
                   className="px-4 py-2 rounded-xl text-red-400 bg-red-400/10 hover:bg-red-400/20 transition-colors font-medium border border-red-400/20"
                 >
-                  ❌ TỪ CHỐI
+                  TỪ CHỐI
                 </button>
               ) : (
                 <button
@@ -80,9 +80,20 @@ const RequestDetailModal = ({ request, onClose, onApprove, onReject, isProcessin
                 disabled={isProcessing}
                 className="px-4 py-2 rounded-xl text-white bg-[#859448] hover:bg-[#96a655] transition-colors font-medium shadow-lg shadow-[#859448]/20 disabled:opacity-50"
               >
-                ✅ DUYỆT
+                DUYỆT
               </button>
             </>
+          )}
+          
+          {/* Delete button for APPROVED organizers */}
+          {request.status === 'APPROVED' && (
+            <button
+              onClick={() => onDelete(request.id)}
+              disabled={isProcessing}
+              className="px-4 py-2 rounded-xl text-white bg-red-600 hover:bg-red-700 transition-colors font-medium shadow-lg shadow-red-600/20 disabled:opacity-50"
+            >
+              🗑️ XÓA ORGANIZER
+            </button>
           )}
         </div>
       </div>

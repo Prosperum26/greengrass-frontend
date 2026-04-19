@@ -14,4 +14,7 @@ export const adminApi = {
   rejectOrganizerRequest: (id, reason) => {
     return apiClient.post(`/admin/organizer-requests/${id}/reject`, { reason });
   },
+  deleteOrganizerRequest: (id) => {
+    return apiClient.post(`/admin/organizer-requests/${id}/delete`);
+  },
 };

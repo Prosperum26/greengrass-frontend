@@ -6,7 +6,7 @@ export const AppShell = ({ children, contentClassName = '' }) => {
   return (
     <div className="flex min-h-screen flex-col bg-surface">
       <Header />
-      <main className={`flex-1 pt-16 ${contentClassName}`}>{children}</main>
+      <main className={`flex-1 pt-20 pb-8 ${contentClassName}`}>{children}</main>
       <Footer />
     </div>
   );

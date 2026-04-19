@@ -3,7 +3,7 @@ import { useAdmin } from '../../hooks/useAdmin';
 import RequestDetailModal from '../../components/Admin/RequestDetailModal';
 
 const OrganizerRequestsPage = () => {
-  const { requests, pagination, isLoading, fetchRequests, approveRequest, rejectRequest } = useAdmin();
+  const { requests, pagination, isLoading, fetchRequests, approveRequest, rejectRequest, deleteOrganizer } = useAdmin();
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -36,6 +36,21 @@ const OrganizerRequestsPage = () => {
     const res = await rejectRequest(id, reason);
     if (res.success) {
       alert('Đã từ chối thành công!');
+      setSelectedRequest(null);
+      loadData(pagination.page, statusFilter);
+    } else {
+      alert(res.message);
+    }
+    setIsProcessing(false);
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('Bạn có chắc muốn xóa organizer này? Tài khoản và tất cả dữ liệu liên quan sẽ bị xóa. Hành động này không thể hoàn tác.')) return;
+    
+    setIsProcessing(true);
+    const res = await deleteOrganizer(id);
+    if (res.success) {
+      alert('Đã xóa organizer thành công!');
       setSelectedRequest(null);
       loadData(pagination.page, statusFilter);
     } else {
@@ -152,6 +167,7 @@ const OrganizerRequestsPage = () => {
           onClose={() => setSelectedRequest(null)}
           onApprove={handleApprove}
           onReject={handleReject}
+          onDelete={handleDelete}
           isProcessing={isProcessing}
         />
       )}

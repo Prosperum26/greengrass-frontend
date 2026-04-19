@@ -59,7 +59,7 @@ export const HomePage = () => {
   }, [debouncedKeyword, status, addError]);
 
   return (
-    <div className="flex-grow space-y-12 w-full">
+    <div className="flex-grow space-y-12 w-full px-4 sm:px-6 lg:px-8">
       {/* Hero / Featured Banner */}
       <section className="relative organic-gradient rounded-[2rem] overflow-hidden min-h-[340px] flex flex-col justify-center p-8 md:p-12 text-white">
         <div className="absolute top-0 right-0 w-1/2 h-full opacity-40">

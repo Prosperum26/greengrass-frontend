@@ -39,6 +39,15 @@ export const useAdmin = () => {
     }
   };
 
+  const deleteOrganizer = async (id) => {
+    try {
+      await adminApi.deleteOrganizerRequest(id);
+      return { success: true };
+    } catch (err) {
+      return { success: false, message: err.response?.data?.message || 'Xóa thất bại' };
+    }
+  };
+
   return {
     requests,
     pagination,
@@ -47,6 +56,7 @@ export const useAdmin = () => {
     fetchRequests,
     approveRequest,
     rejectRequest,
+    deleteOrganizer,
   };
 };
 

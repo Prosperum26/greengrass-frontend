@@ -38,7 +38,7 @@ export const Header = memo(() => {
         <div className="hidden md:flex items-center gap-6">
           <Link to="/events" className="text-accent font-bold text-sm tracking-wide">Explore</Link>
           <Link to="/profile" className="text-white/80 hover:bg-white/10 transition-colors text-sm px-3 py-1 rounded-full">My Impact</Link>
-          <Link to="/ecoma" className="text-white/80 hover:bg-white/10 transition-colors text-sm px-3 py-1 rounded-full">Ecoma</Link>
+          <Link to="/leafia" className="text-white/80 hover:bg-white/10 transition-colors text-sm px-3 py-1 rounded-full">Leafia</Link>
           <Link to="/leaderboard" className="text-white/80 hover:bg-white/10 transition-colors text-sm px-3 py-1 rounded-full">LeaderBoard</Link>
         </div>
         

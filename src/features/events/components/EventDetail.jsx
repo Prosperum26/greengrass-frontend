@@ -1,7 +1,8 @@
-import React, { useEffect, useMemo, useState, useRef } from 'react';
+import React, { useEffect, useMemo, useState, useRef, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { eventsApi, usersApi } from '../../../api';
 import { useAuthContext } from '../../../hooks/useAuthContext';
+import { BrowserQRCodeSvgWriter } from '@zxing/browser';
 
 export const EventDetail = () => {
   const { id } = useParams();
@@ -16,12 +17,26 @@ export const EventDetail = () => {
   const [error, setError] = useState('');
   const [uploadingGallery, setUploadingGallery] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [showQrModal, setShowQrModal] = useState(false);
+  const [qrDataUrl, setQrDataUrl] = useState('');
+  const [qrCountdown, setQrCountdown] = useState(30);
   const fileInputRef = useRef(null);
+  const qrWriterRef = useRef(null);
 
+  const userId = getUserId();
   const role = getRole();
+  const isAdmin = role === 'ADMIN';
   const isOrganizer = role === 'ORGANIZER';
-  const canViewParticipants = role === 'ORGANIZER' || role === 'ADMIN';
-  const canRegister = role === 'STUDENT';
+  
+  // Check if current user is the event owner (organizer who created the event)
+  const isEventOwner = isOrganizer && event?.organizerId === userId;
+  
+  // Can view participants if: admin, or organizer who owns the event
+  const canViewParticipants = isAdmin || isEventOwner;
+  
+  // Can register if: student, or organizer viewing someone else's event
+  const canRegister = role === 'STUDENT' || (isOrganizer && !isEventOwner);
   const statusTone = useMemo(() => {
     const status = event?.status;
     if (status === 'ONGOING') return 'bg-secondary/20 text-secondary';
@@ -33,36 +48,73 @@ export const EventDetail = () => {
     const load = async () => {
       try {
         const requests = [eventsApi.getById(id)];
-        if (canViewParticipants) {
-          requests.push(eventsApi.getParticipants(id));
+        
+        // Only fetch participants if admin or event owner
+        // Need to wait for event data first to check ownership
+        const [eventRes] = await Promise.all(requests);
+        const eventData = eventRes.data?.data || null;
+        setEvent(eventData);
+
+        // After getting event data, check if we should load organizer data
+        const currentUserId = getUserId();
+        const currentRole = getRole();
+        const isCurrentAdmin = currentRole === 'ADMIN';
+        const isCurrentOrganizer = currentRole === 'ORGANIZER';
+        const isCurrentOwner = isCurrentOrganizer && eventData?.organizerId === currentUserId;
+        
+        if (isCurrentAdmin || isCurrentOwner) {
+          try {
+            const participantsRes = await eventsApi.getParticipants(id);
+            setParticipants(participantsRes?.data?.data?.participants || []);
+          } catch {
+            // Silently fail if can't load participants
+          }
         }
+        
         if (canRegister) {
-          requests.push(usersApi.getMyEvents());
-        }
-
-        const [eventRes, participantsRes, myEventsRes] = await Promise.all(requests);
-        setEvent(eventRes.data?.data || null);
-
-        if (canViewParticipants) {
-          setParticipants(participantsRes?.data?.data?.participants || []);
-        }
-
-        if (canRegister) {
-          const rawMyEvents = myEventsRes?.data?.data || myEventsRes?.data || [];
-          const myEvents = Array.isArray(rawMyEvents) ? rawMyEvents : [];
-          setIsRegistered(
-            myEvents.some((item) => item?.id === id || item?.eventId === id),
-          );
+          try {
+            const myEventsRes = await usersApi.getMyEvents();
+            const rawMyEvents = myEventsRes?.data?.data || myEventsRes?.data || [];
+            const myEvents = Array.isArray(rawMyEvents) ? rawMyEvents : [];
+            setIsRegistered(
+              myEvents.some((item) => item?.id === id || item?.eventId === id),
+            );
+          } catch {
+            // Silently fail
+          }
         }
       } catch (err) {
         setError(err.response?.data?.message || 'Failed to load event');
       }
     };
     void load();
-  }, [id, canViewParticipants, canRegister]);
+  }, [id, canRegister, getUserId, getRole]);
 
+  // Initialize QR writer
   useEffect(() => {
-    if (!isOrganizer) return;
+    qrWriterRef.current = new BrowserQRCodeSvgWriter();
+  }, []);
+
+  // Generate QR code from token
+  const generateQrCode = useCallback(() => {
+    if (!qrToken || !qrWriterRef.current) return;
+    
+    try {
+      const svgElement = qrWriterRef.current.write(qrToken, 300, 300);
+      const svgData = new XMLSerializer().serializeToString(svgElement);
+      const blob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      setQrDataUrl(url);
+    } catch {
+      // Failed to generate QR
+    }
+  }, [qrToken]);
+
+  // Load organizer data
+  useEffect(() => {
+    // Only load organizer data if: admin, or organizer who owns the event
+    if (!isAdmin && !isEventOwner) return;
+    
     const loadOrganizerData = async () => {
       try {
         const [checkedInRes, qrRes] = await Promise.all([
@@ -76,7 +128,35 @@ export const EventDetail = () => {
       }
     };
     void loadOrganizerData();
-  }, [id, isOrganizer]);
+  }, [id, isAdmin, isEventOwner]);
+
+  // Refresh QR code when token changes
+  useEffect(() => {
+    if (qrToken) {
+      generateQrCode();
+      setQrCountdown(30);
+    }
+  }, [qrToken, generateQrCode]);
+
+  // Countdown timer for QR refresh
+  useEffect(() => {
+    if (!showQrModal) return;
+    
+    const timer = setInterval(() => {
+      setQrCountdown((prev) => {
+        if (prev <= 1) {
+          // Refresh QR data from API
+          eventsApi.getQrCode(id).then((res) => {
+            setQrToken(res.data?.qrToken || '');
+          }).catch(() => {});
+          return 30;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [showQrModal, id]);
 
   const onRegister = async () => {
     try {
@@ -135,6 +215,20 @@ export const EventDetail = () => {
     } finally {
       setUploadingGallery(false);
       if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
+  const handleDeleteEvent = async () => {
+    if (!window.confirm('Are you sure you want to delete this event? This action cannot be undone.')) return;
+    
+    setIsDeleting(true);
+    try {
+      await eventsApi.delete(id);
+      alert('Event deleted successfully');
+      navigate('/events');
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to delete event');
+      setIsDeleting(false);
     }
   };
 
@@ -198,7 +292,7 @@ export const EventDetail = () => {
 
         {canViewParticipants && (
           <section className="mt-10">
-            <h2 className="mb-4 text-xl font-semibold font-display">Participants</h2>
+            <h2 className="mb-4 text-xl font-semibold font-display text-black">Participants</h2>
             <div className="space-y-2">
               {participants.length === 0 && <p className="text-sm text-ink/60">No participants yet.</p>}
               {participants.map((item) => (
@@ -210,7 +304,21 @@ export const EventDetail = () => {
           </section>
         )}
 
-        {isOrganizer && (
+        {/* Admin Delete Button */}
+        {isAdmin && (
+          <div className="mt-6">
+            <button 
+              onClick={handleDeleteEvent} 
+              disabled={isDeleting}
+              className="rounded-xl bg-accent px-6 py-3 text-sm font-semibold text-white hover:bg-accent-hover shadow-[0_20px_50px_rgba(33,26,20,0.10)] disabled:opacity-50"
+            >
+              {isDeleting ? 'Deleting...' : 'Delete Event'}
+            </button>
+          </div>
+        )}
+
+        {/* Organizer Features - Only show for admin or event owner */}
+        {(isAdmin || isEventOwner) && (
           <section className="mt-10">
             <div className="mb-4 flex flex-wrap gap-2">
               {['participants', 'checkin', 'qr', 'gallery'].map((tab) => (
@@ -230,8 +338,65 @@ export const EventDetail = () => {
             ))}
             {activeTab === 'qr' && (
               <div className="rounded-xl bg-surface-highest p-4">
-                <p className="mb-2 text-sm text-ink/60">Dynamic QR token</p>
-                <code className="block overflow-x-auto text-secondary">{qrToken || 'No token available'}</code>
+                <p className="mb-4 text-sm text-ink/60">Quét mã QR để check-in (Tự động làm mới sau 30s)</p>
+                
+                {!qrToken ? (
+                  <p className="text-sm text-accent">No QR token available</p>
+                ) : (
+                  <div className="space-y-4">
+                    <button
+                      onClick={() => setShowQrModal(true)}
+                      className="w-full rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-white hover:bg-primary/90 transition-colors"
+                    >
+                      Hiển thị mã QR check-in
+                    </button>
+                    <p className="text-xs text-ink/50">Mã QR sẽ tự động làm mới mỗi 30 giây</p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* QR Code Modal */}
+            {showQrModal && qrDataUrl && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+                <div className="relative bg-white rounded-2xl shadow-2xl p-6 max-w-sm w-full">
+                  {/* Close button */}
+                  <button
+                    onClick={() => setShowQrModal(false)}
+                    className="absolute top-3 right-3 p-2 rounded-full bg-surface-highest hover:bg-surface text-ink transition-colors"
+                    aria-label="Close"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                  
+                  <div className="text-center">
+                    <h3 className="text-lg font-semibold text-black mb-2">Mã QR Check-in</h3>
+                    <p className="text-sm text-ink/60 mb-4">Quét mã để check-in sự kiện</p>
+                    
+                    {/* QR Image */}
+                    <div className="bg-white p-4 rounded-xl border-2 border-primary/20">
+                      <img 
+                        src={qrDataUrl} 
+                        alt="Check-in QR Code" 
+                        className="w-full max-w-[250px] mx-auto"
+                      />
+                    </div>
+                    
+                    {/* Countdown */}
+                    <div className="mt-4 flex items-center justify-center gap-2">
+                      <div className="w-32 h-2 bg-surface-highest rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-primary transition-all duration-1000 ease-linear"
+                          style={{ width: `${(qrCountdown / 30) * 100}%` }}
+                        />
+                      </div>
+                      <span className="text-sm font-medium text-primary">{qrCountdown}s</span>
+                    </div>
+                    <p className="text-xs text-ink/50 mt-2">Mã sẽ tự động làm mới sau {qrCountdown} giây</p>
+                  </div>
+                </div>
               </div>
             )}
             {activeTab === 'gallery' && (
