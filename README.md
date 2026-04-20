@@ -1,154 +1,154 @@
 # Greengrass Frontend
 
 <p align="center">
-  <strong>Environmental Events Platform - Frontend</strong>
+  <strong>Nền tảng Sự kiện Môi trường - Frontend</strong>
 </p>
 
 <p align="center">
-  <a href="#tech-stack">Tech Stack</a> •
-  <a href="#features">Features</a> •
-  <a href="#getting-started">Getting Started</a> •
-  <a href="#deployment">Deployment</a> •
-  <a href="#contributing">Contributing</a>
+  <a href="#tech-stack">Công nghệ</a> •
+  <a href="#features">Tính năng</a> •
+  <a href="#getting-started">Bắt đầu</a> •
+  <a href="#deployment">Triển khai</a> •
+  <a href="#contributing">Đóng góp</a>
 </p>
 
 ---
 
-## Overview
+## Tổng quan
 
-Greengrass Frontend is a modern React application for an environmental events platform. It provides a seamless user experience for discovering, registering, and participating in eco-friendly events with gamification features.
+Greengrass Frontend là ứng dụng React hiện đại cho nền tảng sự kiện môi trường. Ứng dụng mang đến trải nghiệm người dùng mượt mà để khám phá, đăng ký và tham gia các sự kiện thân thiện với môi trường cùng các tính năng gamification.
 
-### Key Capabilities
+### Các tính năng chính
 
-- **Event Discovery**: Browse and search environmental events with map integration
-- **Event Management**: Create, register, and manage event participation
-- **QR Check-in**: Scan QR codes for event attendance verification
-- **Gamification**: Earn points, badges, and track leaderboard rankings
-- **Real-time Features**: Live notifications and updates
-- **Responsive Design**: Optimized for all device sizes
-
----
-
-## Tech Stack
-
-| Category        | Technology              | Version |
-| --------------- | ----------------------- | ------- |
-| **Framework**   | React                   | ^19.2.4 |
-| **Build Tool**  | Vite                    | ^8.0.4  |
-| **Styling**     | Tailwind CSS            | ^3.4.19 |
-| **Routing**     | React Router DOM        | ^7.14.0 |
-| **HTTP Client** | Axios                   | ^1.15.0 |
-| **Forms**       | React Hook Form         | ^7.72.1 |
-| **Validation**  | Zod                     | ^4.3.6  |
-| **Maps**        | Leaflet + React Leaflet | ^5.0.0  |
-| **QR Scanner**  | @zxing/browser          | ^0.1.5  |
-| **Linting**     | ESLint                  | ^9.39.4 |
+- **Khám phá sự kiện**: Duyệt và tìm kiếm sự kiện môi trường với tích hợp bản đồ
+- **Quản lý sự kiện**: Tạo, đăng ký và quản lý việc tham gia sự kiện
+- **Check-in QR**: Quét mã QR để xác nhận tham dự sự kiện
+- **Gamification**: Tích điểm, nhận huy hiệu và theo dõi bảng xếp hạng
+- **Tính năng real-time**: Thông báo và cập nhật trực tiếp
+- **Thiết kế responsive**: Tối ưu cho mọi kích thước thiết bị
 
 ---
 
-## Project Structure
+## Công nghệ sử dụng
+
+| Danh mục        | Công nghệ               | Phiên bản |
+| --------------- | ----------------------- | --------- |
+| **Framework**   | React                   | ^19.2.4   |
+| **Build Tool**  | Vite                    | ^8.0.4    |
+| **Styling**     | Tailwind CSS            | ^3.4.19   |
+| **Routing**     | React Router DOM        | ^7.14.0   |
+| **HTTP Client** | Axios                   | ^1.15.0   |
+| **Forms**       | React Hook Form         | ^7.72.1   |
+| **Validation**  | Zod                     | ^4.3.6    |
+| **Maps**        | Leaflet + React Leaflet | ^5.0.0    |
+| **QR Scanner**  | @zxing/browser          | ^0.1.5    |
+| **Linting**     | ESLint                  | ^9.39.4   |
+
+---
+
+## Cấu trúc dự án
 
 ```
 greengrass-frontend/
-├── public/                 # Static assets
+├── public/                 # Tài nguyên tĩnh
 ├── src/
 │   ├── api/               # API clients & interceptors
-│   │   ├── client.js      # Axios configuration
-│   │   ├── auth.js        # Authentication APIs
-│   │   ├── events.js      # Event management APIs
+│   │   ├── client.js      # Cấu hình Axios
+│   │   ├── auth.js        # API xác thực
+│   │   ├── events.js      # API quản lý sự kiện
 │   │   └── ...
-│   ├── components/        # Shared UI components
+│   ├── components/        # Component UI chia sẻ
 │   │   ├── ui/           # Button, Card, Input, Modal...
 │   │   ├── layout/       # Header, Sidebar, Footer
 │   │   └── common/       # Toast, Loading, ErrorBoundary
-│   ├── features/          # Feature-based modules
-│   │   ├── auth/         # Login, Register, OAuth
-│   │   ├── events/       # Event listing, details, registration
-│   │   ├── checkin/      # QR scanner, GPS validation
-│   │   ├── gamification/ # Points, badges, leaderboard
-│   │   ├── map/          # Interactive map with markers
-│   │   └── profile/      # User profiles, history
+│   ├── features/          # Module theo tính năng
+│   │   ├── auth/         # Đăng nhập, Đăng ký, OAuth
+│   │   ├── events/       # Danh sách, chi tiết, đăng ký sự kiện
+│   │   ├── checkin/      # Quét QR, xác thực GPS
+│   │   ├── gamification/ # Điểm, huy hiệu, bảng xếp hạng
+│   │   ├── map/          # Bản đồ tương tác với marker
+│   │   └── profile/      # Hồ sơ người dùng, lịch sử
 │   ├── contexts/          # React contexts (Auth, Error)
 │   ├── hooks/             # Custom React hooks
-│   ├── pages/             # Page-level components
-│   ├── routes/            # Route definitions
-│   ├── utils/             # Utilities & constants
-│   └── styles/            # Global styles
+│   ├── pages/             # Component cấp page
+│   ├── routes/            # Định nghĩa route
+│   ├── utils/             # Tiện ích & hằng số
+│   └── styles/            # Style toàn cục
 ├── .github/workflows/      # CI/CD pipelines
-├── docs/                   # Documentation
-└── ui-prototype/           # Design prototypes
+├── docs/                   # Tài liệu
+└── ui-prototype/           # Prototype thiết kế
 ```
 
-### Architecture Principles
+### Nguyên tắc kiến trúc
 
-- **Feature-Based Structure**: Each feature is self-contained with its own components, hooks, and API calls
-- **Component Composition**: Reusable UI components with clear prop interfaces
-- **Context API**: Global state management for auth and error handling
-- **Custom Hooks**: Encapsulated logic for data fetching and form handling
+- **Cấu trúc theo Feature**: Mỗi tính năng tự chứa với component, hook và API call riêng
+- **Component Composition**: Component UI tái sử dụng với interface prop rõ ràng
+- **Context API**: Quản lý state toàn cục cho auth và xử lý lỗi
+- **Custom Hooks**: Logic đóng gói cho data fetching và form handling
 
 ---
 
-## Getting Started
+## Bắt đầu
 
-### Prerequisites
+### Yêu cầu
 
 - **Node.js** >= 18.0.0
-- **Yarn** 1.x (recommended) or npm
+- **Yarn** 1.x (khuyến nghị) hoặc npm
 
-### Installation
+### Cài đặt
 
 ```bash
-# Clone the repository
+# Clone repository
 git clone <repository-url>
 cd greengrass-frontend
 
-# Install dependencies
+# Cài đặt dependencies
 yarn install
 
-# Copy environment file
+# Copy file môi trường
 cp .env.example .env
 ```
 
-### Development
+### Phát triển
 
 ```bash
-# Start dev server
+# Chạy dev server
 yarn dev
 
-# Run linter
+# Chạy linter
 yarn lint
 
-# Build for production
+# Build production
 yarn build
 
-# Preview production build
+# Xem trước build production
 yarn preview
 ```
 
-### Environment Variables
+### Biến môi trường
 
-Create a `.env` file based on `.env.example`:
+Tạo file `.env` dựa trên `.env.example`:
 
 ```env
-# Required
-VITE_API_URL=http://localhost:3000        # Backend API URL
-VITE_APP_NAME=GreenGrass                    # App name
+# Bắt buộc
+VITE_API_URL=http://localhost:3000        # URL API backend
+VITE_APP_NAME=GreenGrass                    # Tên ứng dụng
 
-# Optional
-VITE_API_TIMEOUT=10000                      # API timeout (ms)
-VITE_DEBUG=false                           # Debug mode
+# Tùy chọn
+VITE_API_TIMEOUT=10000                      # Timeout API (ms)
+VITE_DEBUG=false                           # Chế độ debug
 VITE_ANALYTICS_ENABLED=false               # Analytics
 ```
 
-See `.env.example` for full configuration options.
+Xem `.env.example` để biết đầy đủ tùy chọn cấu hình.
 
 ---
 
-## Deployment
+## Triển khai
 
-### Vercel (Recommended)
+### Vercel (Khuyến nghị)
 
-The project is optimized for Vercel deployment with the following configuration:
+Dự án được tối ưu cho triển khai Vercel với cấu hình:
 
 ```json
 {
@@ -158,28 +158,28 @@ The project is optimized for Vercel deployment with the following configuration:
 }
 ```
 
-#### Deploy Steps
+#### Các bước triển khai
 
-1. **Connect Repository**: Import your GitHub repo to Vercel
-2. **Configure Environment**: Add all environment variables in Vercel dashboard
-3. **Deploy**: Automatic deployment on every push to `main`
+1. **Kết nối Repository**: Import GitHub repo vào Vercel
+2. **Cấu hình môi trường**: Thêm biến môi trường trong Vercel dashboard
+3. **Triển khai**: Tự động deploy khi push lên `main`
 
-#### Environment Variables on Vercel
+#### Biến môi trường trên Vercel
 
-Set these in Vercel Project Settings:
+Cấu hình trong Vercel Project Settings:
 
-- `VITE_API_URL` - Production API URL
-- `VITE_APP_ENV` - Set to `production`
-- `VITE_ANALYTICS_ENABLED` - Enable analytics for production
+- `VITE_API_URL` - URL API production
+- `VITE_APP_ENV` - Đặt thành `production`
+- `VITE_ANALYTICS_ENABLED` - Bật analytics cho production
 
-### Other Platforms
+### Các nền tảng khác
 
-The `dist/` folder contains the static build output and can be deployed to:
+Thư mục `dist/` chứa build tĩnh và có thể triển khai lên:
 
 - Netlify
 - AWS S3 + CloudFront
 - GitHub Pages
-- Any static hosting
+- Bất kỳ static hosting nào
 
 ---
 
@@ -187,7 +187,7 @@ The `dist/` folder contains the static build output and can be deployed to:
 
 ### GitHub Actions Workflow
 
-The project includes automated CI/CD pipeline (`.github/workflows/deploy.yml`):
+Dự án bao gồm pipeline CI/CD tự động (`.github/workflows/deploy.yml`):
 
 ```yaml
 on:
@@ -201,15 +201,15 @@ jobs:
     steps:
       - Checkout code
       - Setup Node.js
-      - Install dependencies
-      - Run linter
-      - Build application
-      - Deploy to Vercel
+      - Cài đặt dependencies
+      - Chạy linter
+      - Build ứng dụng
+      - Triển khai lên Vercel
 ```
 
-### Required Secrets
+### Secrets cần thiết
 
-Configure these in GitHub Settings > Secrets:
+Cấu hình trong GitHub Settings > Secrets:
 
 - `VERCEL_TOKEN` - Vercel API token
 - `VERCEL_ORG_ID` - Vercel organization ID
@@ -217,56 +217,56 @@ Configure these in GitHub Settings > Secrets:
 
 ---
 
-## Development Guidelines
+## Hướng dẫn phát triển
 
 ### Code Style
 
-- **Linting**: ESLint with React Hooks and React Refresh plugins
-- **Formatting**: Follow existing code style (2 spaces, single quotes)
-- **Imports**: Use barrel exports from feature `index.js` files
+- **Linting**: ESLint với React Hooks và React Refresh plugins
+- **Formatting**: Tuân theo style code hiện có (2 spaces, single quotes)
+- **Imports**: Sử dụng barrel exports từ file `index.js` của feature
 
-### Naming Conventions
+### Quy ước đặt tên
 
 - **Components**: PascalCase (`EventCard.jsx`)
-- **Hooks**: camelCase with `use` prefix (`useEvents.js`)
+- **Hooks**: camelCase với tiền tố `use` (`useEvents.js`)
 - **Utils**: camelCase (`formatDate.js`)
 - **Constants**: UPPER_SNAKE_CASE
 
 ### Git Workflow
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed contribution guidelines.
+Xem [CONTRIBUTING.md](./CONTRIBUTING.md) để biết hướng dẫn đóng góp chi tiết.
 
 ---
 
-## Available Scripts
+## Các lệnh có sẵn
 
-| Command        | Description                          |
-| -------------- | ------------------------------------ |
-| `yarn dev`     | Start development server (port 5173) |
-| `yarn build`   | Build for production                 |
-| `yarn preview` | Preview production build locally     |
-| `yarn lint`    | Run ESLint                           |
+| Lệnh           | Mô tả                            |
+| -------------- | -------------------------------- |
+| `yarn dev`     | Khởi động dev server (port 5173) |
+| `yarn build`   | Build cho production             |
+| `yarn preview` | Xem trước build production local |
+| `yarn lint`    | Chạy ESLint                      |
 
 ---
 
-## Troubleshooting
+## Xử lý sự cố
 
-### Common Issues
+### Các vấn đề thường gặp
 
-**'vite' is not recognized**
+**'vite' không được nhận diện**
 
 ```bash
 yarn install
 yarn dev
 ```
 
-**Port 5173 in use**
+**Port 5173 đang được sử dụng**
 
 ```bash
 yarn dev -- --port 3000
 ```
 
-**Dependencies issues**
+**Vấn đề về dependencies**
 
 ```bash
 # Windows
@@ -281,12 +281,12 @@ yarn install
 
 ---
 
-## License
+## Giấy phép
 
-MIT License - see [LICENSE](./LICENSE) file for details.
+MIT License - xem file [LICENSE](./LICENSE) để biết chi tiết.
 
 ---
 
 <p align="center">
-  Built with 💚 for a greener planet
+  Xây dựng với 💚 cho một hành tinh xanh
 </p>

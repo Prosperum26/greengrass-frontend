@@ -1,51 +1,51 @@
-# Contributing to Greengrass Frontend
+# Đóng góp cho Greengrass Frontend
 
-Thank you for your interest in contributing to Greengrass! This document provides guidelines and best practices for contributing to this project.
+Cảm ơn bạn đã quan tâm đến việc đóng góp cho Greengrass! Tài liệu này cung cấp hướng dẫn và best practices để đóng góp cho dự án.
 
-## Table of Contents
+## Mục lục
 
-- [Getting Started](#getting-started)
-- [Development Workflow](#development-workflow)
-- [Branch Naming](#branch-naming)
-- [Commit Messages](#commit-messages)
-- [Code Style](#code-style)
-- [Pull Request Process](#pull-request-process)
-- [Testing](#testing)
-- [Questions?](#questions)
+- [Bắt đầu](#bắt-đầu)
+- [Quy trình phát triển](#quy-trình-phát-triển)
+- [Đặt tên branch](#đặt-tên-branch)
+- [Commit messages](#commit-messages)
+- [Code style](#code-style)
+- [Quy trình Pull Request](#quy-trình-pull-request)
+- [Kiểm thử](#kiểm-thử)
+- [Câu hỏi?](#câu-hỏi)
 
 ---
 
-## Getting Started
+## Bắt đầu
 
 ### Fork & Clone
 
-1. Fork the repository on GitHub
-2. Clone your fork locally:
+1. Fork repository trên GitHub
+2. Clone fork của bạn về local:
 
 ```bash
 git clone https://github.com/YOUR_USERNAME/greengrass-frontend.git
 cd greengrass-frontend
 ```
 
-3. Add the upstream remote:
+3. Thêm remote upstream:
 
 ```bash
 git remote add upstream https://github.com/ORIGINAL_OWNER/greengrass-frontend.git
 ```
 
-4. Install dependencies:
+4. Cài đặt dependencies:
 
 ```bash
 yarn install
 ```
 
-5. Copy environment file:
+5. Copy file môi trường:
 
 ```bash
 cp .env.example .env
 ```
 
-6. Start the development server:
+6. Khởi động dev server:
 
 ```bash
 yarn dev
@@ -53,11 +53,11 @@ yarn dev
 
 ---
 
-## Development Workflow
+## Quy trình phát triển
 
-### 1. Sync with Upstream
+### 1. Đồng bộ với Upstream
 
-Before starting work, ensure your fork is up-to-date:
+Trước khi bắt đầu, đảm bảo fork của bạn đã cập nhật:
 
 ```bash
 git fetch upstream
@@ -65,58 +65,58 @@ git checkout main
 git merge upstream/main
 ```
 
-### 2. Create a Branch
+### 2. Tạo Branch
 
-Create a new branch for your feature or fix:
+Tạo branch mới cho tính năng hoặc fix của bạn:
 
 ```bash
 git checkout -b feature/your-feature-name
 ```
 
-### 3. Make Changes
+### 3. Thực hiện thay đổi
 
-- Write clean, maintainable code
-- Follow the project's code style
-- Add comments where necessary
-- Update documentation if needed
+- Viết code sạch, dễ bảo trì
+- Tuân theo code style của dự án
+- Thêm comment khi cần thiết
+- Cập nhật tài liệu nếu cần
 
-### 4. Commit Changes
+### 4. Commit thay đổi
 
-Commit your changes with a clear, descriptive message (see [Commit Messages](#commit-messages)):
+Commit với message rõ ràng, mô tả (xem [Commit Messages](#commit-messages)):
 
 ```bash
 git add .
 git commit -m "feat: add user profile page"
 ```
 
-### 5. Push & Create PR
+### 5. Push & tạo PR
 
 ```bash
 git push origin feature/your-feature-name
 ```
 
-Then create a Pull Request on GitHub.
+Sau đó tạo Pull Request trên GitHub.
 
 ---
 
-## Branch Naming
+## Đặt tên Branch
 
-Use the following prefixes for branch names:
+Sử dụng các tiền tố sau cho tên branch:
 
-| Prefix | Purpose | Example |
-|--------|---------|---------|
-| `feature/` | New features | `feature/qr-scanner` |
-| `fix/` | Bug fixes | `fix/login-redirect` |
-| `chore/` | Maintenance tasks | `chore/update-deps` |
-| `docs/` | Documentation | `docs/api-guide` |
-| `refactor/` | Code refactoring | `refactor/auth-hook` |
-| `test/` | Adding/updating tests | `test/event-form` |
+| Tiền tố     | Mục đích           | Ví dụ                |
+| ----------- | ------------------ | -------------------- |
+| `feature/`  | Tính năng mới      | `feature/qr-scanner` |
+| `fix/`      | Sửa lỗi            | `fix/login-redirect` |
+| `chore/`    | Công việc bảo trì  | `chore/update-deps`  |
+| `docs/`     | Tài liệu           | `docs/api-guide`     |
+| `refactor/` | Tái cấu trúc code  | `refactor/auth-hook` |
+| `test/`     | Thêm/cập nhật test | `test/event-form`    |
 
 ---
 
 ## Commit Messages
 
-We follow the [Conventional Commits](https://www.conventionalcommits.org/) specification:
+Chúng tôi tuân theo chuẩn [Conventional Commits](https://www.conventionalcommits.org/):
 
 ```
 <type>(<scope>): <description>
@@ -126,19 +126,19 @@ We follow the [Conventional Commits](https://www.conventionalcommits.org/) speci
 [optional footer]
 ```
 
-### Types
+### Các loại
 
-| Type | Description |
-|------|-------------|
-| `feat` | New feature |
-| `fix` | Bug fix |
-| `docs` | Documentation changes |
-| `style` | Code style (formatting, no logic change) |
-| `refactor` | Code refactoring |
-| `test` | Adding/updating tests |
-| `chore` | Build process, dependencies, etc. |
+| Loại       | Mô tả                                    |
+| ---------- | ---------------------------------------- |
+| `feat`     | Tính năng mới                            |
+| `fix`      | Sửa lỗi                                  |
+| `docs`     | Thay đổi tài liệu                        |
+| `style`    | Style code (formatting, không đổi logic) |
+| `refactor` | Tái cấu trúc code                        |
+| `test`     | Thêm/cập nhật test                       |
+| `chore`    | Build process, dependencies, v.v.        |
 
-### Examples
+### Ví dụ
 
 ```bash
 feat(events): add event registration form
@@ -155,26 +155,26 @@ test(auth): add login form tests
 
 ## Code Style
 
-### General Rules
+### Quy tắc chung
 
-- Use **2 spaces** for indentation
-- Use **single quotes** for strings
-- Add **trailing commas** in multi-line objects/arrays
-- Maximum line length: **100 characters**
+- Dùng **2 spaces** cho indentation
+- Dùng **single quotes** cho chuỗi
+- Thêm **trailing commas** trong objects/arrays nhiều dòng
+- Độ dài dòng tối đa: **100 ký tự**
 
 ### React Components
 
 ```jsx
-// Component naming: PascalCase
+// Đặt tên component: PascalCase
 function EventCard({ event, onRegister }) {
-  // Hooks at the top
+  // Hooks đặt ở đầu
   const [loading, setLoading] = useState(false);
-  
+
   // Handlers
   const handleClick = () => {
     onRegister(event.id);
   };
-  
+
   return (
     <div className="event-card">
       <h3>{event.title}</h3>
@@ -191,139 +191,144 @@ export default EventCard;
 ### Custom Hooks
 
 ```jsx
-// Hook naming: camelCase with 'use' prefix
+// Đặt tên hook: camelCase với tiền tố 'use'
 function useEvents() {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(false);
-  
+
   useEffect(() => {
     fetchEvents();
   }, []);
-  
+
   const fetchEvents = async () => {
     setLoading(true);
     // ...
     setLoading(false);
   };
-  
+
   return { events, loading, refetch: fetchEvents };
 }
 ```
 
-### Imports Order
+### Thứ tự Imports
 
 ```jsx
-// 1. React & libraries
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+// 1. React & thư viện
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
 // 2. Absolute imports (features)
-import { useAuth } from '../features/auth';
-import { EventCard } from '../features/events';
+import { useAuth } from "../features/auth";
+import { EventCard } from "../features/events";
 
-// 3. Relative imports (same directory)
-import { formatDate } from './utils';
-import styles from './styles.module.css';
+// 3. Relative imports (cùng thư mục)
+import { formatDate } from "./utils";
+import styles from "./styles.module.css";
 ```
 
 ### Tailwind CSS
 
-- Use Tailwind classes over custom CSS
-- Group related classes logically
-- Use custom colors from `tailwind.config.js`
+- Ưu tiên Tailwind classes hơn custom CSS
+- Nhóm các classes liên quan logic
+- Dùng màu custom từ `tailwind.config.js`
 
 ```jsx
-// Good
+// Tốt
 <div className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg">
 
-// Avoid
+// Tránh
 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
 ```
 
 ---
 
-## Pull Request Process
+## Quy trình Pull Request
 
-### Before Submitting
+### Trước khi gửi
 
-- [ ] Branch is up-to-date with `main`
-- [ ] All tests pass (`yarn test`)
-- [ ] Linting passes (`yarn lint`)
-- [ ] Build succeeds (`yarn build`)
-- [ ] Code is properly formatted
-- [ ] No console errors or warnings
-- [ ] Changes are documented
+- [ ] Branch đã đồng bộ với `main`
+- [ ] Tất cả test pass (`yarn test`)
+- [ ] Linting pass (`yarn lint`)
+- [ ] Build thành công (`yarn build`)
+- [ ] Code đã được format đúng
+- [ ] Không có lỗi hoặc cảnh báo console
+- [ ] Thay đổi đã được ghi tài liệu
 
-### PR Description Template
+### Template mô tả PR
 
 ```markdown
-## Description
-Brief description of changes
+## Mô tả
 
-## Type of Change
-- [ ] Bug fix
-- [ ] New feature
+Mô tả ngắn gọn về thay đổi
+
+## Loại thay đổi
+
+- [ ] Sửa lỗi
+- [ ] Tính năng mới
 - [ ] Breaking change
-- [ ] Documentation update
+- [ ] Cập nhật tài liệu
 
 ## Checklist
-- [ ] Code follows style guidelines
-- [ ] Self-review completed
-- [ ] Comments added for complex logic
-- [ ] Documentation updated
-- [ ] No new warnings
 
-## Screenshots (if applicable)
-Add screenshots for UI changes
+- [ ] Code tuân theo hướng dẫn style
+- [ ] Đã tự review code
+- [ ] Đã thêm comment cho logic phức tạp
+- [ ] Tài liệu đã cập nhật
+- [ ] Không có cảnh báo mới
 
-## Related Issues
+## Screenshots (nếu có)
+
+Thêm ảnh chụp màn hình cho thay đổi UI
+
+## Vấn đề liên quan
+
 Fixes #123
 ```
 
-### Review Process
+### Quy trình review
 
-1. Automated checks must pass (CI/CD)
-2. At least one code review approval required
-3. Address all review comments
-4. Maintainers will merge when ready
+1. Các kiểm tra tự động phải pass (CI/CD)
+2. Cần ít nhất một approval từ code review
+3. Xử lý tất cả các comment review
+4. Maintainers sẽ merge khi sẵn sàng
 
 ---
 
-## Testing
+## Kiểm thử
 
-### Running Tests
+### Chạy test
 
 ```bash
-# Run all tests
+# Chạy tất cả test
 yarn test
 
-# Run with coverage
+# Chạy với coverage
 yarn test:coverage
 
 # Watch mode
 yarn test:watch
 ```
 
-### Test Guidelines
+### Hướng dẫn viết test
 
-- Write tests for new features
-- Update tests when modifying existing code
-- Aim for meaningful test coverage
-
----
-
-## Questions?
-
-- **General questions**: Open a [Discussion](https://github.com/ORIGINAL_OWNER/greengrass-frontend/discussions)
-- **Bug reports**: Create an [Issue](https://github.com/ORIGINAL_OWNER/greengrass-frontend/issues)
-- **Security issues**: Email security@greengrass.vn
+- Viết test cho tính năng mới
+- Cập nhật test khi sửa code hiện có
+- Hướng đến test coverage có ý nghĩa
 
 ---
 
-## License
+## Câu hỏi?
 
-By contributing, you agree that your contributions will be licensed under the MIT License.
+- **Câu hỏi chung**: Mở [Discussion](https://github.com/ORIGINAL_OWNER/greengrass-frontend/discussions)
+- **Báo cáo lỗi**: Tạo [Issue](https://github.com/ORIGINAL_OWNER/greengrass-frontend/issues)
+- **Vấn đề bảo mật**: Email security@greengrass.vn
 
 ---
 
-Thank you for contributing to Greengrass! 🌱
+## Giấy phép
+
+Bằng việc đóng góp, bạn đồng ý rằng các đóng góp của mình sẽ được cấp phép theo MIT License.
+
+---
+
+Cảm ơn bạn đã đóng góp cho Greengrass! 🌱
