@@ -257,10 +257,10 @@ export const EventDetail = () => {
 
     const headers = ['Họ tên', 'Email', 'Trạng thái', 'Thời gian đăng ký'];
     const rows = participants.map((p) => [
-      p.fullName || '-',
-      p.email || '-',
-      p.status || '-',
-      p.createdAt ? new Date(p.createdAt).toLocaleString('vi-VN') : '-',
+      p.user?.fullName || '-',
+      p.user?.email || '-',
+      'Đã đăng ký',
+      p.registeredAt ? new Date(p.registeredAt).toLocaleString('vi-VN') : '-',
     ]);
 
     const csvContent = [headers.join(','), ...rows.map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(','))].join('\n');
@@ -282,10 +282,9 @@ export const EventDetail = () => {
       return;
     }
 
-    const headers = ['Họ tên', 'Email', 'Trạng thái', 'Thời gian check-in'];
+    const headers = ['User ID', 'Trạng thái', 'Thời gian check-in'];
     const rows = checkedIn.map((c) => [
-      c.fullName || '-',
-      c.email || '-',
+      c.userId || '-',
       c.status || '-',
       c.checkInTime ? new Date(c.checkInTime).toLocaleString('vi-VN') : '-',
     ]);
@@ -506,8 +505,8 @@ export const EventDetail = () => {
                 <p className="text-sm text-ink/60">Chưa có người tham gia.</p>
               ) : (
                 participants.map((item, idx) => (
-                  <div key={`participant-${item.userId || idx}-${idx}`} className="rounded-xl bg-surface-highest p-4 text-sm shadow-[0_16px_44px_rgba(33,26,20,0.06)]">
-                    {item.fullName || item.email || item.userId} - {item.status}
+                  <div key={`participant-${item.user?.id || item.registrationId || idx}-${idx}`} className="rounded-xl bg-surface-highest p-4 text-sm shadow-[0_16px_44px_rgba(33,26,20,0.06)]">
+                    {item.user?.fullName || item.user?.email || item.user?.id || '-'} - Đã đăng ký lúc {item.registeredAt ? new Date(item.registeredAt).toLocaleString('vi-VN') : '-'}
                   </div>
                 ))
               )}
@@ -559,7 +558,7 @@ export const EventDetail = () => {
                 ) : (
                   checkedIn.map((item, idx) => (
                     <div key={`checkin-${item.userId || idx}-${idx}`} className="mb-3 rounded-xl bg-surface-highest p-4 text-sm shadow-[0_16px_44px_rgba(33,26,20,0.06)]">
-                      {item.fullName || item.email || item.userId} - {item.status} - {item.checkInTime ? new Date(item.checkInTime).toLocaleString('vi-VN') : '-'}
+                      User ID: {item.userId} - Trạng thái: {item.status} - Check-in: {item.checkInTime ? new Date(item.checkInTime).toLocaleString('vi-VN') : '-'}
                     </div>
                   ))
                 )}
