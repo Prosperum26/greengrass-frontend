@@ -6,6 +6,7 @@ export const usersApi = {
   updateMe: (data) => apiClient.patch('/users/me', data),
   getPublicProfile: (id) => apiClient.get(`/users/${id}/profile`),
   getMyEvents: () => apiClient.get('/users/me/events'),
+  getMyOrganizedEvents: () => apiClient.get('/users/me/organized-events'),
   getMyPoints: () => apiClient.get('/users/me/points'),
   uploadAvatar: (formData) => apiClient.post('/users/me/avatar', formData, {
     headers: { 'Content-Type': 'multipart/form-data' }

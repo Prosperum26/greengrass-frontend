@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState, useRef } from 'react';
-import { eventsApi, usersApi } from '../../../api';
+import { usersApi } from '../../../api';
 import { Link, useNavigate } from 'react-router-dom';
 
 const OrgProfilePage = () => {
@@ -15,9 +15,9 @@ const OrgProfilePage = () => {
 
   useEffect(() => {
     const load = async () => {
-      const [userRes, eventsRes] = await Promise.all([usersApi.getMe(), eventsApi.getAll({ page: 1, limit: 100 })]);
+      const [userRes, eventsRes] = await Promise.all([usersApi.getMe(), usersApi.getMyOrganizedEvents()]);
       setOrganizer(userRes.data);
-      setEvents(eventsRes.data?.data?.items || []);
+      setEvents(eventsRes.data || []);
     };
     void load();
   }, []);
