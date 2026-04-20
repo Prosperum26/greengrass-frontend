@@ -6,12 +6,14 @@ import {
   markAllAsRead,
   deleteNotification,
 } from '../api/notifications';
+import { useAuthContext } from './useAuthContext';
 
 /**
  * Hook quản lý thông báo
  * @returns {Object} Các hàm và state liên quan đến thông báo
  */
 export const useNotifications = () => {
+  const { isAuthenticated } = useAuthContext();
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -21,6 +23,7 @@ export const useNotifications = () => {
    * Fetch danh sách thông báo
    */
   const fetchNotifications = useCallback(async () => {
+    if (!isAuthenticated) return;
     setLoading(true);
     setError(null);
     try {
@@ -35,12 +38,13 @@ export const useNotifications = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [isAuthenticated]);
 
   /**
    * Fetch số lượng thông báo chưa đọc
    */
   const fetchUnreadCount = useCallback(async () => {
+    if (!isAuthenticated) return;
     try {
       const response = await getUnreadCount();
       if (response.success) {
@@ -50,7 +54,7 @@ export const useNotifications = () => {
       // Không set error để không hiển thị lỗi khi chỉ fetch count
       console.error('Lỗi khi lấy số thông báo chưa đọc:', err);
     }
-  }, []);
+  }, [isAuthenticated]);
 
   /**
    * Đánh dấu một thông báo đã đọc
@@ -118,8 +122,14 @@ export const useNotifications = () => {
     }
   }, [notifications]);
 
-  // Polling để cập nhật số thông báo chưa đọc mỗi 30 giây
+  // Polling để cập nhật số thông báo chưa đọc mỗi 30 giây (chỉ khi đã đăng nhập)
   useEffect(() => {
+    if (!isAuthenticated) {
+      setUnreadCount(0);
+      setNotifications([]);
+      return;
+    }
+
     fetchUnreadCount();
 
     const interval = setInterval(() => {
@@ -127,7 +137,7 @@ export const useNotifications = () => {
     }, 30000);
 
     return () => clearInterval(interval);
-  }, [fetchUnreadCount]);
+  }, [fetchUnreadCount, isAuthenticated]);
 
   return {
     notifications,

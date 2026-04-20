@@ -19,9 +19,11 @@ export const eventsApi = {
     headers: { 'Content-Type': 'multipart/form-data' }
   }),
   update: (eventId, payload) =>
-    apiClient.put(`/events/${eventId}`, payload, payload instanceof FormData ? {
+    apiClient.patch(`/events/${eventId}`, payload),
+  updateCoverImage: (eventId, formData) =>
+    apiClient.patch(`/events/${eventId}/cover`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
-    } : undefined),
+    }),
   cancelRegister: (eventId) => apiClient.delete(`/events/${eventId}/register`),
   checkRegistration: (eventId) => apiClient.get(`/events/${eventId}/registration`),
   delete: (eventId) => apiClient.delete(`/events/${eventId}`),

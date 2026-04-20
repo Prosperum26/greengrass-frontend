@@ -248,6 +248,60 @@ export const EventDetail = () => {
     }
   };
 
+  // Export participants to CSV
+  const exportParticipantsCSV = () => {
+    if (participants.length === 0) {
+      alert('Không có người đăng ký để xuất');
+      return;
+    }
+
+    const headers = ['Họ tên', 'Email', 'Trạng thái', 'Thời gian đăng ký'];
+    const rows = participants.map((p) => [
+      p.fullName || '-',
+      p.email || '-',
+      p.status || '-',
+      p.createdAt ? new Date(p.createdAt).toLocaleString('vi-VN') : '-',
+    ]);
+
+    const csvContent = [headers.join(','), ...rows.map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(','))].join('\n');
+
+    const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `dang-ky-su-kien-${event?.title?.replace(/[^a-zA-Z0-9\u00C0-\u1EF9]/g, '_') || 'event'}-${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(link.href);
+  };
+
+  // Export checked-in participants to CSV
+  const exportCheckInCSV = () => {
+    if (checkedIn.length === 0) {
+      alert('Chưa có người check-in để xuất');
+      return;
+    }
+
+    const headers = ['Họ tên', 'Email', 'Trạng thái', 'Thời gian check-in'];
+    const rows = checkedIn.map((c) => [
+      c.fullName || '-',
+      c.email || '-',
+      c.status || '-',
+      c.checkInTime ? new Date(c.checkInTime).toLocaleString('vi-VN') : '-',
+    ]);
+
+    const csvContent = [headers.join(','), ...rows.map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(','))].join('\n');
+
+    const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `checkin-su-kien-${event?.title?.replace(/[^a-zA-Z0-9\u00C0-\u1EF9]/g, '_') || 'event'}-${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(link.href);
+  };
+
   const handleDeleteEvent = async () => {
     if (!window.confirm('Bạn có chắc muốn xóa sự kiện này? Hành động này không thể hoàn tác.')) return;
     
@@ -283,7 +337,7 @@ export const EventDetail = () => {
     try {
       const formData = new FormData();
       formData.append('coverImage', file);
-      const res = await eventsApi.update(id, formData);
+      const res = await eventsApi.updateCoverImage(id, formData);
       setEvent(prev => ({
         ...prev,
         coverImageUrl: res.data?.data?.coverImageUrl || res.data?.coverImageUrl
@@ -311,11 +365,43 @@ export const EventDetail = () => {
         {error && <p className="mb-4 rounded-xl bg-accent/10 px-4 py-3 text-accent-hover">{error}</p>}
         {event && (
           <>
-            <div className="overflow-hidden rounded-2xl border border-surface-highest bg-surface-highest">
+            {/* Cover Image with hover upload for owner */}
+            <div className="overflow-hidden rounded-2xl border border-surface-highest bg-surface-highest relative group">
+              <input
+                type="file"
+                ref={coverInputRef}
+                className="hidden"
+                accept="image/jpeg,image/png,image/webp"
+                onChange={handleCoverSelect}
+              />
+              
               {event.coverImageUrl ? (
-                <img src={event.coverImageUrl} alt={event.title} loading="lazy" className="h-72 w-full object-cover md:h-80" />
+                <img src={coverPreview || event.coverImageUrl} alt={event.title} loading="lazy" className="h-72 w-full object-cover md:h-80" />
               ) : (
-                <div className="h-56 w-full bg-gradient-to-br from-primary/15 to-secondary/15 md:h-72" />
+                <div className="h-56 w-full bg-gradient-to-br from-primary/15 to-secondary/15 md:h-72 flex items-center justify-center">
+                  {coverPreview ? (
+                    <img src={coverPreview} alt="Preview" className="h-full w-full object-cover" />
+                  ) : (
+                    <span className="material-symbols-outlined text-6xl text-primary/30">image</span>
+                  )}
+                </div>
+              )}
+              
+              {/* Hover overlay for event owner */}
+              {isEventOwner && (
+                <div 
+                  onClick={() => coverInputRef.current?.click()}
+                  className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer flex flex-col items-center justify-center text-white"
+                >
+                  <span className="material-symbols-outlined text-4xl mb-2">photo_camera</span>
+                  <span className="text-sm font-medium">{updatingCover ? 'Đang cập nhật...' : 'Thay đổi ảnh đại diện'}</span>
+                </div>
+              )}
+              
+              {updatingCover && (
+                <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                  <div className="w-10 h-10 border-4 border-white border-t-primary rounded-full animate-spin"></div>
+                </div>
               )}
             </div>
 
@@ -403,12 +489,28 @@ export const EventDetail = () => {
           <section className="mt-10">
             <h2 className="mb-4 text-xl font-semibold font-display text-black">Người tham gia</h2>
             <div className="space-y-2">
-              {participants.length === 0 && <p className="text-sm text-ink/60">Chưa có người tham gia.</p>}
-              {participants.map((item, idx) => (
-                <div key={`participant-${item.userId || idx}-${idx}`} className="rounded-xl bg-surface-highest p-4 text-sm shadow-[0_16px_44px_rgba(33,26,20,0.06)]">
-                  {item.fullName || item.email || item.userId} - {item.status}
-                </div>
-              ))}
+              <div className="flex justify-between items-center mb-4">
+                <p className="text-sm text-ink/60">
+                  Tổng số: {participants.length} người đăng ký
+                </p>
+                <button
+                  onClick={exportParticipantsCSV}
+                  disabled={participants.length === 0}
+                  className="rounded-lg bg-primary/10 px-4 py-2 text-sm font-medium text-primary hover:bg-primary/20 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+                >
+                  <span className="material-symbols-outlined text-sm">download</span>
+                  Xuất CSV
+                </button>
+              </div>
+              {participants.length === 0 ? (
+                <p className="text-sm text-ink/60">Chưa có người tham gia.</p>
+              ) : (
+                participants.map((item, idx) => (
+                  <div key={`participant-${item.userId || idx}-${idx}`} className="rounded-xl bg-surface-highest p-4 text-sm shadow-[0_16px_44px_rgba(33,26,20,0.06)]">
+                    {item.fullName || item.email || item.userId} - {item.status}
+                  </div>
+                ))
+              )}
             </div>
           </section>
         )}
@@ -430,21 +532,39 @@ export const EventDetail = () => {
         {(isAdmin || isEventOwner) && (
           <section className="mt-10">
             <div className="mb-4 flex flex-wrap gap-2">
-              {['participants', 'checkin', 'qr', 'gallery', 'edit'].map((tab) => (
+              {['participants', 'checkin', 'qr', 'gallery'].map((tab) => (
                 <button key={tab} onClick={() => setActiveTab(tab)} className={`rounded-xl px-3 py-2 text-sm font-medium ${activeTab === tab ? 'bg-primary text-white' : 'bg-surface-highest text-ink hover:bg-surface-high'}`}>
-                  {tab === 'edit' ? 'CHỈNH SỬA' : tab.toUpperCase()}
+                  {tab.toUpperCase()}
                 </button>
               ))}
             </div>
 
-            {activeTab === 'checkin' && checkedIn.length === 0 && (
-              <p className="text-sm text-ink/60">No check-ins yet.</p>
+            {activeTab === 'checkin' && (
+              <>
+                <div className="flex justify-between items-center mb-4">
+                  <p className="text-sm text-ink/60">
+                    Tổng số: {checkedIn.length} người đã check-in
+                  </p>
+                  <button
+                    onClick={exportCheckInCSV}
+                    disabled={checkedIn.length === 0}
+                    className="rounded-lg bg-secondary/10 px-4 py-2 text-sm font-medium text-secondary hover:bg-secondary/20 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+                  >
+                    <span className="material-symbols-outlined text-sm">download</span>
+                    Xuất CSV
+                  </button>
+                </div>
+                {checkedIn.length === 0 ? (
+                  <p className="text-sm text-ink/60">Chưa có người check-in.</p>
+                ) : (
+                  checkedIn.map((item, idx) => (
+                    <div key={`checkin-${item.userId || idx}-${idx}`} className="mb-3 rounded-xl bg-surface-highest p-4 text-sm shadow-[0_16px_44px_rgba(33,26,20,0.06)]">
+                      {item.fullName || item.email || item.userId} - {item.status} - {item.checkInTime ? new Date(item.checkInTime).toLocaleString('vi-VN') : '-'}
+                    </div>
+                  ))
+                )}
+              </>
             )}
-            {activeTab === 'checkin' && checkedIn.map((item, idx) => (
-              <div key={`checkin-${item.userId || idx}-${idx}`} className="mb-3 rounded-xl bg-surface-highest p-4 text-sm shadow-[0_16px_44px_rgba(33,26,20,0.06)]">
-                {item.userId} - {item.status} - {item.checkInTime ? new Date(item.checkInTime).toLocaleString() : '-'}
-              </div>
-            ))}
             {activeTab === 'qr' && (
               <div className="rounded-xl bg-surface-highest p-4">
                 <p className="mb-4 text-sm text-ink/60">Quét mã QR để check-in (Tự động làm mới sau 30s)</p>
@@ -561,56 +681,6 @@ export const EventDetail = () => {
               </div>
             )}
 
-            {/* Edit Tab - Only for event owner */}
-            {activeTab === 'edit' && isEventOwner && (
-              <div className="rounded-xl bg-surface-highest p-4 space-y-4">
-                <h3 className="text-sm font-semibold text-ink">Cập nhật ảnh đại diện sự kiện</h3>
-                
-                <input
-                  type="file"
-                  ref={coverInputRef}
-                  className="hidden"
-                  accept="image/jpeg,image/png,image/webp"
-                  onChange={handleCoverSelect}
-                />
-
-                {/* Current Cover Preview */}
-                <div className="relative rounded-xl overflow-hidden bg-surface-low aspect-[16/9]">
-                  {coverPreview ? (
-                    <img src={coverPreview} alt="Preview" className="w-full h-full object-cover" />
-                  ) : event.coverImageUrl ? (
-                    <img src={event.coverImageUrl} alt={event.title} className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-primary/15 to-secondary/15 flex items-center justify-center">
-                      <span className="material-symbols-outlined text-6xl text-primary/30">image</span>
-                    </div>
-                  )}
-                  
-                  {updatingCover && (
-                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                      <div className="w-10 h-10 border-4 border-white border-t-primary rounded-full animate-spin"></div>
-                    </div>
-                  )}
-                </div>
-
-                <button
-                  onClick={() => coverInputRef.current?.click()}
-                  disabled={updatingCover}
-                  className="w-full rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-white hover:bg-primary/90 transition-colors disabled:opacity-50"
-                >
-                  {updatingCover ? 'Đang cập nhật...' : 'Chọn ảnh mới'}
-                </button>
-                
-                <p className="text-xs text-ink/50">Chỉ ban tổ chức sở hữu sự kiện mới có thể cập nhật ảnh đại diện. Ảnh nên có tỷ lệ 16:9, tối đa 5MB.</p>
-              </div>
-            )}
-
-            {/* Edit Tab - Admin message */}
-            {activeTab === 'edit' && isAdmin && !isEventOwner && (
-              <div className="rounded-xl bg-surface-highest p-4">
-                <p className="text-sm text-ink/60">Chỉ ban tổ chức sở hữu sự kiện mới có thể chỉnh sửa ảnh đại diện.</p>
-              </div>
-            )}
           </section>
         )}
       </div>
