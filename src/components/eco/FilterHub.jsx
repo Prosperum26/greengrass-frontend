@@ -14,12 +14,17 @@ export const FilterHub = ({ keyword, onKeywordChange, status, onStatusChange }) 
       <div className="space-y-6">
         <div>
           <label className="block text-xs font-bold text-on-surface-variant mb-3">TỪ KHÓA</label>
-          <input
-            value={keyword}
-            onChange={(e) => onKeywordChange(e.target.value)}
-            placeholder="Tìm kiếm sự kiện…"
-            className="w-full rounded-xl bg-surface-container-highest px-4 py-3 text-sm text-on-surface outline-none focus:ring-2 focus:ring-primary/25 border-none"
-          />
+          <div className="relative group">
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-ink/40 text-sm group-hover:text-primary group-focus-within:text-primary transition-colors duration-300">
+              search
+            </span>
+            <input
+              value={keyword}
+              onChange={(e) => onKeywordChange(e.target.value)}
+              placeholder="Tìm kiếm sự kiện…"
+              className="w-full rounded-xl bg-surface-container-highest pl-10 pr-4 py-3 text-sm text-on-surface outline-none focus:ring-2 focus:ring-primary/40 hover:shadow-md hover:bg-white transition-all duration-300 border-none"
+            />
+          </div>
         </div>
         <div>
           <label className="block text-xs font-bold text-on-surface-variant mb-3">LOẠI HÀNH ĐỘNG</label>
@@ -30,8 +35,10 @@ export const FilterHub = ({ keyword, onKeywordChange, status, onStatusChange }) 
                 <button
                   key={s.id}
                   onClick={() => onStatusChange(s.id)}
-                  className={`px-3 py-1.5 text-[11px] font-bold rounded-full transition-colors ${
-                    active ? 'bg-primary text-white' : 'bg-surface-container-highest text-primary hover:bg-primary/10'
+                  className={`px-4 py-2 text-[11px] font-bold rounded-full transition-all duration-300 ${
+                    active
+                      ? 'bg-primary text-white shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 hover:-translate-y-0.5'
+                      : 'bg-surface-container-highest text-primary hover:bg-primary hover:text-white hover:shadow-md hover:-translate-y-0.5 active:scale-95'
                   }`}
                 >
                   {s.label}

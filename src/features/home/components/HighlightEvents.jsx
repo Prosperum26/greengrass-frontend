@@ -16,25 +16,26 @@ export const HighlightEvents = ({ events = [] }) => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
           {events.length > 0 ? (
             events.map((event, idx) => (
-              <div key={event.id || idx} className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-xl transition-shadow duration-300 group cursor-pointer" onClick={() => navigate('/events')}>
-              <div className="relative h-48 overflow-hidden bg-gray-200">
-                <img src={event.img} alt={event.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-bold text-primary shadow-sm">
-                  {event.participants}+ tham gia
-                </div>
-              </div>
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-brown-900 mb-2 group-hover:text-primary transition-colors">{event.title}</h3>
-                <div className="space-y-2 mt-4 text-sm text-gray-500">
-                  <div className="flex items-center">
-                    <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                    {event.time}
-                  </div>
-                  <div className="flex items-center">
-                    <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                    {event.location}
+              <div key={event.id || idx} className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-[0_20px_50px_rgba(35,70,18,0.15)] hover:-translate-y-3 transition-all duration-500 group cursor-pointer" onClick={() => navigate('/events')}>
+                <div className="relative h-48 overflow-hidden bg-gray-200">
+                  <img src={event.img} alt={event.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-bold text-primary shadow-sm group-hover:shadow-lg group-hover:scale-105 transition-all duration-300">
+                    {event.participants}+ tham gia
                   </div>
                 </div>
+                <div className="p-6 group-hover:bg-surface-high transition-colors duration-300">
+                  <h3 className="text-xl font-bold text-brown-900 mb-2 group-hover:text-primary transition-colors duration-300">{event.title}</h3>
+                  <div className="space-y-2 mt-4 text-sm text-gray-500">
+                    <div className="flex items-center group-hover:text-primary/70 transition-colors duration-300">
+                      <svg className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                      {event.time}
+                    </div>
+                    <div className="flex items-center group-hover:text-primary/70 transition-colors duration-300">
+                      <svg className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                      {event.location}
+                    </div>
+                  </div>
                 </div>
               </div>
             ))

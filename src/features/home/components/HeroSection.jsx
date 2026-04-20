@@ -31,12 +31,12 @@ export const HeroSection = ({ stats }) => {
             </div>
             
             <div className="flex items-center space-x-6 pt-4 text-sm font-medium text-gray-500">
-              <div className="flex items-center">
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100 text-primary font-bold mr-2">✓</span>
+              <div className="group flex items-center cursor-pointer transition-all duration-300 hover:text-primary">
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100 text-primary font-bold mr-2 transition-all duration-300 group-hover:bg-primary group-hover:text-white group-hover:scale-110 group-hover:shadow-md">✓</span>
                 Dễ dàng kiếm điểm
               </div>
-              <div className="flex items-center">
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100 text-primary font-bold mr-2">✓</span>
+              <div className="group flex items-center cursor-pointer transition-all duration-300 hover:text-primary">
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100 text-primary font-bold mr-2 transition-all duration-300 group-hover:bg-primary group-hover:text-white group-hover:scale-110 group-hover:shadow-md">✓</span>
                 Kết bạn mới
               </div>
             </div>
@@ -54,13 +54,13 @@ export const HeroSection = ({ stats }) => {
             />
             
             {/* Floating badge over image */}
-            <div className="absolute -bottom-6 -right-6 bg-white p-4 rounded-xl shadow-xl border border-gray-100 flex items-center space-x-4 z-20">
-              <div className="bg-orange-100 p-2 rounded-lg">
-                <svg className="w-8 h-8 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <div className="absolute -bottom-6 -right-6 bg-white p-4 rounded-xl shadow-xl border border-gray-100 flex items-center space-x-4 z-20 group hover:shadow-2xl hover:-translate-y-1 hover:scale-105 transition-all duration-500 cursor-pointer">
+              <div className="bg-orange-100 p-2 rounded-lg transition-all duration-300 group-hover:bg-accent group-hover:scale-110">
+                <svg className="w-8 h-8 text-accent group-hover:text-white transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
               </div>
               <div>
-                <p className="text-xs text-gray-500 font-medium tracking-wide uppercase">Cộng đồng</p>
-                <p className="text-brown-900 font-bold">{stats?.totalStudents || '1000+'}+ sinh viên</p>
+                <p className="text-xs text-gray-500 font-medium tracking-wide uppercase group-hover:text-accent transition-colors duration-300">Cộng đồng</p>
+                <p className="text-brown-900 font-bold group-hover:text-primary transition-colors duration-300">{stats?.totalStudents || '1000+'}+ sinh viên</p>
               </div>
             </div>
           </div>

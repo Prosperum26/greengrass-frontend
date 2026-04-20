@@ -5,7 +5,7 @@ export const EventCard = memo(({ event, onRegister, onDetail }) => {
   const dateText = startTime ? new Date(startTime).toLocaleString() : null;
 
   return (
-    <article className="bg-surface-container-low rounded-3xl p-4 group hover:bg-surface-container-high transition-all duration-300 flex flex-col justify-between">
+    <article className="bg-surface-container-low rounded-3xl p-4 group hover:bg-surface-container-high transition-all duration-500 flex flex-col justify-between hover:shadow-[0_30px_60px_rgba(35,70,18,0.15)] hover:-translate-y-2 relative overflow-hidden">
       <div>
         <div className="relative aspect-[16/10] rounded-2xl overflow-hidden mb-5">
           {coverImageUrl ? (
@@ -65,16 +65,21 @@ export const EventCard = memo(({ event, onRegister, onDetail }) => {
           <button
             type="button"
             onClick={() => onRegister(event.id)}
-            className="w-full bg-accent text-white py-3 rounded-xl font-bold text-sm tracking-wide hover:shadow-lg hover:-translate-y-0.5 transition-all"
+            className="w-full bg-accent text-white py-3 rounded-xl font-bold text-sm tracking-wide hover:shadow-[0_10px_30px_rgba(247,90,13,0.4)] hover:-translate-y-0.5 active:scale-[0.98] transition-all duration-300 relative overflow-hidden group/btn"
           >
-            Tham gia sự kiện
+            <span className="relative z-10 flex items-center justify-center gap-2">
+              <span className="material-symbols-outlined text-base group-hover/btn:rotate-12 transition-transform duration-300">add_circle</span>
+              Tham gia sự kiện
+            </span>
+            <div className="absolute inset-0 bg-gradient-to-r from-accent to-accent-hover opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300" />
           </button>
         )}
         <button
           type="button"
           onClick={() => onDetail?.(event.id)}
-          className="w-full bg-surface-container-highest text-primary py-3 rounded-xl font-bold text-sm tracking-wide hover:bg-primary/10 transition-colors"
+          className="w-full bg-surface-container-highest text-primary py-3 rounded-xl font-bold text-sm tracking-wide hover:bg-primary hover:text-white hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-2 group/detail"
         >
+          <span className="material-symbols-outlined text-base group-hover/detail:translate-x-1 transition-transform duration-300">arrow_forward</span>
           Chi tiết
         </button>
       </div>

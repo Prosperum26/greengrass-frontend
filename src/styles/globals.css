@@ -1,6 +1,7 @@
 /* Global Styles - Extension for Tailwind */
 
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   width: 100%;
@@ -8,7 +9,7 @@ html, body {
 }
 
 /* Quan trọng với React: Thẻ div gốc chứa toàn bộ app cũng cần full màn hình */
-#root { 
+#root {
   width: 100%;
   min-height: 100vh;
   display: flex; /* Tuỳ chọn, giúp các component con bên trong dễ dàng kế thừa chiều cao */
@@ -55,13 +56,223 @@ html, body {
   animation: fadeIn 0.3s ease-out;
 }
 
+/* Hover lift effect */
+.hover-lift {
+  transition:
+    transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(33, 26, 20, 0.12);
+}
+
+/* Hover scale effect */
+.hover-scale {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.hover-scale:hover {
+  transform: scale(1.03);
+}
+
+/* Hover glow effect for primary elements */
+.hover-glow {
+  transition:
+    box-shadow 0.3s ease,
+    transform 0.2s ease;
+}
+
+.hover-glow:hover {
+  box-shadow: 0 0 30px rgba(35, 70, 18, 0.25);
+  transform: translateY(-2px);
+}
+
+/* Hover shimmer effect */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.hover-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.hover-shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  background-size: 200% 100%;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.hover-shimmer:hover::after {
+  opacity: 1;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Hover bounce effect */
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.hover-bounce:hover {
+  animation: bounce 0.6s ease;
+}
+
+/* Pulse glow animation */
+@keyframes pulse-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(35, 70, 18, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 20px 10px rgba(35, 70, 18, 0.1);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Ripple effect for buttons */
+.ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+.ripple::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition:
+    width 0.6s ease,
+    height 0.6s ease;
+}
+
+.ripple:active::before {
+  width: 300px;
+  height: 300px;
+}
+
+/* Gradient shift on hover */
+.hover-gradient-shift {
+  background-size: 200% 200%;
+  transition: background-position 0.5s ease;
+}
+
+.hover-gradient-shift:hover {
+  background-position: 100% 100%;
+}
+
+/* Underline slide effect */
+.underline-slide {
+  position: relative;
+}
+
+.underline-slide::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: currentColor;
+  transition: width 0.3s ease;
+}
+
+.underline-slide:hover::after {
+  width: 100%;
+}
+
+/* Rotate icon on hover */
+.hover-rotate-icon .icon {
+  transition: transform 0.3s ease;
+}
+
+.hover-rotate-icon:hover .icon {
+  transform: rotate(15deg);
+}
+
+/* Smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Selection color */
+::selection {
+  background: rgba(35, 70, 18, 0.2);
+  color: inherit;
+}
+
+/* Focus visible styles */
+*:focus-visible {
+  outline: 2px solid rgba(35, 70, 18, 0.5);
+  outline-offset: 2px;
+}
+
+/* Button press effect */
+.btn-press {
+  transition: transform 0.1s ease, box-shadow 0.2s ease;
+}
+
+.btn-press:active {
+  transform: scale(0.96);
+}
+
+/* Magnetic button effect placeholder */
+.magnetic-btn {
+  transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* Glass morphism enhancement */
+.glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.glass-dark {
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
 /* QR Scanner overlay */
 .qr-scanner-overlay {
-  background: linear-gradient(to bottom, 
-    rgba(0,0,0,0.7) 0%, 
-    transparent 25%, 
-    transparent 75%, 
-    rgba(0,0,0,0.7) 100%
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.7) 0%,
+    transparent 25%,
+    transparent 75%,
+    rgba(0, 0, 0, 0.7) 100%
   );
 }
 

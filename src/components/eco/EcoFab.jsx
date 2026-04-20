@@ -3,16 +3,18 @@ import React from 'react';
 export const EcoFab = ({ label = 'Quick Join nearest event', onClick }) => {
   return (
     <div className="fixed bottom-24 right-8 z-[60] flex flex-col items-end gap-4 group md:bottom-8">
-      <div className="opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto">
-        <div className="bg-on-surface text-white text-xs font-bold px-4 py-2 rounded-xl mb-2 shadow-2xl">
+      <div className="opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-500 pointer-events-none group-hover:pointer-events-auto">
+        <div className="bg-on-surface text-white text-xs font-bold px-4 py-2 rounded-xl mb-2 shadow-2xl hover:shadow-accent/20">
           {label}
         </div>
       </div>
       <button
         onClick={onClick}
-        className="w-16 h-16 bg-accent text-white rounded-2xl shadow-[0_16px_32px_rgba(247,90,13,0.3)] flex items-center justify-center hover:scale-110 active:scale-95 transition-all"
+        className="w-16 h-16 bg-accent text-white rounded-2xl shadow-[0_16px_32px_rgba(247,90,13,0.3)] flex items-center justify-center hover:scale-125 hover:shadow-[0_20px_50px_rgba(247,90,13,0.5)] hover:rotate-12 active:scale-95 transition-all duration-500 relative overflow-hidden group/btn animate-pulse-glow"
       >
-        <span className="material-symbols-outlined text-3xl" style={{fontVariationSettings: "'FILL' 1"}}>bolt</span>
+        {/* Shimmer effect */}
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700" />
+        <span className="material-symbols-outlined text-3xl relative z-10 group-hover/btn:animate-pulse" style={{fontVariationSettings: "'FILL' 1"}}>bolt</span>
       </button>
     </div>
   );

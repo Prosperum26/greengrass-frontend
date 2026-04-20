@@ -17,19 +17,19 @@ export const GamificationPreview = ({ stats, leaderboard = [] }) => {
             Mỗi đóng góp của bạn đều được ghi nhận. Tích lũy điểm rèn luyện, thu thập huy hiệu độc đáo và thi đua cùng {stats?.totalStudents || 'hàng ngàn'} sinh viên khác trên toàn quốc. Sự nỗ lực của bạn là nguồn cảm hứng cho cộng đồng.
           </p>
           
-          <div className="space-y-6 mb-10">
-            <div className="flex items-start">
-              <span className="text-2xl mr-4">🥇</span>
+          <div className="space-y-4 mb-10">
+            <div className="group flex items-start p-4 rounded-xl transition-all duration-300 hover:bg-white/10 hover:-translate-x-1 cursor-pointer">
+              <span className="text-2xl mr-4 group-hover:scale-125 group-hover:rotate-12 transition-transform duration-300">🥇</span>
               <div>
-                <h4 className="font-bold text-xl drop-shadow-sm">Người Dẫn Đầu</h4>
-                <p className="text-orange-100">Top xuất sắc hàng tháng nhận giải.</p>
+                <h4 className="font-bold text-xl drop-shadow-sm group-hover:text-white transition-colors">Người Dẫn Đầu</h4>
+                <p className="text-orange-100 group-hover:text-orange-50 transition-colors">Top xuất sắc hàng tháng nhận giải.</p>
               </div>
             </div>
-            <div className="flex items-start">
-              <span className="text-2xl mr-4">🏆</span>
+            <div className="group flex items-start p-4 rounded-xl transition-all duration-300 hover:bg-white/10 hover:-translate-x-1 cursor-pointer">
+              <span className="text-2xl mr-4 group-hover:scale-125 group-hover:rotate-12 transition-transform duration-300">🏆</span>
               <div>
-                <h4 className="font-bold text-xl drop-shadow-sm">Huy Hiệu Giới Hạn</h4>
-                <p className="text-orange-100">Chứng nhận hoạt động tích cực.</p>
+                <h4 className="font-bold text-xl drop-shadow-sm group-hover:text-white transition-colors">Huy Hiệu Giới Hạn</h4>
+                <p className="text-orange-100 group-hover:text-orange-50 transition-colors">Chứng nhận hoạt động tích cực.</p>
               </div>
             </div>
           </div>

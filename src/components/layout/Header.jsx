@@ -129,19 +129,19 @@ export const Header = memo(() => {
       </div>
 
       <div className="flex items-center gap-6">
-        <div className="hidden md:flex items-center gap-6">
-          <Link to="/events" className="text-accent font-bold text-sm tracking-wide">Khám phá</Link>
-          <Link to="/profile" className="text-white/80 hover:bg-white/10 transition-colors text-sm px-3 py-1 rounded-full">Đóng góp của tôi</Link>
-          <Link to="/leafia" className="text-white/80 hover:bg-white/10 transition-colors text-sm px-3 py-1 rounded-full">Leafia</Link>
-          <Link to="/leaderboard" className="text-white/80 hover:bg-white/10 transition-colors text-sm px-3 py-1 rounded-full">Bảng xếp hạng</Link>
+        <div className="hidden md:flex items-center gap-2">
+          <Link to="/events" className="text-accent font-bold text-sm tracking-wide px-4 py-2 rounded-full hover:bg-white/10 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300">Khám phá</Link>
+          <Link to="/profile" className="text-white/80 hover:text-white hover:bg-white/10 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 text-sm px-4 py-2 rounded-full">Đóng góp của tôi</Link>
+          <Link to="/leafia" className="text-white/80 hover:text-white hover:bg-white/10 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 text-sm px-4 py-2 rounded-full">Leafia</Link>
+          <Link to="/leaderboard" className="text-white/80 hover:text-white hover:bg-white/10 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 text-sm px-4 py-2 rounded-full">Bảng xếp hạng</Link>
         </div>
-        
+
         <div className="flex items-center gap-4 border-l border-white/10 pl-6">
           {/* Notification Button with Dropdown */}
           <div className="relative" ref={notificationRef}>
             <button
               onClick={toggleNotifications}
-              className="material-symbols-outlined text-white/80 hover:bg-white/10 p-2 rounded-full transition-colors flex items-center justify-center relative"
+              className="material-symbols-outlined text-white/80 hover:text-white hover:bg-white/15 p-2.5 rounded-full transition-all duration-300 hover:shadow-lg hover:scale-110 hover:rotate-12 flex items-center justify-center relative active:scale-95"
             >
               notifications
               {unreadCount > 0 && (
