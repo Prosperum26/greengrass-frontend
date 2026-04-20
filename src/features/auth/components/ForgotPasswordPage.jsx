@@ -99,10 +99,6 @@ const ForgotPasswordPage = () => {
 
                 {/* Các liên kết bên dưới */}
                 <div className="mt-6 flex flex-col items-start gap-3">
-                        Đăng nhập
-                    </a><a href="#" className="text-[14px] text-gray-600 hover:text-black underline underline-offset-4 decoration-1">
-                        Bạn chưa có tài khoản?
-                    </a> */}
                     <Link
                         to="/login"
                         className="text-[14px] text-gray-600 hover:text-black underline underline-offset-4 decoration-1"
