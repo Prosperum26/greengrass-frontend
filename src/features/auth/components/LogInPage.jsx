@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuthContext } from '../../../hooks/useAuthContext';
@@ -8,6 +8,7 @@ import { loginSchema } from '../../../utils/validationSchemas';
 const LoginPage = () => {
     const { login, isLoading, error: apiError } = useAuthContext();
     const navigate = useNavigate();
+    const [showPassword, setShowPassword] = useState(false);
     const fieldBaseClass = 'w-full rounded-xl border border-ink/10 bg-white/80 px-4 py-3 text-ink placeholder:text-ink/45 outline-none transition focus:ring-2';
     
     const {
@@ -18,6 +19,10 @@ const LoginPage = () => {
         resolver: zodResolver(loginSchema),
         mode: 'onBlur',
     });
+
+    const togglePasswordVisibility = () => {
+        setShowPassword(prev => !prev);
+    };
 
     const onSubmit = async (data) => {
         try {
@@ -54,15 +59,27 @@ const LoginPage = () => {
 
                     <div className="flex flex-col gap-1 items-start">
                         <label htmlFor="password" className="text-xs font-semibold tracking-widest text-ink/70 uppercase">Mật khẩu</label>
-                        <input
-                            id="password"
-                            type="password"
-                            placeholder="Nhập mật khẩu"
-                            {...register('password')}
-                            className={`${fieldBaseClass} ${
-                                errors.password ? 'ring-2 ring-accent' : 'focus:ring-primary/35'
-                            }`}
-                        />
+                        <div className="relative w-full">
+                            <input
+                                id="password"
+                                type={showPassword ? 'text' : 'password'}
+                                placeholder="Nhập mật khẩu"
+                                {...register('password')}
+                                className={`${fieldBaseClass} pr-12 ${
+                                    errors.password ? 'ring-2 ring-accent' : 'focus:ring-primary/35'
+                                }`}
+                            />
+                            <button
+                                type="button"
+                                onClick={togglePasswordVisibility}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 rounded-full hover:bg-ink/5 transition-colors text-ink/50 hover:text-ink"
+                                tabIndex={-1}
+                            >
+                                <span className="material-symbols-outlined text-xl">
+                                    {showPassword ? 'visibility_off' : 'visibility'}
+                                </span>
+                            </button>
+                        </div>
                         {errors.password && (
                             <p className="text-sm text-accent-hover mt-1">{errors.password.message}</p>
                         )}

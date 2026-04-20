@@ -85,11 +85,22 @@ export const Header = memo(() => {
               
               <div className="absolute right-0 pt-3 w-48 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                 <div className="bg-[#2a241c] border border-white/10 rounded-xl shadow-lg py-1 overflow-hidden">
-                  {role === 'ADMIN' ? (
+                  {role === 'ADMIN' && (
                     <Link to="/admin/organizer-requests" className="block px-4 py-2 text-sm text-accent font-bold hover:bg-white/5 transition-colors">
                       Yêu cầu chờ duyệt
                     </Link>
-                  ) : (
+                  )}
+                  {role === 'ORGANIZER' && (
+                    <>
+                      <Link to="/profile" className="block px-4 py-2 text-sm text-white/80 font-bold hover:bg-white/5 transition-colors">
+                        Hồ sơ của tôi
+                      </Link>
+                      <Link to="/org-profile" className="block px-4 py-2 text-sm text-accent font-bold hover:bg-white/5 transition-colors border-t border-white/5">
+                        Trang ban tổ chức
+                      </Link>
+                    </>
+                  )}
+                  {role !== 'ADMIN' && role !== 'ORGANIZER' && (
                     <Link to="/profile" className="block px-4 py-2 text-sm text-white/80 font-bold hover:bg-white/5 transition-colors">
                       Hồ sơ của tôi
                     </Link>

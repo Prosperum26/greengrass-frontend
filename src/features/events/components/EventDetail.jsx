@@ -84,7 +84,7 @@ export const EventDetail = () => {
             const rawMyEvents = myEventsRes?.data?.data || myEventsRes?.data || [];
             const myEvents = Array.isArray(rawMyEvents) ? rawMyEvents : [];
             setIsRegistered(
-              myEvents.some((item) => item?.id === id || item?.eventId === id),
+              myEvents.some((item) => String(item?.id) === id || String(item?.eventId) === id),
             );
           } catch {
             // Silently fail
