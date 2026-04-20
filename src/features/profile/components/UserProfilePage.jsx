@@ -14,7 +14,37 @@ const UserProfilePage = () => {
   const [_rank, setRank] = useState(null);
   const [loading, setLoading] = useState(true);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [newFullName, setNewFullName] = useState('');
+  const [savingName, setSavingName] = useState(false);
   const fileInputRef = useRef(null);
+
+  const handleEditNameClick = () => {
+    setNewFullName(user?.fullName || '');
+    setIsEditingName(true);
+  };
+
+  const handleCancelEditName = () => {
+    setIsEditingName(false);
+    setNewFullName('');
+  };
+
+  const handleSaveName = async () => {
+    if (!newFullName.trim()) {
+      alert('Vui lòng nhập tên');
+      return;
+    }
+    setSavingName(true);
+    try {
+      await usersApi.updateMe({ fullName: newFullName.trim() });
+      setUser(prev => ({ ...prev, fullName: newFullName.trim() }));
+      setIsEditingName(false);
+    } catch (err) {
+      alert(err.response?.data?.message || 'Không thể cập nhật tên');
+    } finally {
+      setSavingName(false);
+    }
+  };
 
   const handleAvatarSelect = async (e) => {
     const file = e.target.files?.[0];
@@ -130,7 +160,44 @@ const UserProfilePage = () => {
             </div>
 
             <div className="space-y-2 pt-2">
-              <h1 className="text-4xl font-extrabold tracking-tight font-display text-primary">{user.fullName}</h1>
+              {isEditingName ? (
+                <div className="space-y-3">
+                  <input
+                    type="text"
+                    value={newFullName}
+                    onChange={(e) => setNewFullName(e.target.value)}
+                    className="w-full text-2xl font-extrabold tracking-tight font-display text-primary bg-white border border-primary/30 rounded-xl px-4 py-2 focus:ring-2 focus:ring-primary/30 outline-none shadow-sm"
+                    placeholder="Nhập tên của bạn"
+                    onKeyDown={(e) => e.key === 'Enter' && handleSaveName()}
+                  />
+                  <div className="flex gap-2">
+                    <button
+                      onClick={handleSaveName}
+                      disabled={savingName}
+                      className="px-4 py-1.5 bg-primary text-white text-sm font-bold rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50"
+                    >
+                      {savingName ? 'Đang lưu...' : 'Lưu'}
+                    </button>
+                    <button
+                      onClick={handleCancelEditName}
+                      className="px-4 py-1.5 bg-surface-high text-ink text-sm font-bold rounded-lg hover:bg-surface-highest transition-colors"
+                    >
+                      Hủy
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center gap-3">
+                  <h1 className="text-4xl font-extrabold tracking-tight font-display text-primary">{user.fullName}</h1>
+                  <button
+                    onClick={handleEditNameClick}
+                    className="p-2 rounded-full hover:bg-surface-highest transition-colors text-ink/60 hover:text-primary"
+                    title="Sửa tên"
+                  >
+                    <span className="material-symbols-outlined text-xl">edit</span>
+                  </button>
+                </div>
+              )}
               <p className="text-ink font-medium leading-relaxed">
                 {user.bio || 'Chiến binh xanh tận tâm. Biến đổi cộng đồng từng hành động một.'}
               </p>
