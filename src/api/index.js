@@ -8,4 +8,5 @@ export * from './points';
 export * from './map';
 export * from './admin';
 export * from './assistant';
+export * from './notifications';
 export * from './validatedApi'; // Response validation wrappers

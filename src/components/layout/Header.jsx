@@ -1,12 +1,26 @@
-import React, { useMemo, memo, useState, useCallback } from 'react';
+import React, { useMemo, memo, useState, useCallback, useRef, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthContext } from '../../hooks/useAuthContext';
+import { useNotifications } from '../../hooks/useNotifications';
 
 export const Header = memo(() => {
   const { user, isAuthenticated, logout, getRole } = useAuthContext();
   const navigate = useNavigate();
   const location = useLocation();
   const role = getRole();
+
+  // Notifications state
+  const {
+    notifications,
+    unreadCount,
+    loading,
+    fetchNotifications,
+    markAsRead,
+    markAllAsRead,
+    deleteNotification,
+  } = useNotifications();
+  const [showNotifications, setShowNotifications] = useState(false);
+  const notificationRef = useRef(null);
 
   // Get initial search value from URL if on events page
   const getInitialSearch = () => {
@@ -40,6 +54,61 @@ export const Header = memo(() => {
     return (first || 'U').toUpperCase();
   }, [user]);
 
+  // Fetch notifications when panel opens
+  useEffect(() => {
+    if (showNotifications) {
+      fetchNotifications();
+    }
+  }, [showNotifications, fetchNotifications]);
+
+  // Close notification panel when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (notificationRef.current && !notificationRef.current.contains(event.target)) {
+        setShowNotifications(false);
+      }
+    };
+
+    if (showNotifications) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showNotifications]);
+
+  const toggleNotifications = () => {
+    setShowNotifications(!showNotifications);
+  };
+
+  const handleNotificationClick = async (notification) => {
+    if (!notification.isRead) {
+      await markAsRead(notification.id);
+    }
+    if (notification.event) {
+      navigate(`/events/${notification.event.id}`);
+      setShowNotifications(false);
+    }
+  };
+
+  const handleDelete = async (e, notificationId) => {
+    e.stopPropagation();
+    await deleteNotification(notificationId);
+  };
+
+  const formatNotificationTime = (dateString) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diff = Math.floor((now - date) / 1000);
+
+    if (diff < 60) return 'Vừa xong';
+    if (diff < 3600) return `${Math.floor(diff / 60)} phút trước`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)} giờ trước`;
+    if (diff < 604800) return `${Math.floor(diff / 86400)} ngày trước`;
+    return date.toLocaleDateString('vi-VN');
+  };
+
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 glass-nav bg-[#251E18] text-white flex justify-between items-center w-full px-6 h-16 shadow-none font-display antialiased">
       <div className="flex items-center gap-8">
@@ -68,9 +137,104 @@ export const Header = memo(() => {
         </div>
         
         <div className="flex items-center gap-4 border-l border-white/10 pl-6">
-          <button className="material-symbols-outlined text-white/80 hover:bg-white/10 p-2 rounded-full transition-colors flex items-center justify-center">
-            notifications
-          </button>
+          {/* Notification Button with Dropdown */}
+          <div className="relative" ref={notificationRef}>
+            <button
+              onClick={toggleNotifications}
+              className="material-symbols-outlined text-white/80 hover:bg-white/10 p-2 rounded-full transition-colors flex items-center justify-center relative"
+            >
+              notifications
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-tertiary text-white text-xs font-bold rounded-full flex items-center justify-center">
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+              )}
+            </button>
+
+            {/* Notification Panel */}
+            {showNotifications && (
+              <div className="absolute right-0 top-full mt-2 w-80 bg-[#2a241c] border border-white/10 rounded-xl shadow-lg z-50 overflow-hidden">
+                {/* Header */}
+                <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
+                  <h3 className="text-white font-semibold text-sm">Thông báo</h3>
+                  {notifications.length > 0 && (
+                    <button
+                      onClick={markAllAsRead}
+                      className="text-xs text-accent hover:text-accent/80 transition-colors"
+                    >
+                      Đánh dấu tất cả đã đọc
+                    </button>
+                  )}
+                </div>
+
+                {/* Notification List */}
+                <div className="max-h-80 overflow-y-auto">
+                  {loading ? (
+                    <div className="px-4 py-8 text-center text-white/60 text-sm">
+                      <span className="material-symbols-outlined animate-spin text-2xl mb-2 block">refresh</span>
+                      Đang tải...
+                    </div>
+                  ) : notifications.length === 0 ? (
+                    <div className="px-4 py-8 text-center text-white/60 text-sm">
+                      <span className="material-symbols-outlined text-4xl mb-2 block opacity-50">notifications_off</span>
+                      Không có thông báo
+                    </div>
+                  ) : (
+                    notifications.map((notification) => (
+                      <div
+                        key={notification.id}
+                        onClick={() => handleNotificationClick(notification)}
+                        className={`px-4 py-3 border-b border-white/5 hover:bg-white/5 cursor-pointer transition-colors relative group ${
+                          !notification.isRead ? 'bg-white/5' : ''
+                        }`}
+                      >
+                        <div className="flex items-start gap-3">
+                          {/* Unread indicator */}
+                          {!notification.isRead && (
+                            <span className="w-2 h-2 bg-tertiary rounded-full mt-1.5 flex-shrink-0"></span>
+                          )}
+                          {notification.isRead && <span className="w-2 h-2 flex-shrink-0"></span>}
+
+                          <div className="flex-1 min-w-0">
+                            <p className={`text-sm ${!notification.isRead ? 'text-white font-medium' : 'text-white/80'}`}>
+                              {notification.title}
+                            </p>
+                            <p className="text-xs text-white/60 mt-0.5 line-clamp-2">
+                              {notification.message}
+                            </p>
+                            <p className="text-xs text-white/40 mt-1">
+                              {formatNotificationTime(notification.createdAt)}
+                            </p>
+                          </div>
+
+                          {/* Delete button */}
+                          <button
+                            onClick={(e) => handleDelete(e, notification.id)}
+                            className="opacity-0 group-hover:opacity-100 text-white/40 hover:text-red-400 transition-all p-1"
+                          >
+                            <span className="material-symbols-outlined text-sm">close</span>
+                          </button>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+
+                {/* Footer */}
+                {notifications.length > 0 && (
+                  <div className="px-4 py-2 border-t border-white/10 bg-white/5">
+                    <Link
+                      to="/profile"
+                      onClick={() => setShowNotifications(false)}
+                      className="text-xs text-accent hover:text-accent/80 transition-colors block text-center"
+                    >
+                      Xem tất cả trong hồ sơ
+                    </Link>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
           
           {!isAuthenticated ? (
              <div className="flex items-center gap-3 text-sm font-bold">
