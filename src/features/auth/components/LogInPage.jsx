@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuthContext } from '../../../hooks/useAuthContext';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { loginSchema } from '../../../utils/validationSchemas';
 
 const LoginPage = () => {
     const { login, isLoading, error: apiError } = useAuthContext();
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const redirectUrl = searchParams.get('redirect');
     const [showPassword, setShowPassword] = useState(false);
     const fieldBaseClass = 'w-full rounded-xl border border-ink/10 bg-white/80 px-4 py-3 text-ink placeholder:text-ink/45 outline-none transition focus:ring-2';
     
@@ -27,7 +29,12 @@ const LoginPage = () => {
     const onSubmit = async (data) => {
         try {
             await login(data);
-            navigate('/');
+            // Redirect to original page if redirect param exists, otherwise go home
+            if (redirectUrl) {
+                navigate(decodeURIComponent(redirectUrl));
+            } else {
+                navigate('/');
+            }
         } catch (err) {
             console.log("Đã có lỗi xảy ra:", err);
         }

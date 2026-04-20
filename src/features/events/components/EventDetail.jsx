@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { eventsApi, usersApi } from '../../../api';
 import { useAuthContext } from '../../../hooks/useAuthContext';
 import { useError } from '../../../hooks/useError';
+import { useCheckIn } from '../../checkin/hooks/useCheckIn';
 import { BrowserQRCodeSvgWriter } from '@zxing/browser';
 
 export const EventDetail = () => {
@@ -23,6 +24,10 @@ export const EventDetail = () => {
   const [showQrModal, setShowQrModal] = useState(false);
   const [qrDataUrl, setQrDataUrl] = useState('');
   const [qrCountdown, setQrCountdown] = useState(30);
+  const [manualToken, setManualToken] = useState('');
+  const [checkingIn, setCheckingIn] = useState(false);
+  const [checkInSuccess, setCheckInSuccess] = useState(false);
+  const { checkIn } = useCheckIn();
   const fileInputRef = useRef(null);
   const qrWriterRef = useRef(null);
 
@@ -298,6 +303,48 @@ export const EventDetail = () => {
                 Hủy đăng ký
               </button>
             )}
+
+            {/* Manual Check-in for registered users */}
+            {isRegistered && !checkInSuccess && (
+              <div className="mt-6 rounded-2xl bg-surface-highest p-4 shadow-[0_12px_32px_rgba(33,26,20,0.06)]">
+                <p className="text-sm font-semibold text-ink mb-3">Check-in bằng mã</p>
+                <div className="flex gap-2">
+                  <input
+                    value={manualToken}
+                    onChange={(e) => setManualToken(e.target.value)}
+                    placeholder="Nhập mã check-in do ban tổ chức cung cấp"
+                    className="flex-1 rounded-xl bg-white px-4 py-3 text-sm text-ink placeholder:text-ink/40 outline-none focus:ring-2 focus:ring-primary/25"
+                  />
+                  <button
+                    onClick={async () => {
+                      if (!manualToken.trim()) return;
+                      setCheckingIn(true);
+                      try {
+                        await checkIn(id, manualToken.trim());
+                        setCheckInSuccess(true);
+                        setManualToken('');
+                      } catch (err) {
+                        alert(err.response?.data?.message || 'Check-in thất bại');
+                      } finally {
+                        setCheckingIn(false);
+                      }
+                    }}
+                    disabled={checkingIn || !manualToken.trim()}
+                    className="rounded-xl bg-accent px-4 py-3 text-sm font-semibold text-white hover:bg-accent-hover disabled:opacity-50 transition-colors"
+                  >
+                    {checkingIn ? 'Đang xử lý...' : 'Check-in'}
+                  </button>
+                </div>
+                <p className="mt-2 text-xs text-ink/50">Hoặc quét mã QR tại sự kiện để check-in</p>
+              </div>
+            )}
+
+            {checkInSuccess && (
+              <div className="mt-6 rounded-2xl bg-secondary/15 p-4 text-center">
+                <p className="font-bold text-primary">Check-in thành công!</p>
+                <p className="text-sm text-ink/60 mt-1">Điểm thưởng của bạn sẽ được cập nhật sớm.</p>
+              </div>
+            )}
           </>
         )}
 
@@ -361,6 +408,25 @@ export const EventDetail = () => {
                     >
                       Hiển thị mã QR check-in
                     </button>
+                    <div className="rounded-xl bg-surface-low p-3">
+                      <p className="text-xs text-ink/60 mb-2">Mã check-in (copy cho người tham gia):</p>
+                      <div className="flex gap-2">
+                        <input
+                          readOnly
+                          value={qrToken}
+                          className="flex-1 rounded-lg bg-white px-3 py-2 text-xs font-mono text-ink/80 outline-none"
+                        />
+                        <button
+                          onClick={() => {
+                            navigator.clipboard.writeText(qrToken);
+                            alert('Đã copy mã check-in!');
+                          }}
+                          className="rounded-lg bg-secondary px-3 py-2 text-xs font-semibold text-white hover:bg-secondary/90 transition-colors"
+                        >
+                          Copy
+                        </button>
+                      </div>
+                    </div>
                     <p className="text-xs text-ink/50">Mã QR sẽ tự động làm mới mỗi 30 giây</p>
                   </div>
                 )}

@@ -1,9 +1,10 @@
 // Private Route Guard
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useAuthContext } from '../hooks/useAuthContext';
 
 export const PrivateRoute = ({ children }) => {
   const { isAuthenticated, isInitialized } = useAuthContext();
+  const location = useLocation();
   
   if (!isInitialized) {
     // Show loading state while auth is initializing
@@ -11,7 +12,9 @@ export const PrivateRoute = ({ children }) => {
   }
   
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    // Preserve current URL to redirect back after login
+    const redirectUrl = encodeURIComponent(location.pathname + location.search);
+    return <Navigate to={`/login?redirect=${redirectUrl}`} replace />;
   }
   
   return children;
