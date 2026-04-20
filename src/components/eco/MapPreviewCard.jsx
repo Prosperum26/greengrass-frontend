@@ -1,7 +1,7 @@
 import React from 'react';
 
 export const MapPreviewCard = ({
-  title = 'Active Zones',
+  title = 'Khu vực hoạt động',
   liveCount = 0,
   upcomingCount = 0,
   onExpand,
@@ -11,7 +11,7 @@ export const MapPreviewCard = ({
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-bold uppercase tracking-widest text-primary">{title}</h3>
         <span className="bg-secondary-container text-[#5b6922] text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap">
-          {liveCount} Live / {upcomingCount} Soon
+          {liveCount} Đang diễn ra / {upcomingCount} Sắp tới
         </span>
       </div>
       <div className="relative h-48 rounded-xl overflow-hidden bg-surface-dim">
@@ -22,7 +22,7 @@ export const MapPreviewCard = ({
       </div>
       <button onClick={onExpand} className="w-full mt-4 py-2 text-xs font-bold text-primary hover:bg-primary/5 rounded-lg transition-all flex items-center justify-center gap-2">
         <span className="material-symbols-outlined text-sm">map</span>
-        Expand Ecosystem Map
+        Mở rộng Bản đồ Hệ sinh thái
       </button>
     </section>
   );

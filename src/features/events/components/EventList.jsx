@@ -16,7 +16,7 @@ export const EventList = () => {
         const { data } = await eventsApi.getAll({ page: 1, limit: 30 }, { skipAuth: true });
         setEvents(data?.data?.items || []);
       } catch (err) {
-        setError(err.response?.data?.message || "Failed to load events");
+        setError(err.response?.data?.message || "Không thể tải sự kiện");
       } finally {
         setLoading(false);
       }
@@ -27,9 +27,9 @@ export const EventList = () => {
   const onRegister = async (eventId) => {
     try {
       await eventsApi.register(eventId);
-      alert("Registered successfully");
+      alert("Đăng ký thành công");
     } catch (err) {
-      alert(err.response?.data?.message || "Registration failed");
+      alert(err.response?.data?.message || "Đăng ký thất bại");
     }
   };
 
@@ -37,13 +37,13 @@ export const EventList = () => {
     <div className="mx-auto max-w-7xl px-6 py-10">
       <div className="mb-8 flex items-baseline justify-between">
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-primary font-headline">Discover Events</h1>
-          <p className="mt-2 text-on-surface-variant">Find campus impact actions you can join today.</p>
+          <h1 className="text-3xl font-extrabold tracking-tight text-primary font-headline">Khám phá Sự kiện</h1>
+          <p className="mt-2 text-on-surface-variant">Tìm các hoạt động ý nghĩa bạn có thể tham gia ngay hôm nay.</p>
         </div>
-        <span className="text-sm font-bold text-on-surface-variant">Sort: Recently Added</span>
+        <span className="text-sm font-bold text-on-surface-variant">Sắp xếp: Mới nhất</span>
       </div>
 
-      {loading && <p className="text-on-surface-variant">Loading events...</p>}
+      {loading && <p className="text-on-surface-variant">Đang tải sự kiện...</p>}
       {error && <p className="text-error">{error}</p>}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

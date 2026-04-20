@@ -9,16 +9,16 @@ export const Footer = () => {
               <span className="text-white font-bold text-xs">G</span>
             </div>
             <span className="text-sm text-white/70">
-              GreenGrass - Green Community Platform
+              GreenGrass - Nền tảng cộng đồng xanh
             </span>
           </div>
           <div className="flex items-center gap-6 text-sm text-white/60">
-            <a href="/" className="hover:text-[#859448] transition-colors">Home</a>
-            <a href="/events" className="hover:text-[#859448] transition-colors">Events</a>
-            <a href="/leaderboard" className="hover:text-[#859448] transition-colors">Leaderboard</a>
+            <a href="/" className="hover:text-[#859448] transition-colors">Trang chủ</a>
+            <a href="/events" className="hover:text-[#859448] transition-colors">Sự kiện</a>
+            <a href="/leaderboard" className="hover:text-[#859448] transition-colors">Bảng xếp hạng</a>
           </div>
           <p className="text-sm text-white/40">
-            2026 GreenGrass. All rights reserved.
+            2026 GreenGrass. Đã đăng ký bản quyền.
           </p>
         </div>
       </div>

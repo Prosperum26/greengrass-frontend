@@ -6,19 +6,19 @@ export const MobileNav = () => {
     <div className="md:hidden fixed bottom-0 left-0 right-0 h-16 glass-nav border-t border-white/10 flex items-center justify-around px-4 z-50">
       <Link to="/events" className="flex flex-col items-center text-accent">
         <span className="material-symbols-outlined" style={{fontVariationSettings: "'FILL' 1"}}>explore</span>
-        <span className="text-[10px] font-bold mt-0.5">Explore</span>
+        <span className="text-[10px] font-bold mt-0.5">Khám phá</span>
       </Link>
       <Link to="/map" className="flex flex-col items-center text-white/60">
         <span className="material-symbols-outlined">map</span>
-        <span className="text-[10px] font-bold mt-0.5">Map</span>
+        <span className="text-[10px] font-bold mt-0.5">Bản đồ</span>
       </Link>
       <Link to="/leaderboard" className="flex flex-col items-center text-white/60">
         <span className="material-symbols-outlined">eco</span>
-        <span className="text-[10px] font-bold mt-0.5">Impact</span>
+        <span className="text-[10px] font-bold mt-0.5">Tác động</span>
       </Link>
       <Link to="/profile" className="flex flex-col items-center text-white/60">
         <span className="material-symbols-outlined">person</span>
-        <span className="text-[10px] font-bold mt-0.5">Profile</span>
+        <span className="text-[10px] font-bold mt-0.5">Hồ sơ</span>
       </Link>
     </div>
   );

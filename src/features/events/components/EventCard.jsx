@@ -20,17 +20,17 @@ export const EventCard = memo(({ event, onRegister, onDetail }) => {
             {verified && (
               <span className="bg-white/90 backdrop-blur text-primary text-[10px] font-extrabold px-2.5 py-1 rounded-lg flex items-center gap-1">
                 <span className="material-symbols-outlined text-[14px]" style={{fontVariationSettings: "'FILL' 1"}}>verified</span>
-                VERIFIED
+                ĐÃ XÁC THỰC
               </span>
             )}
             <span className="bg-primary/90 backdrop-blur text-white text-[10px] font-extrabold px-2.5 py-1 rounded-lg">
-              {points} PTS
+              {points} ĐIỂM
             </span>
           </div>
           
           <div className="absolute bottom-4 right-4">
              <span className={`${status === 'ONGOING' ? 'bg-accent' : 'bg-primary-container'} rounded-full px-3 py-1 text-[10px] font-bold text-white uppercase tracking-widest backdrop-blur-md`}>
-                {status || 'UPCOMING'}
+                {status === 'UPCOMING' ? 'SẮP DIỄN RA' : status === 'ONGOING' ? 'ĐANG DIỄN RA' : status === 'COMPLETED' ? 'ĐÃ KẾT THÚC' : status}
               </span>
           </div>
         </div>
@@ -67,7 +67,7 @@ export const EventCard = memo(({ event, onRegister, onDetail }) => {
             onClick={() => onRegister(event.id)}
             className="w-full bg-accent text-white py-3 rounded-xl font-bold text-sm tracking-wide hover:shadow-lg hover:-translate-y-0.5 transition-all"
           >
-            Join Event
+            Tham gia sự kiện
           </button>
         )}
         <button
@@ -75,7 +75,7 @@ export const EventCard = memo(({ event, onRegister, onDetail }) => {
           onClick={() => onDetail?.(event.id)}
           className="w-full bg-surface-container-highest text-primary py-3 rounded-xl font-bold text-sm tracking-wide hover:bg-primary/10 transition-colors"
         >
-          Details
+          Chi tiết
         </button>
       </div>
     </article>

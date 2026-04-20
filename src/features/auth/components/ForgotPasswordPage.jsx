@@ -59,7 +59,7 @@ const ForgotPasswordPage = () => {
 
             {/* Tiêu đề */}
             <h1 className="text-[36px] font-bold mb-10 text-black tracking-wide text-center">
-                Forgot Password
+                Quên mật khẩu
             </h1>
 
             {/* Khung Form (Kích thước max-w-[500px] giống hệt form Login cho cân đối) */}
@@ -93,13 +93,12 @@ const ForgotPasswordPage = () => {
                         className={`w-full mt-2 py-3.5 text-white text-[15px] font-medium rounded-md transition-colors
                             ${isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#222222] hover:bg-black'}`}
                     >
-                        {isLoading ? 'Đang gửi...' : 'Send'}
+                        {isLoading ? 'Đang gửi...' : 'Gửi'}
                     </button>
                 </form>
 
                 {/* Các liên kết bên dưới */}
                 <div className="mt-6 flex flex-col items-start gap-3">
-                    {/* <a href="#" className="text-[14px] text-gray-600 hover:text-black underline underline-offset-4 decoration-1">
                         Đăng nhập
                     </a><a href="#" className="text-[14px] text-gray-600 hover:text-black underline underline-offset-4 decoration-1">
                         Bạn chưa có tài khoản?

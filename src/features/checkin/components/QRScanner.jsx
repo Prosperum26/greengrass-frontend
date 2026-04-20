@@ -72,7 +72,7 @@ export const QRScanner = ({ onScan, onError, className = '' }) => {
             </>
           ) : (
             <div className="h-full w-full flex items-center justify-center text-white/80">
-              Camera unavailable
+              Không có camera
             </div>
           )}
         </div>
@@ -85,7 +85,7 @@ export const QRScanner = ({ onScan, onError, className = '' }) => {
             onClick={stopScanning}
             className="flex-1 rounded-2xl bg-surface-highest px-4 py-3 text-sm font-bold text-primary hover:bg-surface-high"
           >
-            Stop scanning
+            Dừng quét
           </button>
         ) : (
           <button
@@ -93,13 +93,13 @@ export const QRScanner = ({ onScan, onError, className = '' }) => {
             onClick={startScanning}
             className="flex-1 rounded-2xl bg-primary px-4 py-3 text-sm font-bold text-white shadow-[0_18px_48px_rgba(33,26,20,0.10)]"
           >
-            Start scanning
+            Bắt đầu quét
           </button>
         )}
       </div>
 
       <p className="mt-3 text-center text-xs font-medium text-ink/60">
-        Align the QR code within the frame.
+        Đưa mã QR vào khung hình để quét.
       </p>
     </section>
   );

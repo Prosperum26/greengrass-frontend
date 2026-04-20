@@ -91,9 +91,8 @@ export const EventDetail = () => {
           }
         }
       } catch (err) {
-        const msg = err.response?.data?.message || 'Failed to load event';
-        setError(msg);
-        addError(msg);
+        setError(err.response?.data?.message || 'Không thể tải sự kiện');
+        addError(err.response?.data?.message || 'Không thể tải sự kiện');
       }
     };
     load();
@@ -182,7 +181,7 @@ export const EventDetail = () => {
   };
 
   const onUnregister = async () => {
-    if (!window.confirm('Are you sure you want to cancel your registration?')) return;
+    if (!window.confirm('Bạn có chắc muốn hủy đăng ký?')) return;
     try {
       await eventsApi.cancelRegister(id);
       setIsRegistered(false);
@@ -191,7 +190,7 @@ export const EventDetail = () => {
         setParticipants(participantsRes.data?.data?.participants || []);
       }
     } catch (err) {
-      const msg = err.response?.data?.message || 'Cancel registration failed';
+      const msg = err.response?.data?.message || 'Hủy đăng ký thất bại';
       addError(msg);
     }
   };
@@ -229,27 +228,27 @@ export const EventDetail = () => {
   };
 
   const handleDeleteEvent = async () => {
-    if (!window.confirm('Are you sure you want to delete this event? This action cannot be undone.')) return;
+    if (!window.confirm('Bạn có chắc muốn xóa sự kiện này? Hành động này không thể hoàn tác.')) return;
     
     setIsDeleting(true);
     try {
       await eventsApi.delete(id);
       navigate('/events');
     } catch (err) {
-      const msg = err.response?.data?.message || 'Failed to delete event';
+      const msg = err.response?.data?.message || 'Không thể xóa sự kiện';
       addError(msg);
       setIsDeleting(false);
     }
   };
 
-  if (!event && !error) return <div className="min-h-screen bg-surface p-8 text-ink">Loading...</div>;
+  if (!event && !error) return <div className="min-h-screen bg-surface p-8 text-ink">Đang tải...</div>;
 
   return (
     <div className="min-h-screen bg-surface p-4 md:p-10">
       <div className="mx-auto max-w-6xl rounded-3xl bg-surface-high p-6 text-ink shadow-[0_24px_70px_rgba(33,26,20,0.10)] md:p-8">
         <button onClick={() => navigate('/events')} className="mb-5 inline-flex items-center gap-2 rounded-xl bg-surface-highest px-4 py-2 text-sm font-medium hover:bg-surface-high">
           <span className="material-symbols-outlined text-base">arrow_back</span>
-          Back to events
+          Quay lại sự kiện
         </button>
         {error && <p className="mb-4 rounded-xl bg-accent/10 px-4 py-3 text-accent-hover">{error}</p>}
         {event && (
@@ -265,7 +264,7 @@ export const EventDetail = () => {
             <div className="mt-6 flex flex-wrap items-center gap-3">
               <span className={`rounded-full px-3 py-1 text-xs font-bold tracking-wide ${statusTone}`}>{event.status}</span>
               <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-bold tracking-wide text-primary">
-                {event.points} points
+                {event.points} điểm
               </span>
             </div>
 
@@ -274,27 +273,27 @@ export const EventDetail = () => {
 
             <div className="mt-6 grid gap-4 md:grid-cols-3">
               <div className="rounded-2xl bg-surface-highest p-4 shadow-[0_12px_32px_rgba(33,26,20,0.06)]">
-                <p className="text-xs font-semibold uppercase tracking-wide text-ink/45">Location</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-ink/45">Địa điểm</p>
                 <p className="mt-2 font-medium text-ink">{event.location}</p>
               </div>
               <div className="rounded-2xl bg-surface-highest p-4 shadow-[0_12px_32px_rgba(33,26,20,0.06)]">
-                <p className="text-xs font-semibold uppercase tracking-wide text-ink/45">Start time</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-ink/45">Thời gian bắt đầu</p>
                 <p className="mt-2 font-medium text-ink">{new Date(event.startTime).toLocaleString()}</p>
               </div>
               <div className="rounded-2xl bg-surface-highest p-4 shadow-[0_12px_32px_rgba(33,26,20,0.06)]">
-                <p className="text-xs font-semibold uppercase tracking-wide text-ink/45">End time</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-ink/45">Thời gian kết thúc</p>
                 <p className="mt-2 font-medium text-ink">{new Date(event.endTime).toLocaleString()}</p>
               </div>
             </div>
 
             {canRegister && !isRegistered && (
               <button onClick={onRegister} className="mt-6 rounded-xl bg-accent px-6 py-3 text-sm font-semibold text-white hover:bg-accent-hover shadow-[0_20px_50px_rgba(33,26,20,0.10)]">
-                Register Event
+                Đăng ký sự kiện
               </button>
             )}
             {canRegister && isRegistered && (
               <button onClick={onUnregister} className="mt-6 rounded-xl bg-secondary px-6 py-3 text-sm font-semibold text-white hover:bg-secondary/90 shadow-[0_20px_50px_rgba(33,26,20,0.10)]">
-                Cancel Registration
+                Hủy đăng ký
               </button>
             )}
           </>
@@ -302,9 +301,9 @@ export const EventDetail = () => {
 
         {canViewParticipants && (
           <section className="mt-10">
-            <h2 className="mb-4 text-xl font-semibold font-display text-black">Participants</h2>
+            <h2 className="mb-4 text-xl font-semibold font-display text-black">Người tham gia</h2>
             <div className="space-y-2">
-              {participants.length === 0 && <p className="text-sm text-ink/60">No participants yet.</p>}
+              {participants.length === 0 && <p className="text-sm text-ink/60">Chưa có người tham gia.</p>}
               {participants.map((item) => (
                 <div key={item.userId} className="rounded-xl bg-surface-highest p-4 text-sm shadow-[0_16px_44px_rgba(33,26,20,0.06)]">
                   {item.fullName || item.email || item.userId} - {item.status}
@@ -322,7 +321,7 @@ export const EventDetail = () => {
               disabled={isDeleting}
               className="rounded-xl bg-accent px-6 py-3 text-sm font-semibold text-white hover:bg-accent-hover shadow-[0_20px_50px_rgba(33,26,20,0.10)] disabled:opacity-50"
             >
-              {isDeleting ? 'Deleting...' : 'Delete Event'}
+              {isDeleting ? 'Đang xóa...' : 'Xóa sự kiện'}
             </button>
           </div>
         )}

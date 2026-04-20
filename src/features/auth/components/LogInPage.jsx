@@ -32,7 +32,7 @@ const LoginPage = () => {
         <div className="flex min-h-screen items-center justify-center bg-surface px-4 py-12">
             <div className="w-full max-w-[520px] rounded-2xl bg-surface-high p-8 shadow-[0_32px_80px_rgba(33,26,20,0.10)]">
             <h1 className="mb-8 text-center text-3xl font-semibold uppercase text-ink font-display tracking-tight">
-                Log In
+                Đăng nhập
             </h1>
 
                 <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
@@ -53,7 +53,7 @@ const LoginPage = () => {
                     </div>
 
                     <div className="flex flex-col gap-1 items-start">
-                        <label htmlFor="password" className="text-xs font-semibold tracking-widest text-ink/70 uppercase">Password</label>
+                        <label htmlFor="password" className="text-xs font-semibold tracking-widest text-ink/70 uppercase">Mật khẩu</label>
                         <input
                             id="password"
                             type="password"
@@ -79,13 +79,13 @@ const LoginPage = () => {
                         disabled={isLoading || isSubmitting}
                         className={`mt-2 w-full rounded-xl py-3 text-sm font-medium text-white transition-colors ${isLoading || isSubmitting ? 'cursor-not-allowed bg-primary-light/60' : 'bg-primary hover:bg-primary-light'} shadow-[0_20px_50px_rgba(33,26,20,0.10)]`}
                     >
-                        {isLoading || isSubmitting ? 'Đang xử lý...' : 'Student / Organizer Sign In'}
+                        {isLoading || isSubmitting ? 'Đang xử lý...' : 'Sinh viên / Ban tổ chức Đăng nhập'}
                     </button>
                 </form>
 
                 <div className="mt-2 flex flex-col items-start gap-2">
                     <Link to="/forgot-password" className="text-sm text-ink/60 underline underline-offset-4 hover:text-ink">
-                        Forgot password?
+                        Quên mật khẩu?
                     </Link>
                     <Link to="/register" className="text-sm text-ink/60 underline underline-offset-4 hover:text-ink">
                         Bạn chưa có tài khoản?

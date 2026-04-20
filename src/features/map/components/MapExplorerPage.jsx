@@ -5,9 +5,9 @@ import GreenMap from './GreenMap';
 const WALKING_SPEED_KMH = 4.8;
 const BIKING_SPEED_KMH = 15;
 const GEOLOCATION_UNSUPPORTED_MESSAGE =
-  'Trình duyệt không hỗ trợ định vị..';
+  'Trình duyệt không hỗ trợ định vị.';
 const GEOLOCATION_PERMISSION_MESSAGE =
-  'Chưa bật quyền vị trí, thời gian di chuyển đang ước tính.';
+  'Chưa bật quyền vị trí, thời gian di chuyển đang được ước tính.';
 
 const toRadians = (value) => (value * Math.PI) / 180;
 
@@ -167,19 +167,19 @@ export const MapExplorerPage = () => {
       <div className="pointer-events-none absolute left-0 top-0 bottom-0 z-10 flex w-full flex-col gap-4 p-4 md:w-[340px] md:p-5">
         <div className="pointer-events-auto rounded-2xl bg-surface/85 p-4 shadow-[24px_0_38px_rgba(33,26,20,0.05)] backdrop-blur-xl">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="font-display text-base font-bold text-primary">Route Suggestion</h2>
-            <span className="rounded bg-secondary/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-secondary">Eco-Path</span>
+            <h2 className="font-display text-base font-bold text-primary">Gợi ý Đường đi</h2>
+            <span className="rounded bg-secondary/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-secondary">Đường xanh</span>
           </div>
           <p className="mb-3 text-xs text-ink/60">
-            {locationError || 'Æ¯á»›c tĂ­nh dá»±a trĂªn vá»‹ trĂ­ hiá»‡n táº¡i cá»§a báº¡n.'}
+            {locationError || 'Ước tính dựa trên vị trí hiện tại của bạn.'}
           </p>
           <div className="space-y-3">
             <div className="flex items-center gap-4 rounded-xl bg-surface-low p-3">
               <div className="rounded-lg bg-primary px-2 py-2 text-white">đŸ¶</div>
               <div className="flex-1">
-                <p className="text-xs font-medium text-ink/60">Walking Distance</p>
+                <p className="text-xs font-medium text-ink/60">Đi bộ</p>
                 <p className="text-sm font-bold text-ink">
-                  {routeStats ? `${routeStats.walkingMinutes} mins` : '-'}
+                  {routeStats ? `${routeStats.walkingMinutes} phút` : '-'}
                 </p>
               </div>
               <div className="text-sm font-bold text-secondary">
@@ -189,9 +189,9 @@ export const MapExplorerPage = () => {
             <div className="flex items-center gap-4 rounded-xl bg-surface-low p-3 ring-2 ring-primary/10">
               <div className="rounded-lg bg-primary px-2 py-2 text-white">đŸ²</div>
               <div className="flex-1">
-                <p className="text-xs font-medium text-ink/60">Biking Distance</p>
+                <p className="text-xs font-medium text-ink/60">Đi xe đạp</p>
                 <p className="text-sm font-bold text-ink">
-                  {routeStats ? `${routeStats.bikingMinutes} mins` : '-'}
+                  {routeStats ? `${routeStats.bikingMinutes} phút` : '-'}
                 </p>
               </div>
               <div className="text-sm font-bold text-secondary">
@@ -203,24 +203,24 @@ export const MapExplorerPage = () => {
             type="button"
             className="mt-4 w-full rounded-xl bg-primary py-2.5 text-sm font-bold text-white shadow-[0_18px_48px_rgba(33,26,20,0.08)]"
           >
-            {selected ? `Navigate to ${selected.name || selected.title}` : 'Start Navigation'}
+            {selected ? `Chỉ đường đến ${selected.name || selected.title}` : 'Bắt đầu chỉ đường'}
           </button>
         </div>
 
         <div className="pointer-events-auto rounded-2xl bg-surface/85 p-4 shadow-[24px_0_38px_rgba(33,26,20,0.05)] backdrop-blur-xl">
-          <h3 className="mb-4 text-[10px] font-bold uppercase tracking-widest text-ink/60">Map Layers</h3>
+          <h3 className="mb-4 text-[10px] font-bold uppercase tracking-widest text-ink/60">Lớp bản đồ</h3>
           <div className="grid grid-cols-1 gap-2">
             <label className="flex cursor-pointer items-center gap-3 rounded-lg p-2 transition-colors hover:bg-surface-highest">
               <input checked={enabledLayers.events} onChange={() => toggleLayer('events')} className="rounded border-transparent bg-surface-highest text-primary focus:ring-primary/30" type="checkbox" />
-              <span className="text-sm font-medium">Events ({markers.length})</span>
+              <span className="text-sm font-medium">Sự kiện ({markers.length})</span>
             </label>
             <label className="flex cursor-not-allowed items-center gap-3 rounded-lg p-2 text-ink/50">
               <input checked={enabledLayers.recycling} onChange={() => toggleLayer('recycling')} className="rounded border-transparent bg-surface-highest text-primary focus:ring-primary/30" type="checkbox" />
-              <span className="text-sm font-medium">Recycling Points (coming soon)</span>
+              <span className="text-sm font-medium">Điểm tái chế (sắp có)</span>
             </label>
             <label className="flex cursor-not-allowed items-center gap-3 rounded-lg p-2 text-ink/50">
               <input checked={enabledLayers.ecoStations} onChange={() => toggleLayer('ecoStations')} className="rounded border-transparent bg-surface-highest text-primary focus:ring-primary/30" type="checkbox" />
-              <span className="text-sm font-medium">Eco Stations (coming soon)</span>
+              <span className="text-sm font-medium">Trạm xanh (sắp có)</span>
             </label>
           </div>
         </div>
@@ -230,29 +230,29 @@ export const MapExplorerPage = () => {
         <div className="space-y-6 p-6">
           <div>
             <span className="inline-flex rounded bg-accent px-2 py-1 text-[10px] font-extrabold uppercase tracking-widest text-white">
-              Selected
+              Đã chọn
             </span>
             <h2 className="font-display mt-3 text-2xl font-bold leading-tight text-ink">
               {selected?.name || selected?.title || 'Eco Point'}
             </h2>
             <p className="mt-2 text-sm text-ink/60">
-              {selected?.type || selected?.category || 'Green station'}
+              {selected?.type || selected?.category || 'Trạm xanh'}
             </p>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="rounded-2xl bg-surface-low p-4">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-ink/50">Latitude</p>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-ink/50">Vĩ độ</p>
               <p className="text-sm font-bold">{selected?.latitude?.toFixed?.(4) ?? selected?.lat?.toFixed?.(4) ?? '-'}</p>
             </div>
             <div className="rounded-2xl bg-surface-low p-4">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-ink/50">Longitude</p>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-ink/50">Kinh độ</p>
               <p className="text-sm font-bold">{selected?.longitude?.toFixed?.(4) ?? selected?.lng?.toFixed?.(4) ?? '-'}</p>
             </div>
           </div>
 
           <div>
-            <h3 className="mb-3 text-sm font-bold uppercase tracking-widest">Nearby Points</h3>
+            <h3 className="mb-3 text-sm font-bold uppercase tracking-widest">Điểm gần đây</h3>
             <div className="space-y-3">
               {(nearbyMarkers.length > 0 ? nearbyMarkers : markers).slice(0, 6).map((p) => (
                 <button
@@ -263,8 +263,8 @@ export const MapExplorerPage = () => {
                     p.id === selectedId ? 'bg-surface-highest' : 'bg-surface-low hover:bg-surface-highest'
                   }`}
                 >
-                  <p className="font-bold">{p.name || p.title || 'Eco Point'}</p>
-                  <p className="text-sm text-ink/60">{p.type || p.category || 'Green station'}</p>
+                  <p className="font-bold">{p.name || p.title || 'Điểm xanh'}</p>
+                  <p className="text-sm text-ink/60">{p.type || p.category || 'Trạm xanh'}</p>
                 </button>
               ))}
             </div>

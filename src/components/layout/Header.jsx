@@ -28,7 +28,7 @@ export const Header = memo(() => {
           <span className="material-symbols-outlined text-white/60 text-sm">search</span>
           <input 
             className="bg-transparent border-none focus:ring-0 text-sm placeholder-white/40 w-full ml-2 outline-none" 
-            placeholder="Search projects..." 
+            placeholder="Tìm kiếm sự kiện..." 
             type="text" 
           />
         </div>
@@ -36,10 +36,10 @@ export const Header = memo(() => {
 
       <div className="flex items-center gap-6">
         <div className="hidden md:flex items-center gap-6">
-          <Link to="/events" className="text-accent font-bold text-sm tracking-wide">Explore</Link>
-          <Link to="/profile" className="text-white/80 hover:bg-white/10 transition-colors text-sm px-3 py-1 rounded-full">My Impact</Link>
+          <Link to="/events" className="text-accent font-bold text-sm tracking-wide">Khám phá</Link>
+          <Link to="/profile" className="text-white/80 hover:bg-white/10 transition-colors text-sm px-3 py-1 rounded-full">Đóng góp của tôi</Link>
           <Link to="/leafia" className="text-white/80 hover:bg-white/10 transition-colors text-sm px-3 py-1 rounded-full">Leafia</Link>
-          <Link to="/leaderboard" className="text-white/80 hover:bg-white/10 transition-colors text-sm px-3 py-1 rounded-full">LeaderBoard</Link>
+          <Link to="/leaderboard" className="text-white/80 hover:bg-white/10 transition-colors text-sm px-3 py-1 rounded-full">Bảng xếp hạng</Link>
         </div>
         
         <div className="flex items-center gap-4 border-l border-white/10 pl-6">
@@ -49,8 +49,8 @@ export const Header = memo(() => {
           
           {!isAuthenticated ? (
              <div className="flex items-center gap-3 text-sm font-bold">
-                <Link to="/login" className="text-white/80 hover:text-white transition-colors">Login</Link>
-                <Link to="/register" className="bg-accent py-1.5 px-4 rounded-full hover:bg-opacity-90 transition-all text-white">Sign Up</Link>
+                <Link to="/login" className="text-white/80 hover:text-white transition-colors">Đăng nhập</Link>
+                <Link to="/register" className="bg-accent py-1.5 px-4 rounded-full hover:bg-opacity-90 transition-all text-white">Đăng ký</Link>
              </div>
           ) : (
             <div className="relative group">
@@ -62,15 +62,15 @@ export const Header = memo(() => {
                 <div className="bg-[#2a241c] border border-white/10 rounded-xl shadow-lg py-1 overflow-hidden">
                   {role === 'ADMIN' ? (
                     <Link to="/admin/organizer-requests" className="block px-4 py-2 text-sm text-accent font-bold hover:bg-white/5 transition-colors">
-                      Pending Approvals
+                      Yêu cầu chờ duyệt
                     </Link>
                   ) : (
                     <Link to="/profile" className="block px-4 py-2 text-sm text-white/80 font-bold hover:bg-white/5 transition-colors">
-                      My Profile
+                      Hồ sơ của tôi
                     </Link>
                   )}
                   <button onClick={handleLogout} className="block w-full text-left px-4 py-3 text-sm text-red-400 hover:bg-white/5 transition-colors font-bold border-t border-white/5">
-                    Log out
+                    Đăng xuất
                   </button>
                 </div>
               </div>

@@ -25,8 +25,8 @@ const OrgProfilePage = () => {
 
         <section className="rounded-2xl bg-surface-highest p-6 shadow-[0_24px_70px_rgba(33,26,20,0.08)] flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-semibold text-primary">{organizer?.fullName || 'Organizer profile'}</h1>
-            <p className="mt-2 text-ink/75">Organizer management dashboard for events and community operation.</p>
+            <h1 className="text-2xl font-semibold text-primary">{organizer?.fullName || 'Hồ sơ Ban tổ chức'}</h1>
+            <p className="mt-2 text-ink/75">Bảng điều khiển quản lý sự kiện và hoạt động cộng đồng.</p>
           </div>
           <button 
             onClick={() => navigate('/organizer/events/create')}

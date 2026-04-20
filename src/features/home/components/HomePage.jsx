@@ -68,13 +68,13 @@ export const HomePage = () => {
         <div className="relative z-10 max-w-lg space-y-4">
           <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md px-3 py-1 rounded-full border border-white/20">
             <span className="w-2 h-2 bg-accent rounded-full"></span>
-            <span className="text-[10px] font-bold uppercase tracking-[0.1em]">Featured Event</span>
+            <span className="text-[10px] font-bold uppercase tracking-[0.1em]">Sự kiện nổi bật</span>
           </div>
-          <h1 className="text-4xl md:text-5xl font-extrabold leading-tight tracking-tight">The Earth doesn't have a reset button.</h1>
-          <p className="text-white/80 font-medium text-lg leading-relaxed">Join green events. Earn points and lead your campus leaderboard.</p>
+          <h1 className="text-4xl md:text-5xl font-extrabold leading-tight tracking-tight">Trái đất không có nút reset.</h1>
+          <p className="text-white/80 font-medium text-lg leading-relaxed">Tham gia sự kiện xanh. Tích điểm và dẫn đầu bảng xếp hạng cộng đồng.</p>
           <div className="pt-4 flex gap-4">
-            <button onClick={() => navigate('/events')} className="bg-accent text-white px-8 py-3.5 rounded-xl font-bold text-sm shadow-xl shadow-orange-900/20 hover:scale-105 transition-transform">Join Global Action</button>
-            <button onClick={() => navigate('/leaderboard')} className="bg-white/10 backdrop-blur-md text-white px-6 py-3.5 rounded-xl font-bold text-sm border border-white/20 hover:bg-white/20 transition-all">Learn More</button>
+            <button onClick={() => navigate('/events')} className="bg-accent text-white px-8 py-3.5 rounded-xl font-bold text-sm shadow-xl shadow-orange-900/20 hover:scale-105 transition-transform">Tham gia Hành động</button>
+            <button onClick={() => navigate('/leaderboard')} className="bg-white/10 backdrop-blur-md text-white px-6 py-3.5 rounded-xl font-bold text-sm border border-white/20 hover:bg-white/20 transition-all">Tìm hiểu thêm</button>
           </div>
         </div>
       </section>
@@ -97,9 +97,9 @@ export const HomePage = () => {
 
         <section className="flex-grow">
           <div className="flex items-baseline justify-between mb-8">
-            <h2 className="text-2xl font-extrabold tracking-tight text-primary">Discover Events</h2>
+            <h2 className="text-2xl font-extrabold tracking-tight text-primary">Khám phá Sự kiện</h2>
             <button onClick={() => navigate('/events')} className="text-sm font-bold text-on-surface-variant flex items-center gap-1 cursor-pointer hover:text-primary transition-colors border-none bg-transparent">
-              Sort: Recently Added <span className="material-symbols-outlined text-lg">expand_more</span>
+              Sắp xếp: Mới nhất <span className="material-symbols-outlined text-lg">expand_more</span>
             </button>
           </div>
 
@@ -113,12 +113,12 @@ export const HomePage = () => {
             <article className="bg-primary text-white rounded-3xl p-8 flex flex-col justify-between overflow-hidden relative">
               <div className="absolute -right-12 -top-12 w-48 h-48 bg-secondary-container/20 rounded-full blur-3xl"></div>
               <div className="relative z-10">
-                <h3 className="text-2xl font-bold mb-4 font-headline">Don't see anything for you?</h3>
-                <p className="text-white/70 text-sm font-medium leading-relaxed max-w-[200px]">Organize your own impact event and earn triple the points this month.</p>
+                <h3 className="text-2xl font-bold mb-4 font-headline">Chưa tìm thấy sự kiện phù hợp?</h3>
+                <p className="text-white/70 text-sm font-medium leading-relaxed max-w-[200px]">Tổ chức sự kiện tác động của riêng bạn và nhận gấp ba điểm thưởng tháng này.</p>
               </div>
               <button onClick={() => navigate('/organizer/events/create')} className="relative z-10 mt-8 bg-white text-primary w-full py-3.5 rounded-xl font-bold text-sm hover:bg-secondary-container transition-colors flex items-center justify-center gap-2">
                 <span className="material-symbols-outlined">add_circle</span>
-                Start New Event
+                Tạo Sự kiện Mới
               </button>
             </article>
           </div>

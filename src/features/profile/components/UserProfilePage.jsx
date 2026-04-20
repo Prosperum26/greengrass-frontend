@@ -69,8 +69,8 @@ const UserProfilePage = () => {
   const _joinedEvents = useMemo(() => events.filter((item) => item.status !== 'COMPLETED'), [events]);
   const _completedEvents = useMemo(() => events.filter((item) => item.status === 'COMPLETED'), [events]);
 
-  if (loading) return <div className="min-h-screen bg-surface p-6 text-ink">Loading profile...</div>;
-  if (!user) return <div className="min-h-screen bg-surface p-6 text-ink">No user profile</div>;
+  if (loading) return <div className="min-h-screen bg-surface p-6 text-ink">Đang tải hồ sơ...</div>;
+  if (!user) return <div className="min-h-screen bg-surface p-6 text-ink">Không có hồ sơ người dùng</div>;
 
   const totalPoints = user.totalPoints ?? 0;
   const ecoLevel = Math.max(1, Math.floor(user.totalPoints / 100) + 1);
@@ -132,18 +132,18 @@ const UserProfilePage = () => {
             <div className="space-y-2 pt-2">
               <h1 className="text-4xl font-extrabold tracking-tight font-display text-primary">{user.fullName}</h1>
               <p className="text-ink font-medium leading-relaxed">
-                {user.bio || 'Dedicated eco-hero. Transforming the campus one action at a time.'}
+                {user.bio || 'Chiến binh xanh tận tâm. Biến đổi cộng đồng từng hành động một.'}
               </p>
             </div>
 
             <div className="rounded-[2rem] bg-surface-highest p-6 space-y-4 shadow-[0_18px_48px_rgba(33,26,20,0.06)]">
               <div className="flex justify-between items-end">
                 <div>
-                  <span className="uppercase text-xs tracking-widest text-ink/90 font-bold">Point Milestone</span>
+                  <span className="uppercase text-xs tracking-widest text-ink/90 font-bold">Cột mốc Điểm</span>
                   <h3 className="text-2xl font-display font-bold text-primary">
                     {nextPointMilestone
-                      ? `Next: ${nextPointMilestone} pts`
-                      : 'Top milestone reached'}
+                      ? `Tiếp theo: ${nextPointMilestone} điểm`
+                      : 'Đã đạt cột mốc cao nhất'}
                   </h3>
                 </div>
                 <span className="text-secondary text-3xl">🏁</span>
@@ -187,38 +187,38 @@ const UserProfilePage = () => {
               </div>
               <p className="text-sm text-ink/90">
                 {nextPointMilestone
-                  ? `${Math.max(nextPointMilestone - totalPoints, 0)} points to unlock next milestone`
-                  : 'You unlocked all configured point milestones.'}
+                  ? `Còn ${Math.max(nextPointMilestone - totalPoints, 0)} điểm để mở khóa cột mốc tiếp theo`
+                  : 'Bạn đã mở khóa tất cả các cột mốc điểm.'}
               </p>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="rounded-3xl bg-surface-highest p-5 shadow-[0_16px_44px_rgba(33,26,20,0.06)]">
                 <span className="text-3xl font-black text-primary">{user.totalPoints.toLocaleString()}</span>
-                <p className="text-[10px] font-bold uppercase tracking-wider text-ink/90">Impact Points</p>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-ink/90">Điểm tác động</p>
               </div>
               <div className="rounded-3xl bg-surface-highest p-5 shadow-[0_16px_44px_rgba(33,26,20,0.06)]">
                 <div className="flex items-center gap-2">
                   <span className="text-xl">🎯</span>
                   <span className="text-3xl font-black text-ink">{totalEventsJoined}</span>
                 </div>
-                <p className="text-[10px] font-bold uppercase tracking-wider text-ink/90">Events Joined</p>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-ink/90">Sự kiện đã tham gia</p>
               </div>
             </div>
           </div>
 
           <div className="lg:col-span-8 space-y-12">
             <section>
-              <h2 className="mb-6 text-2xl font-extrabold font-display text-primary">Event Milestones</h2>
+              <h2 className="mb-6 text-2xl font-extrabold font-display text-primary">Cột mốc Sự kiện</h2>
               <div className="rounded-[2rem] bg-surface-highest p-6 shadow-[0_18px_48px_rgba(33,26,20,0.06)]">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <p className="text-sm font-semibold text-ink/90">
                     {nextMilestone
-                      ? `Next milestone: ${nextMilestone} events (${Math.max(nextMilestone - totalEventsJoined, 0)} to go)`
-                      : 'You reached the top milestone (50 events)!'}
+                      ? `Cột mốc tiếp theo: ${nextMilestone} sự kiện (còn ${Math.max(nextMilestone - totalEventsJoined, 0)})`
+                      : 'Bạn đã đạt cột mốc cao nhất (50 sự kiện)!'}
                   </p>
                   <p className="text-xs font-bold uppercase tracking-wider text-ink/75">
-                    {totalEventsJoined} total events
+                    {totalEventsJoined} sự kiện tổng cộng
                   </p>
                 </div>
                 <div className="mt-4 h-3 w-full overflow-hidden rounded-full bg-surface-low">
@@ -239,7 +239,7 @@ const UserProfilePage = () => {
                       >
                         <p className="text-base font-black">{milestone}</p>
                         <p className="text-[10px] font-bold uppercase tracking-wider">
-                          {unlocked ? 'Unlocked' : 'Locked'}
+                          {unlocked ? 'Đã mở khóa' : 'Đã khóa'}
                         </p>
                       </div>
                     );
@@ -250,8 +250,8 @@ const UserProfilePage = () => {
 
             <section>
               <div className="mb-6 flex items-center justify-between">
-                <h2 className="text-2xl font-extrabold font-display text-primary">Earned Badges</h2>
-                <button type="button" className="text-primary font-bold text-sm hover:underline">View All</button>
+                <h2 className="text-2xl font-extrabold font-display text-primary">Huy hiệu đã nhận</h2>
+                <button type="button" className="text-primary font-bold text-sm hover:underline">Xem tất cả</button>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
                 {(points?.badges || []).slice(0, 4).map((badge) => (
@@ -264,14 +264,14 @@ const UserProfilePage = () => {
                       )}
                     </div>
                     <p className="font-display font-bold text-sm">{badge.name}</p>
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-ink/90">Unlocked</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-ink/90">Đã mở khóa</span>
                   </div>
                 ))}
               </div>
             </section>
 
             <section>
-              <h2 className="mb-8 text-2xl font-extrabold font-display text-primary">Environmental Journey</h2>
+              <h2 className="mb-8 text-2xl font-extrabold font-display text-primary">Hành trình Xanh</h2>
               <div className="relative space-y-0">
                 <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-surface-highest" />
                 {events.slice(0, 6).map((item) => (

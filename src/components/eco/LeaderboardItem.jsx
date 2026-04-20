@@ -22,12 +22,12 @@ export const LeaderboardItem = ({ rank, name, subtitle, points, progressLabel })
         <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/70">
           <div className="h-full w-2/3 rounded-full bg-secondary" />
         </div>
-        {progressLabel && <span className="text-[10px] font-bold uppercase tracking-widest text-secondary">{progressLabel}</span>}
+        {progressLabel && <span className="text-[10px] font-bold uppercase tracking-widest text-secondary">{progressLabel === 'Points contribution' ? 'Đóng góp điểm' : progressLabel}</span>}
       </div>
 
       <div className="text-right">
         <p className="font-black text-primary">{points?.toLocaleString?.() ?? points}</p>
-        <p className="text-[10px] font-bold uppercase tracking-widest text-ink/40">Impact Pts</p>
+        <p className="text-[10px] font-bold uppercase tracking-widest text-ink/40">Điểm tác động</p>
       </div>
     </div>
   );
