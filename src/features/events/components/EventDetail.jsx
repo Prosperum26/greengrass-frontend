@@ -28,7 +28,10 @@ export const EventDetail = () => {
   const [checkingIn, setCheckingIn] = useState(false);
   const [checkInSuccess, setCheckInSuccess] = useState(false);
   const { checkIn } = useCheckIn();
+  const [updatingCover, setUpdatingCover] = useState(false);
+  const [coverPreview, setCoverPreview] = useState(null);
   const fileInputRef = useRef(null);
+  const coverInputRef = useRef(null);
   const qrWriterRef = useRef(null);
 
   const userId = useMemo(() => getUserId(), [getUserId]);
@@ -248,6 +251,43 @@ export const EventDetail = () => {
     }
   };
 
+  const handleCoverSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      addError('File quá lớn. Vui lòng chọn ảnh < 5MB');
+      return;
+    }
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      addError('Định dạng ảnh không hợp lệ. Chỉ chấp nhận JPG, PNG, WEBP');
+      return;
+    }
+    setCoverPreview(URL.createObjectURL(file));
+    void handleCoverUpdate(file);
+  };
+
+  const handleCoverUpdate = async (file) => {
+    setUpdatingCover(true);
+    try {
+      const formData = new FormData();
+      formData.append('coverImage', file);
+      const res = await eventsApi.update(id, formData);
+      setEvent(prev => ({
+        ...prev,
+        coverImageUrl: res.data?.data?.coverImageUrl || res.data?.coverImageUrl
+      }));
+      setCoverPreview(null);
+      alert('Cập nhật ảnh đại diện thành công!');
+    } catch (err) {
+      const msg = err.response?.data?.message || 'Lỗi cập nhật ảnh đại diện';
+      addError(msg);
+    } finally {
+      setUpdatingCover(false);
+      if (coverInputRef.current) coverInputRef.current.value = '';
+    }
+  };
+
   if (!event && !error) return <div className="min-h-screen bg-surface p-8 text-ink">Đang tải...</div>;
 
   return (
@@ -379,9 +419,9 @@ export const EventDetail = () => {
         {(isAdmin || isEventOwner) && (
           <section className="mt-10">
             <div className="mb-4 flex flex-wrap gap-2">
-              {['participants', 'checkin', 'qr', 'gallery'].map((tab) => (
+              {['participants', 'checkin', 'qr', 'gallery', 'edit'].map((tab) => (
                 <button key={tab} onClick={() => setActiveTab(tab)} className={`rounded-xl px-3 py-2 text-sm font-medium ${activeTab === tab ? 'bg-primary text-white' : 'bg-surface-highest text-ink hover:bg-surface-high'}`}>
-                  {tab.toUpperCase()}
+                  {tab === 'edit' ? 'CHỈNH SỬA' : tab.toUpperCase()}
                 </button>
               ))}
             </div>
@@ -507,6 +547,57 @@ export const EventDetail = () => {
                     </div>
                   ))}
                 </div>
+              </div>
+            )}
+
+            {/* Edit Tab - Only for event owner */}
+            {activeTab === 'edit' && isEventOwner && (
+              <div className="rounded-xl bg-surface-highest p-4 space-y-4">
+                <h3 className="text-sm font-semibold text-ink">Cập nhật ảnh đại diện sự kiện</h3>
+                
+                <input
+                  type="file"
+                  ref={coverInputRef}
+                  className="hidden"
+                  accept="image/jpeg,image/png,image/webp"
+                  onChange={handleCoverSelect}
+                />
+
+                {/* Current Cover Preview */}
+                <div className="relative rounded-xl overflow-hidden bg-surface-low aspect-[16/9]">
+                  {coverPreview ? (
+                    <img src={coverPreview} alt="Preview" className="w-full h-full object-cover" />
+                  ) : event.coverImageUrl ? (
+                    <img src={event.coverImageUrl} alt={event.title} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-primary/15 to-secondary/15 flex items-center justify-center">
+                      <span className="material-symbols-outlined text-6xl text-primary/30">image</span>
+                    </div>
+                  )}
+                  
+                  {updatingCover && (
+                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                      <div className="w-10 h-10 border-4 border-white border-t-primary rounded-full animate-spin"></div>
+                    </div>
+                  )}
+                </div>
+
+                <button
+                  onClick={() => coverInputRef.current?.click()}
+                  disabled={updatingCover}
+                  className="w-full rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-white hover:bg-primary/90 transition-colors disabled:opacity-50"
+                >
+                  {updatingCover ? 'Đang cập nhật...' : 'Chọn ảnh mới'}
+                </button>
+                
+                <p className="text-xs text-ink/50">Chỉ ban tổ chức sở hữu sự kiện mới có thể cập nhật ảnh đại diện. Ảnh nên có tỷ lệ 16:9, tối đa 5MB.</p>
+              </div>
+            )}
+
+            {/* Edit Tab - Admin message */}
+            {activeTab === 'edit' && isAdmin && !isEventOwner && (
+              <div className="rounded-xl bg-surface-highest p-4">
+                <p className="text-sm text-ink/60">Chỉ ban tổ chức sở hữu sự kiện mới có thể chỉnh sửa ảnh đại diện.</p>
               </div>
             )}
           </section>
