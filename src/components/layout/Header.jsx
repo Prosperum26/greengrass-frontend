@@ -92,11 +92,8 @@ export const Header = memo(() => {
                   )}
                   {role === 'ORGANIZER' && (
                     <>
-                      <Link to="/profile" className="block px-4 py-2 text-sm text-white/80 font-bold hover:bg-white/5 transition-colors">
+                      <Link to="/organizer/profile" className="block px-4 py-2 text-sm text-white/80 font-bold hover:bg-white/5 transition-colors">
                         Hồ sơ của tôi
-                      </Link>
-                      <Link to="/org-profile" className="block px-4 py-2 text-sm text-accent font-bold hover:bg-white/5 transition-colors border-t border-white/5">
-                        Trang ban tổ chức
                       </Link>
                     </>
                   )}

@@ -304,8 +304,8 @@ export const EventDetail = () => {
             <h2 className="mb-4 text-xl font-semibold font-display text-black">Người tham gia</h2>
             <div className="space-y-2">
               {participants.length === 0 && <p className="text-sm text-ink/60">Chưa có người tham gia.</p>}
-              {participants.map((item) => (
-                <div key={item.userId} className="rounded-xl bg-surface-highest p-4 text-sm shadow-[0_16px_44px_rgba(33,26,20,0.06)]">
+              {participants.map((item, idx) => (
+                <div key={`participant-${item.userId || idx}-${idx}`} className="rounded-xl bg-surface-highest p-4 text-sm shadow-[0_16px_44px_rgba(33,26,20,0.06)]">
                   {item.fullName || item.email || item.userId} - {item.status}
                 </div>
               ))}
@@ -340,8 +340,8 @@ export const EventDetail = () => {
             {activeTab === 'checkin' && checkedIn.length === 0 && (
               <p className="text-sm text-ink/60">No check-ins yet.</p>
             )}
-            {activeTab === 'checkin' && checkedIn.map((item) => (
-              <div key={item.userId} className="mb-3 rounded-xl bg-surface-highest p-4 text-sm shadow-[0_16px_44px_rgba(33,26,20,0.06)]">
+            {activeTab === 'checkin' && checkedIn.map((item, idx) => (
+              <div key={`checkin-${item.userId || idx}-${idx}`} className="mb-3 rounded-xl bg-surface-highest p-4 text-sm shadow-[0_16px_44px_rgba(33,26,20,0.06)]">
                 {item.userId} - {item.status} - {item.checkInTime ? new Date(item.checkInTime).toLocaleString() : '-'}
               </div>
             ))}

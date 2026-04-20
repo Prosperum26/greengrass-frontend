@@ -175,7 +175,7 @@ export const MapExplorerPage = () => {
           </p>
           <div className="space-y-3">
             <div className="flex items-center gap-4 rounded-xl bg-surface-low p-3">
-              <div className="rounded-lg bg-primary px-2 py-2 text-white">đŸ¶</div>
+              <div className="rounded-lg bg-primary px-2 py-2 text-white"><span className="material-symbols-outlined">directions_walk</span></div>
               <div className="flex-1">
                 <p className="text-xs font-medium text-ink/60">Đi bộ</p>
                 <p className="text-sm font-bold text-ink">
@@ -187,7 +187,7 @@ export const MapExplorerPage = () => {
               </div>
             </div>
             <div className="flex items-center gap-4 rounded-xl bg-surface-low p-3 ring-2 ring-primary/10">
-              <div className="rounded-lg bg-primary px-2 py-2 text-white">đŸ²</div>
+              <div className="rounded-lg bg-primary px-2 py-2 text-white"><span className="material-symbols-outlined">pedal_bike</span></div>
               <div className="flex-1">
                 <p className="text-xs font-medium text-ink/60">Đi xe đạp</p>
                 <p className="text-sm font-bold text-ink">
