@@ -103,12 +103,14 @@ export const EventDetail = () => {
     qrWriterRef.current = new BrowserQRCodeSvgWriter();
   }, []);
 
-  // Generate QR code from token
+  // Generate QR code with check-in URL
   const generateQrCode = useCallback(() => {
-    if (!qrToken || !qrWriterRef.current) return;
+    if (!qrToken || !qrWriterRef.current || !id) return;
     
     try {
-      const svgElement = qrWriterRef.current.write(qrToken, 300, 300);
+      // Create check-in URL that users can scan and visit
+      const checkInUrl = `${window.location.origin}/checkin/${id}?token=${encodeURIComponent(qrToken)}`;
+      const svgElement = qrWriterRef.current.write(checkInUrl, 300, 300);
       const svgData = new XMLSerializer().serializeToString(svgElement);
       const blob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
       const url = URL.createObjectURL(blob);
@@ -116,7 +118,7 @@ export const EventDetail = () => {
     } catch {
       // Failed to generate QR
     }
-  }, [qrToken]);
+  }, [qrToken, id]);
 
   // Load organizer data
   useEffect(() => {

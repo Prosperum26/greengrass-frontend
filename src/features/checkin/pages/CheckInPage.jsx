@@ -1,25 +1,21 @@
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { eventsApi } from '../../../api';
+import React, { useEffect, useState, useCallback } from 'react';
+import { useParams, useSearchParams, Link } from 'react-router-dom';
+import { eventsApi, usersApi } from '../../../api';
 import { QRScanner } from '../components/QRScanner';
 import { useCheckIn } from '../hooks/useCheckIn';
 
 export const CheckInPage = () => {
   const { eventId } = useParams();
+  const [searchParams] = useSearchParams();
+  const urlToken = searchParams.get('token');
   const [event, setEvent] = useState(null);
-  const [qrToken, setQrToken] = useState('');
-  const [status, setStatus] = useState('idle'); // idle | submitting | success
+  const [qrToken, setQrToken] = useState(urlToken || '');
+  const [status, setStatus] = useState('idle'); // idle | submitting | success | not_registered
+  const [isRegistered, setIsRegistered] = useState(false);
+  const [checkingRegistration, setCheckingRegistration] = useState(true);
   const { checkIn, isLoading, error } = useCheckIn();
 
-  useEffect(() => {
-    const load = async () => {
-      const { data } = await eventsApi.getById(eventId);
-      setEvent(data?.data || data);
-    };
-    void load();
-  }, [eventId]);
-
-  const submit = async (token) => {
+  const submit = useCallback(async (token) => {
     if (!token) return;
     setStatus('submitting');
     try {
@@ -27,6 +23,44 @@ export const CheckInPage = () => {
       setStatus('success');
     } catch {
       setStatus('idle');
+    }
+  }, [checkIn, eventId]);
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const { data } = await eventsApi.getById(eventId);
+        setEvent(data?.data || data);
+
+        // Check if user is registered for this event
+        const myEventsRes = await usersApi.getMyEvents();
+        const rawMyEvents = myEventsRes?.data?.data || myEventsRes?.data || [];
+        const myEvents = Array.isArray(rawMyEvents) ? rawMyEvents : [];
+        const registered = myEvents.some(
+          (item) => String(item?.id) === eventId || String(item?.eventId) === eventId
+        );
+        setIsRegistered(registered);
+
+        // If registered and has token from URL, auto-submit
+        if (registered && urlToken) {
+          void submit(urlToken);
+        }
+      } catch {
+        // Silent fail
+      } finally {
+        setCheckingRegistration(false);
+      }
+    };
+    void load();
+  }, [eventId, urlToken, submit]);
+
+  const handleRegister = async () => {
+    try {
+      await eventsApi.register(eventId);
+      setIsRegistered(true);
+      alert('Đăng ký thành công! Vui lòng quét lại mã QR để check-in.');
+    } catch (err) {
+      alert(err.response?.data?.message || 'Đăng ký thất bại');
     }
   };
 
@@ -47,14 +81,18 @@ export const CheckInPage = () => {
           <div className="text-3xl text-primary">📍</div>
           <div>
             <p className="text-[10px] font-bold uppercase tracking-widest text-ink/50">Trạng thái</p>
-            <p className="text-sm font-bold text-primary">{status === 'success' ? 'Đã xác thực' : 'Sẵn sàng'}</p>
+            <p className="text-sm font-bold text-primary">
+              {!checkingRegistration && !isRegistered ? 'Chưa đăng ký' : status === 'success' ? 'Đã xác thực' : 'Sẵn sàng'}
+            </p>
           </div>
         </div>
         <div className="rounded-3xl bg-secondary/15 p-4 flex flex-col gap-3">
           <div className="text-3xl text-secondary">🌿</div>
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-widest text-ink/50">Mã sự kiện</p>
-            <p className="text-sm font-bold text-ink">#{eventId}</p>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-ink/50">Đăng ký</p>
+            <p className="text-sm font-bold text-ink">
+              {checkingRegistration ? '...' : isRegistered ? '✓ Đã đăng ký' : '✗ Chưa đăng ký'}
+            </p>
           </div>
         </div>
       </div>
@@ -73,7 +111,32 @@ export const CheckInPage = () => {
             />
           </div>
 
-          {status !== 'success' && (
+          {checkingRegistration && (
+            <div className="w-full text-center py-8">
+              <div className="w-10 h-10 border-4 border-primary border-t-accent rounded-full animate-spin mx-auto"></div>
+              <p className="mt-4 text-sm text-ink/60">Đang kiểm tra đăng ký...</p>
+            </div>
+          )}
+
+          {!checkingRegistration && !isRegistered && (
+            <div className="w-full rounded-3xl bg-accent/10 p-6 text-center">
+              <p className="font-extrabold text-accent text-lg">Chưa đăng ký sự kiện</p>
+              <p className="mt-2 text-sm text-ink/70">
+                Bạn cần đăng ký sự kiện trước khi check-in.
+              </p>
+              <button
+                onClick={handleRegister}
+                className="mt-4 w-full rounded-2xl bg-accent py-3 text-sm font-bold text-white hover:bg-accent-hover transition"
+              >
+                Đăng ký ngay
+              </button>
+              <p className="mt-3 text-xs text-ink/50">
+                Sau khi đăng ký, vui lòng quét lại mã QR để check-in.
+              </p>
+            </div>
+          )}
+
+          {!checkingRegistration && isRegistered && status !== 'success' && (
             <>
               <QRScanner
                 onScan={(token) => {

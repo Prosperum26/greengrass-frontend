@@ -22,8 +22,7 @@ const RegisterPage = lazy(() => import('../features/auth/components/RegisterPage
 const OrgProfilePage = lazy(() => import('../features/profile/components/OrgProfilePage'));
 const UserProfilePage = lazy(() => import('../features/profile/components/UserProfilePage'));
 const PublicProfilePage = lazy(() => import('../features/profile/components/PublicProfilePage'));
-// CheckInPage - commented out as component doesn't exist yet
-// const CheckInPage = lazy(() => import('../features/checkin/components/CheckInPage'));
+const CheckInPage = lazy(() => import('../features/checkin/pages/CheckInPage'));
 const OrganizerRequestsPage = lazy(() => import('../pages/Admin/OrganizerRequestsPage'));
 
 // Loading fallback component
@@ -125,7 +124,7 @@ export const AppRoutes = () => {
         <Route path="/map" element={<AppShell contentClassName="overflow-hidden"><MapPage /></AppShell>} />
         <Route path="/leaderboard" element={<AppShell><LeaderboardPage /></AppShell>} />
         <Route path="/leafia" element={<AppShell><LeafiaRoutePage /></AppShell>} />
-        {/* <Route path="/checkin/:eventId" element={<AppShell><PrivateRoute><Suspense fallback={<LoadingFallback />}><CheckInPage /></Suspense></PrivateRoute></AppShell>} /> */}
+        <Route path="/checkin/:eventId" element={<AppShell><PrivateRoute><Suspense fallback={<LoadingFallback />}><CheckInPage /></Suspense></PrivateRoute></AppShell>} />
         
         {/* Admin routes */}
         <Route
