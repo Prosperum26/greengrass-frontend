@@ -1,11 +1,13 @@
 import React from "react";
 import { EventCard } from "./EventCard";
 import { eventsApi } from "../../../api";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 export const EventList = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const keyword = searchParams.get('keyword') || '';
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -13,7 +15,11 @@ export const EventList = () => {
   useEffect(() => {
     const loadEvents = async () => {
       try {
-        const { data } = await eventsApi.getAll({ page: 1, limit: 30 }, { skipAuth: true });
+        const params = { page: 1, limit: 30 };
+        if (keyword) {
+          params.keyword = keyword;
+        }
+        const { data } = await eventsApi.getAll(params, { skipAuth: true });
         setEvents(data?.data?.items || []);
       } catch (err) {
         setError(err.response?.data?.message || "Không thể tải sự kiện");
@@ -22,7 +28,7 @@ export const EventList = () => {
       }
     };
     void loadEvents();
-  }, []);
+  }, [keyword]);
 
   const onRegister = async (eventId) => {
     try {
@@ -43,8 +49,25 @@ export const EventList = () => {
         <span className="text-sm font-bold text-on-surface-variant">Sắp xếp: Mới nhất</span>
       </div>
 
+      {keyword && (
+        <div className="mb-4 flex items-center gap-2">
+          <span className="text-sm text-on-surface-variant">
+            Kết quả tìm kiếm cho: <strong className="text-primary">"{keyword}"</strong>
+          </span>
+          <button 
+            onClick={() => navigate('/events')} 
+            className="text-xs text-accent hover:underline"
+          >
+            Xóa tìm kiếm
+          </button>
+        </div>
+      )}
+
       {loading && <p className="text-on-surface-variant">Đang tải sự kiện...</p>}
       {error && <p className="text-error">{error}</p>}
+      {!loading && events.length === 0 && keyword && (
+        <p className="text-on-surface-variant">Không tìm thấy sự kiện nào phù hợp.</p>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {events.map((event) => (

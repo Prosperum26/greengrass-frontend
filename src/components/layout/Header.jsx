@@ -1,11 +1,33 @@
-import React, { useMemo, memo } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useMemo, memo, useState, useCallback } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthContext } from '../../hooks/useAuthContext';
 
 export const Header = memo(() => {
   const { user, isAuthenticated, logout, getRole } = useAuthContext();
   const navigate = useNavigate();
+  const location = useLocation();
   const role = getRole();
+
+  // Get initial search value from URL if on events page
+  const getInitialSearch = () => {
+    if (location.pathname === '/events') {
+      const params = new URLSearchParams(location.search);
+      return params.get('keyword') || '';
+    }
+    return '';
+  };
+
+  const [searchQuery, setSearchQuery] = useState(getInitialSearch);
+
+  const handleSearch = useCallback((e) => {
+    if (e.key === 'Enter' && searchQuery.trim()) {
+      navigate(`/events?keyword=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  }, [searchQuery, navigate]);
+
+  const handleSearchChange = useCallback((e) => {
+    setSearchQuery(e.target.value);
+  }, []);
 
   const handleLogout = async () => {
     await logout();
@@ -29,7 +51,10 @@ export const Header = memo(() => {
           <input 
             className="bg-transparent border-none focus:ring-0 text-sm placeholder-white/40 w-full ml-2 outline-none" 
             placeholder="Tìm kiếm sự kiện..." 
-            type="text" 
+            type="text"
+            value={searchQuery}
+            onChange={handleSearchChange}
+            onKeyDown={handleSearch}
           />
         </div>
       </div>
