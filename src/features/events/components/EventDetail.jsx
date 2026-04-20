@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState, useRef, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { eventsApi, usersApi } from '../../../api';
+import { eventsApi } from '../../../api';
 import { useAuthContext } from '../../../hooks/useAuthContext';
 import { useError } from '../../../hooks/useError';
 import { useCheckIn } from '../../checkin/hooks/useCheckIn';
@@ -86,25 +86,13 @@ export const EventDetail = () => {
           }
         }
         
-        if (canRegister) {
-          try {
-            const myEventsRes = await usersApi.getMyEvents();
-            const rawMyEvents = myEventsRes?.data?.data || myEventsRes?.data || [];
-            const myEvents = Array.isArray(rawMyEvents) ? rawMyEvents : [];
-            setIsRegistered(
-              myEvents.some((item) => String(item?.id) === id || String(item?.eventId) === id),
-            );
-          } catch {
-            // Silently fail
-          }
-        }
       } catch (err) {
         setError(err.response?.data?.message || 'Không thể tải sự kiện');
         addError(err.response?.data?.message || 'Không thể tải sự kiện');
       }
     };
     load();
-  }, [id, canRegister, getUserId, getRole, addError]);
+  }, [id, getUserId, getRole, addError, isAdmin]);
 
   // Initialize QR writer
   useEffect(() => {
@@ -147,6 +135,29 @@ export const EventDetail = () => {
     };
     void loadOrganizerData();
   }, [id, isAdmin, isEventOwner]);
+
+  // Check registration status when event data is loaded and user is logged in
+  useEffect(() => {
+    // Only check if we have both event data and user is logged in
+    if (!event?.id || !userId) {
+      setIsRegistered(false);
+      return;
+    }
+    
+    const checkRegistration = async () => {
+      try {
+        const res = await eventsApi.checkRegistration(id);
+        setIsRegistered(res.data?.data?.registered || false);
+      } catch (err) {
+        // If 404, user is not registered
+        if (err.response?.status === 404) {
+          setIsRegistered(false);
+        }
+        // Other errors: keep current state
+      }
+    };
+    void checkRegistration();
+  }, [event?.id, id, userId]);
 
   // Refresh QR code when token changes
   useEffect(() => {
