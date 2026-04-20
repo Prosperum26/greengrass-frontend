@@ -1,17 +1,17 @@
-import { useEffect, useState } from 'react';
-import { pointsApi } from '../../../api';
-import { LeaderboardItem } from '../../../components/eco';
+import { useEffect, useState } from "react";
+import { pointsApi } from "../../../api";
+import { LeaderboardItem } from "../../../components/eco";
 
 export const Leaderboard = () => {
-  const [timeframe, setTimeframe] = useState('weekly');
+  const [timeframe, setTimeframe] = useState("weekly");
   const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const load = async () => {
       setLoading(true);
-      setError('');
+      setError("");
       try {
         const { data } = await pointsApi.getLeaderboard({ timeframe });
         const rawEntries = Array.isArray(data) ? data : data?.data || [];
@@ -36,10 +36,10 @@ export const Leaderboard = () => {
 
         const sortedEntries = enrichedEntries
           .sort((a, b) => {
-            if (b.totalEventsJoined !== a.totalEventsJoined) {
-              return b.totalEventsJoined - a.totalEventsJoined;
+            if (b.totalPoints !== a.totalPoints) {
+              return (b.totalPoints || 0) - (a.totalPoints || 0);
             }
-            return (b.totalPoints || 0) - (a.totalPoints || 0);
+            return b.totalEventsJoined - a.totalEventsJoined;
           })
           .slice(0, 10)
           .map((entry, index) => ({
@@ -49,7 +49,7 @@ export const Leaderboard = () => {
 
         setEntries(sortedEntries);
       } catch (err) {
-        setError(err?.response?.data?.message || 'Không thể tải bảng xếp hạng');
+        setError(err?.response?.data?.message || "Không thể tải bảng xếp hạng");
         setEntries([]);
       } finally {
         setLoading(false);
@@ -61,7 +61,10 @@ export const Leaderboard = () => {
   const topThree = entries.slice(0, 3);
   const otherContributors = entries.slice(3);
   const totalContributors = entries.length;
-  const totalPoints = entries.reduce((sum, user) => sum + (user.totalPoints || 0), 0);
+  const totalPoints = entries.reduce(
+    (sum, user) => sum + (user.totalPoints || 0),
+    0,
+  );
   const topPoints = entries[0]?.totalPoints || 0;
   const campusGoal =
     totalPoints > 0 ? Math.ceil(totalPoints / 1000) * 1000 : 1000;
@@ -80,7 +83,8 @@ export const Leaderboard = () => {
             Xanh
           </h2>
           <p className="text-lg text-ink/60 max-w-xs leading-relaxed">
-            Vinh danh những người dẫn đầu hành trình xanh. Mỗi hành động đều lan tỏa tác động bền vững.
+            Vinh danh những người dẫn đầu hành trình xanh. Mỗi hành động đều lan
+            tỏa tác động bền vững.
           </p>
         </div>
 
@@ -89,7 +93,9 @@ export const Leaderboard = () => {
             <div
               key={u.userId}
               className={`rounded-3xl p-6 text-center space-y-4 shadow-[0_20px_60px_rgba(33,26,20,0.08)] ${
-                u.rank === 1 ? 'bg-primary text-white md:w-64 -translate-y-5' : 'bg-surface-low text-ink md:w-56'
+                u.rank === 1
+                  ? "bg-primary text-white md:w-64 -translate-y-5"
+                  : "bg-surface-low text-ink md:w-56"
               }`}
             >
               <div className="relative inline-block">
@@ -100,23 +106,41 @@ export const Leaderboard = () => {
                     className="mx-auto h-20 w-20 rounded-full object-cover"
                   />
                 ) : (
-                  <div className={`mx-auto flex h-20 w-20 items-center justify-center rounded-full ${u.rank === 1 ? 'bg-white/15' : 'bg-surface-high'}`}>
-                    <span className={`text-2xl font-black ${u.rank === 1 ? 'text-white' : 'text-secondary'}`}>{(u.fullName?.[0] || 'U').toUpperCase()}</span>
+                  <div
+                    className={`mx-auto flex h-20 w-20 items-center justify-center rounded-full ${u.rank === 1 ? "bg-white/15" : "bg-surface-high"}`}
+                  >
+                    <span
+                      className={`text-2xl font-black ${u.rank === 1 ? "text-white" : "text-secondary"}`}
+                    >
+                      {(u.fullName?.[0] || "U").toUpperCase()}
+                    </span>
                   </div>
                 )}
-                <span className={`absolute -bottom-2 -right-2 flex h-9 w-9 items-center justify-center rounded-full text-sm font-extrabold ${
-                  u.rank === 1 ? 'bg-accent text-white' : 'bg-secondary text-white'
-                }`}>
+                <span
+                  className={`absolute -bottom-2 -right-2 flex h-9 w-9 items-center justify-center rounded-full text-sm font-extrabold ${
+                    u.rank === 1
+                      ? "bg-accent text-white"
+                      : "bg-secondary text-white"
+                  }`}
+                >
                   {u.rank}
                 </span>
               </div>
               <div>
-                <h3 className={`font-extrabold ${u.rank === 1 ? 'text-white text-xl' : 'text-ink'}`}>{u.fullName}</h3>
-                <p className={`text-xs font-bold uppercase tracking-widest ${u.rank === 1 ? 'text-white/80' : 'text-ink/50'}`}>
+                <h3
+                  className={`font-extrabold ${u.rank === 1 ? "text-white text-xl" : "text-ink"}`}
+                >
+                  {u.fullName}
+                </h3>
+                <p
+                  className={`text-xs font-bold uppercase tracking-widest ${u.rank === 1 ? "text-white/80" : "text-ink/50"}`}
+                >
                   {u.totalEventsJoined || 0} events
                 </p>
               </div>
-              <p className={`font-black ${u.rank === 1 ? 'text-3xl text-white' : 'text-2xl text-primary'}`}>
+              <p
+                className={`font-black ${u.rank === 1 ? "text-3xl text-white" : "text-2xl text-primary"}`}
+              >
                 {u.totalPoints.toLocaleString()}
               </p>
             </div>
@@ -133,8 +157,14 @@ export const Leaderboard = () => {
         <div className="lg:col-span-4 space-y-8">
           <div className="rounded-3xl bg-surface-highest p-8 shadow-[0_24px_70px_rgba(33,26,20,0.08)] space-y-6">
             <div className="flex items-center justify-between">
-              <h4 className="text-xl font-bold font-display text-primary">Tiến độ Cộng đồng</h4>
-              <select value={timeframe} onChange={(e) => setTimeframe(e.target.value)} className="rounded-xl bg-surface-high px-3 py-2 text-sm text-ink outline-none focus:ring-2 focus:ring-primary/30">
+              <h4 className="text-xl font-bold font-display text-primary">
+                Tiến độ Cộng đồng
+              </h4>
+              <select
+                value={timeframe}
+                onChange={(e) => setTimeframe(e.target.value)}
+                className="rounded-xl bg-surface-high px-3 py-2 text-sm text-ink outline-none focus:ring-2 focus:ring-primary/30"
+              >
                 <option value="all">Tất cả</option>
                 <option value="weekly">Hàng tuần</option>
                 <option value="monthly">Hàng tháng</option>
@@ -154,18 +184,27 @@ export const Leaderboard = () => {
                   />
                 </div>
                 <p className="text-sm text-ink/60">
-                  {totalPoints.toLocaleString()} / {campusGoal.toLocaleString()} điểm đã đóng góp.
+                  {totalPoints.toLocaleString()} / {campusGoal.toLocaleString()}{" "}
+                  điểm đã đóng góp.
                 </p>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="rounded-xl bg-surface-low p-3">
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-ink/60">Người đóng góp</p>
-                  <p className="text-xl font-extrabold text-primary">{totalContributors}</p>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-ink/60">
+                    Người đóng góp
+                  </p>
+                  <p className="text-xl font-extrabold text-primary">
+                    {totalContributors}
+                  </p>
                 </div>
                 <div className="rounded-xl bg-surface-low p-3">
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-ink/60">Điểm cao nhất</p>
-                  <p className="text-xl font-extrabold text-primary">{topPoints.toLocaleString()}</p>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-ink/60">
+                    Điểm cao nhất
+                  </p>
+                  <p className="text-xl font-extrabold text-primary">
+                    {topPoints.toLocaleString()}
+                  </p>
                 </div>
               </div>
             </div>
@@ -175,12 +214,20 @@ export const Leaderboard = () => {
         <div className="lg:col-span-8 rounded-3xl bg-surface-low p-8 shadow-[0_24px_70px_rgba(33,26,20,0.08)]">
           <div className="mb-8 flex items-end justify-between gap-4">
             <div>
-              <h4 className="text-3xl font-bold font-display text-primary">Người đóng góp</h4>
-              <p className="text-ink/60">Xếp hạng theo số sự kiện tham gia, sau đó theo điểm đóng góp</p>
+              <h4 className="text-3xl font-bold font-display text-primary">
+                Người đóng góp
+              </h4>
+              <p className="text-ink/60">
+                Xếp hạng theo điểm đóng góp, sau đó theo số sự kiện tham gia
+              </p>
             </div>
           </div>
 
-          {error && <p className="mb-4 rounded-xl bg-accent/10 px-4 py-3 text-accent-hover">{error}</p>}
+          {error && (
+            <p className="mb-4 rounded-xl bg-accent/10 px-4 py-3 text-accent-hover">
+              {error}
+            </p>
+          )}
           {loading && <p className="text-ink/60">Đang tải bảng xếp hạng...</p>}
 
           <div className="space-y-4">
@@ -194,9 +241,14 @@ export const Leaderboard = () => {
                 progressLabel="Points contribution"
               />
             ))}
-            {!loading && !error && otherContributors.length === 0 && topThree.length > 0 && (
-              <p className="text-ink/60">Chỉ có người đóng góp hàng đầu trong khoảng thời gian này.</p>
-            )}
+            {!loading &&
+              !error &&
+              otherContributors.length === 0 &&
+              topThree.length > 0 && (
+                <p className="text-ink/60">
+                  Chỉ có người đóng góp hàng đầu trong khoảng thời gian này.
+                </p>
+              )}
           </div>
         </div>
       </section>
