@@ -10,7 +10,7 @@ export const CheckInPage = () => {
   const urlToken = searchParams.get('token');
   const [event, setEvent] = useState(null);
   const [qrToken, setQrToken] = useState(urlToken || '');
-  const [status, setStatus] = useState('idle'); // idle | submitting | success | not_registered
+  const [status, setStatus] = useState('idle'); // idle | submitting | success | error | not_registered
   const [isRegistered, setIsRegistered] = useState(false);
   const [checkingRegistration, setCheckingRegistration] = useState(true);
   const { checkIn, isLoading, error } = useCheckIn();
@@ -22,7 +22,7 @@ export const CheckInPage = () => {
       await checkIn(eventId, token);
       setStatus('success');
     } catch {
-      setStatus('idle');
+      setStatus('error');
     }
   }, [checkIn, eventId]);
 
@@ -157,6 +157,19 @@ export const CheckInPage = () => {
                 {isLoading ? 'Đang gửi...' : 'Hoàn tất Check-in'}
               </button>
             </>
+          )}
+
+          {status === 'error' && (
+            <div className="w-full rounded-3xl bg-accent/10 p-6 text-center">
+              <p className="font-extrabold text-accent text-lg">Check-in thất bại</p>
+              <p className="mt-2 text-sm text-ink/70">{error || 'Mã QR không hợp lệ hoặc đã hết hạn.'}</p>
+              <button
+                onClick={() => setStatus('idle')}
+                className="mt-4 w-full rounded-2xl bg-accent px-4 py-3 text-sm font-bold text-white hover:bg-accent-hover transition"
+              >
+                Thử lại
+              </button>
+            </div>
           )}
 
           {status === 'success' && (
