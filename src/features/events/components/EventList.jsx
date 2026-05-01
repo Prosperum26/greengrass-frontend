@@ -4,6 +4,16 @@ import { eventsApi } from "../../../api";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 
+const sortOptions = [
+  { value: 'startTime:asc', label: 'Thời gian bắt đầu (Cũ → Mới)' },
+  { value: 'startTime:desc', label: 'Thời gian bắt đầu (Mới → Cũ)' },
+  { value: 'createdAt:desc', label: 'Mới đăng gần đây' },
+  { value: 'title:asc', label: 'Tên A → Z' },
+  { value: 'title:desc', label: 'Tên Z → A' },
+  { value: 'points:desc', label: 'Điểm thưởng cao nhất' },
+  { value: 'points:asc', label: 'Điểm thưởng thấp nhất' },
+];
+
 export const EventList = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -11,11 +21,13 @@ export const EventList = () => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [sort, setSort] = useState('startTime:asc');
 
   useEffect(() => {
     const loadEvents = async () => {
       try {
-        const params = { page: 1, limit: 30 };
+        const [sortBy, sortOrder] = sort.split(':');
+        const params = { page: 1, limit: 30, sortBy, sortOrder };
         if (keyword) {
           params.keyword = keyword;
         }
@@ -28,7 +40,7 @@ export const EventList = () => {
       }
     };
     void loadEvents();
-  }, [keyword]);
+  }, [keyword, sort]);
 
   const onRegister = async (eventId) => {
     try {
@@ -46,7 +58,20 @@ export const EventList = () => {
           <h1 className="text-3xl font-extrabold tracking-tight text-primary font-headline">Khám phá Sự kiện</h1>
           <p className="mt-2 text-on-surface-variant">Tìm các hoạt động ý nghĩa bạn có thể tham gia ngay hôm nay.</p>
         </div>
-        <span className="text-sm font-bold text-on-surface-variant">Sắp xếp: Mới nhất</span>
+        <div className="flex items-center gap-2">
+          <label className="text-sm font-medium text-on-surface-variant">Sắp xếp:</label>
+          <select
+            value={sort}
+            onChange={(e) => setSort(e.target.value)}
+            className="rounded-lg border border-surface-variant bg-white px-3 py-2 text-sm text-on-surface outline-none focus:ring-2 focus:ring-primary/40 hover:bg-surface-container-highest transition-colors"
+          >
+            {sortOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {keyword && (
