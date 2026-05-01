@@ -16,27 +16,27 @@ export const Input = ({
   return (
     <div className={`w-full ${className}`}>
       {label && (
-        <label htmlFor={inputId} className="block text-xs font-semibold tracking-wider text-ink/70 mb-2 uppercase hover:text-primary transition-colors duration-300 cursor-pointer">
+        <label htmlFor={inputId} className="block text-xs sm:text-sm font-semibold tracking-wider text-ink/70 mb-1.5 sm:mb-2 uppercase hover:text-primary transition-colors duration-300 cursor-pointer">
           {label}
         </label>
       )}
-      <div className={`group rounded-xl bg-surface-highest px-4 py-3 transition-all duration-300 hover:shadow-md hover:bg-white ${error ? 'ring-2 ring-accent-hover/40' : 'focus-within:ring-2 focus-within:ring-primary/40 focus-within:shadow-lg focus-within:bg-white hover:focus-within:ring-primary/50'}`}>
-        <div className="flex items-center gap-3">
+      <div className={`group rounded-lg sm:rounded-xl bg-surface-highest px-3 sm:px-4 py-2.5 sm:py-3 transition-all duration-300 hover:shadow-md hover:bg-white ${error ? 'ring-2 ring-accent-hover/40' : 'focus-within:ring-2 focus-within:ring-primary/40 focus-within:shadow-lg focus-within:bg-white hover:focus-within:ring-primary/50'}`}>
+        <div className="flex items-center gap-2 sm:gap-3">
           {icon && (
-            <span className="material-symbols-outlined text-ink/40 group-hover:text-primary group-focus-within:text-primary transition-all duration-300 group-hover:scale-110">
+            <span className="material-symbols-outlined text-lg sm:text-xl text-ink/40 group-hover:text-primary group-focus-within:text-primary transition-all duration-300 group-hover:scale-110 flex-shrink-0">
               {icon}
             </span>
           )}
           <input
             id={inputId}
-            className="w-full bg-transparent text-ink placeholder:text-ink/40 outline-none"
+            className="w-full bg-transparent text-sm sm:text-base text-ink placeholder:text-ink/40 outline-none min-h-[24px] sm:min-h-[28px]"
             {...props}
           />
         </div>
-        <div className={`mt-2 h-[2px] w-full rounded-full transition-all duration-300 ${error ? 'bg-accent-hover' : 'bg-primary/25 group-hover:bg-primary/40 group-focus-within:bg-primary group-focus-within:h-[3px]'}`} />
+        <div className={`mt-1.5 sm:mt-2 h-[2px] w-full rounded-full transition-all duration-300 ${error ? 'bg-accent-hover' : 'bg-primary/25 group-hover:bg-primary/40 group-focus-within:bg-primary group-focus-within:h-[3px]'}`} />
       </div>
-      {error && <p className="mt-2 text-sm text-accent-hover animate-fade-in">{error}</p>}
-      {helperText && !error && <p className="mt-2 text-sm text-ink/60">{helperText}</p>}
+      {error && <p className="mt-1.5 sm:mt-2 text-xs sm:text-sm text-accent-hover animate-fade-in">{error}</p>}
+      {helperText && !error && <p className="mt-1.5 sm:mt-2 text-xs sm:text-sm text-ink/60">{helperText}</p>}
     </div>
   );
 };

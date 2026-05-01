@@ -1,6 +1,6 @@
 // Reusable Card Component
 export const Card = ({ children, className = '', hover = false, interactive = false }) => {
-  const baseStyles = 'bg-surface-high rounded-xl overflow-hidden';
+  const baseStyles = 'bg-surface-high rounded-xl sm:rounded-2xl overflow-hidden';
   const hoverStyles = hover
     ? 'transition-all duration-300 hover:bg-surface-highest hover:shadow-xl hover:-translate-y-1 hover:shadow-primary/10 cursor-pointer'
     : '';
@@ -16,19 +16,19 @@ export const Card = ({ children, className = '', hover = false, interactive = fa
 };
 
 export const CardHeader = ({ children, className = '' }) => (
-  <div className={`px-6 py-4 ${className}`}>
+  <div className={`px-4 sm:px-5 lg:px-6 py-3 sm:py-4 ${className}`}>
     {children}
   </div>
 );
 
 export const CardBody = ({ children, className = '' }) => (
-  <div className={`px-6 py-4 ${className}`}>
+  <div className={`px-4 sm:px-5 lg:px-6 py-3 sm:py-4 ${className}`}>
     {children}
   </div>
 );
 
 export const CardFooter = ({ children, className = '' }) => (
-  <div className={`px-6 py-4 bg-surface-low ${className}`}>
+  <div className={`px-4 sm:px-5 lg:px-6 py-3 sm:py-4 bg-surface-low ${className}`}>
     {children}
   </div>
 );

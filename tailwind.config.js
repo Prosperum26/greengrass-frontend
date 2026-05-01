@@ -3,7 +3,22 @@ export default {
   darkMode: "class",
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
+    screens: {
+      'xs': '480px',
+      'sm': '640px',
+      'md': '768px',
+      'lg': '1024px',
+      'xl': '1280px',
+      '2xl': '1536px',
+    },
     extend: {
+      spacing: {
+        '18': '4.5rem',
+        '22': '5.5rem',
+      },
+      maxWidth: {
+        'container': '1440px',
+      },
       colors: {
         "on-surface-variant": "#43493e",
         "on-primary-fixed-variant": "#2c4f1a",

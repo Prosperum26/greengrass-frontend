@@ -1,26 +1,45 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+
+const navItems = [
+  { to: '/events', icon: 'explore', label: 'Khám phá', filled: true },
+  { to: '/map', icon: 'map', label: 'Bản đồ' },
+  { to: '/leaderboard', icon: 'emoji_events', label: 'Xếp hạng' },
+  { to: '/profile', icon: 'person', label: 'Hồ sơ' },
+];
 
 export const MobileNav = () => {
+  const location = useLocation();
+
   return (
-    <div className="md:hidden fixed bottom-0 left-0 right-0 h-16 glass-nav border-t border-white/10 flex items-center justify-around px-4 z-50">
-      <Link to="/events" className="flex flex-col items-center text-accent">
-        <span className="material-symbols-outlined" style={{fontVariationSettings: "'FILL' 1"}}>explore</span>
-        <span className="text-[10px] font-bold mt-0.5">Khám phá</span>
-      </Link>
-      <Link to="/map" className="flex flex-col items-center text-white/60">
-        <span className="material-symbols-outlined">map</span>
-        <span className="text-[10px] font-bold mt-0.5">Bản đồ</span>
-      </Link>
-      <Link to="/leaderboard" className="flex flex-col items-center text-white/60">
-        <span className="material-symbols-outlined">eco</span>
-        <span className="text-[10px] font-bold mt-0.5">Tác động</span>
-      </Link>
-      <Link to="/profile" className="flex flex-col items-center text-white/60">
-        <span className="material-symbols-outlined">person</span>
-        <span className="text-[10px] font-bold mt-0.5">Hồ sơ</span>
-      </Link>
-    </div>
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 glass-nav border-t border-white/10 z-50 safe-bottom">
+      <div className="flex items-center justify-around px-2 sm:px-4 h-14 sm:h-16">
+        {navItems.map((item) => {
+          const isActive = location.pathname === item.to ||
+            (item.to !== '/events' && location.pathname.startsWith(item.to));
+
+          return (
+            <Link
+              key={item.to}
+              to={item.to}
+              className={`flex flex-col items-center justify-center min-w-[64px] py-2 px-3 rounded-xl transition-all duration-200 active:scale-95 ${
+                isActive
+                  ? 'text-accent'
+                  : 'text-white/60 hover:text-white/80'
+              }`}
+            >
+              <span
+                className="material-symbols-outlined text-xl sm:text-2xl"
+                style={item.filled || isActive ? { fontVariationSettings: "'FILL' 1" } : undefined}
+              >
+                {item.icon}
+              </span>
+              <span className="text-[10px] sm:text-xs font-bold mt-0.5 sm:mt-1">{item.label}</span>
+            </Link>
+          );
+        })}
+      </div>
+    </nav>
   );
 };
 

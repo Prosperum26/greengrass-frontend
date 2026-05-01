@@ -73,29 +73,35 @@ export const HomePage = () => {
   }, [debouncedKeyword, status, sort, addError]);
 
   return (
-    <div className="flex-grow space-y-12 w-full px-4 sm:px-6 lg:px-8">
+    <div className="flex-grow space-y-8 sm:space-y-10 lg:space-y-12 w-full px-3 sm:px-4 lg:px-6 xl:px-8">
       {/* Hero / Featured Banner */}
-      <section className="relative organic-gradient rounded-[2rem] overflow-hidden min-h-[340px] flex flex-col justify-center p-8 md:p-12 text-white">
-        <div className="absolute top-0 right-0 w-1/2 h-full opacity-40">
+      <section className="relative organic-gradient rounded-xl sm:rounded-[2rem] overflow-hidden min-h-[280px] sm:min-h-[340px] flex flex-col justify-center p-4 sm:p-6 md:p-8 lg:p-12 text-white">
+        <div className="absolute top-0 right-0 w-full sm:w-1/2 h-full opacity-20 sm:opacity-40">
           <img className="w-full h-full object-cover mix-blend-overlay" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBBovL64LjzGDRXWr6OzL0GRfG5aT4tYOBbA_xl2VhOZgbD5dINsGTsecFbu1gUFnXtviqaz7RRcw17rEZt10K6--YiqlifY2pRoV_aTdUW34erqse-gq3R_fHleW6NHGEpNCy0a0Mnk3W-oD3Ic1PJl0oim0iZW0CRQaS5PeaudmqlQJHww_pu3bNSEWR61Es3IwWZ2JBUXasMhzhNhJepa0VagNfK_-0uxY2z8Reg-bwSQuwrgUT4G2_cIViUHPUab2YD6IYsXxM" alt="Featured" />
         </div>
-        <div className="relative z-10 max-w-lg space-y-4">
-          <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md px-3 py-1 rounded-full border border-white/20">
-            <span className="w-2 h-2 bg-accent rounded-full"></span>
-            <span className="text-[10px] font-bold uppercase tracking-[0.1em]">Sự kiện nổi bật</span>
+        <div className="relative z-10 max-w-lg space-y-3 sm:space-y-4">
+          <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md px-2 sm:px-3 py-1 rounded-full border border-white/20">
+            <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-accent rounded-full"></span>
+            <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.1em]">Sự kiện nổi bật</span>
           </div>
-          <h1 className="text-4xl md:text-5xl font-extrabold leading-tight tracking-tight">Trái đất không có nút reset.</h1>
-          <p className="text-white/80 font-medium text-lg leading-relaxed">Tham gia sự kiện xanh. Tích điểm và dẫn đầu bảng xếp hạng cộng đồng.</p>
-          <div className="pt-4 flex gap-4">
-            <button onClick={() => navigate('/events')} className="bg-accent text-white px-8 py-3.5 rounded-xl font-bold text-sm shadow-xl shadow-orange-900/20 hover:scale-105 transition-transform">Tham gia Hành động</button>
-            <button onClick={() => navigate('/leaderboard')} className="bg-white/10 backdrop-blur-md text-white px-6 py-3.5 rounded-xl font-bold text-sm border border-white/20 hover:bg-white/20 transition-all">Tìm hiểu thêm</button>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold leading-tight tracking-tight">Trái đất không có nút reset.</h1>
+          <p className="text-white/80 font-medium text-sm sm:text-base lg:text-lg leading-relaxed">Tham gia sự kiện xanh. Tích điểm và dẫn đầu bảng xếp hạng cộng đồng.</p>
+          <div className="pt-2 sm:pt-4 flex flex-col xs:flex-row gap-2 sm:gap-4">
+            <button onClick={() => navigate('/events')} className="bg-accent text-white px-[clamp(0.75rem,2vw,1.5rem)] py-[clamp(0.5rem,1.5vw,0.875rem)] rounded-lg sm:rounded-xl font-bold text-[clamp(0.625rem,1.5vw,0.875rem)] shadow-xl shadow-orange-900/20 hover:scale-105 transition-transform whitespace-nowrap">
+              <span className="hidden xs:inline">Tham gia Hành động</span>
+              <span className="xs:hidden">Tham gia</span>
+            </button>
+            <button onClick={() => navigate('/leaderboard')} className="bg-white/10 backdrop-blur-md text-white px-[clamp(0.75rem,2vw,1.25rem)] py-[clamp(0.5rem,1.5vw,0.875rem)] rounded-lg sm:rounded-xl font-bold text-[clamp(0.625rem,1.5vw,0.875rem)] border border-white/20 hover:bg-white/20 transition-all whitespace-nowrap">
+              Tìm hiểu thêm
+            </button>
           </div>
         </div>
       </section>
 
-      {/* Main Container replacing Sidebar setup */}
-      <div className="flex gap-8">
-        <aside className="hidden lg:flex flex-col gap-8 w-72 flex-shrink-0">
+      {/* Main Container - Responsive Sidebar */}
+      <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
+        {/* Sidebar - Hidden on mobile/tablet, shown on desktop */}
+        <aside className="hidden lg:flex flex-col gap-6 lg:gap-8 w-64 xl:w-72 flex-shrink-0">
           <MapPreviewCard
             liveCount={liveEventCount}
             upcomingCount={upcomingEventCount}
@@ -109,15 +115,27 @@ export const HomePage = () => {
           />
         </aside>
 
-        <section className="flex-grow">
-          <div className="flex items-baseline justify-between mb-8">
-            <h2 className="text-2xl font-extrabold tracking-tight text-primary">Khám phá Sự kiện</h2>
+        {/* Mobile Filter - Shown only on mobile/tablet */}
+        <div className="lg:hidden">
+          <FilterHub
+            keyword={keywordInput}
+            onKeywordChange={setKeywordInput}
+            status={status}
+            onStatusChange={setStatus}
+            compact
+          />
+        </div>
+
+        {/* Main Content */}
+        <section className="flex-1 min-w-0">
+          <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between mb-4 sm:mb-6 lg:mb-8 gap-3 sm:gap-4">
+            <h2 className="text-xl sm:text-2xl font-extrabold tracking-tight text-primary">Khám phá Sự kiện</h2>
             <div className="flex items-center gap-2">
-              <label className="text-sm font-medium text-on-surface-variant">Sắp xếp:</label>
+              <label className="text-xs sm:text-sm font-medium text-on-surface-variant whitespace-nowrap">Sắp xếp:</label>
               <select
                 value={sort}
                 onChange={(e) => setSort(e.target.value)}
-                className="rounded-lg border border-surface-variant bg-white px-3 py-2 text-sm text-on-surface outline-none focus:ring-2 focus:ring-primary/40 hover:bg-surface-container-highest transition-colors cursor-pointer"
+                className="rounded-lg border border-surface-variant bg-white px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm text-on-surface outline-none focus:ring-2 focus:ring-primary/40 hover:bg-surface-container-highest transition-colors cursor-pointer"
               >
                 {sortOptions.map((option) => (
                   <option key={option.value} value={option.value}>
@@ -128,27 +146,40 @@ export const HomePage = () => {
             </div>
           </div>
 
-          {loading && <p className="text-on-surface-variant/60">Đang tải các sự kiện...</p>}
+          {loading && <p className="text-sm sm:text-base text-on-surface-variant/60 py-4">Đang tải các sự kiện...</p>}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Events Grid - Responsive */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 lg:gap-6">
             {featuredEvents.map((event) => (
-              <EventCard key={event.id} event={event} onDetail={(id) => navigate(`/events/${id}`)} onRegister={(id) => navigate(`/events/${id}`)} />
+              <EventCard
+                key={event.id}
+                event={event}
+                onDetail={(id) => navigate(`/events/${id}`)}
+                onRegister={(id) => navigate(`/events/${id}`)}
+              />
             ))}
 
-            <article className="bg-primary text-white rounded-3xl p-8 flex flex-col justify-between overflow-hidden relative">
-              <div className="absolute -right-12 -top-12 w-48 h-48 bg-secondary-container/20 rounded-full blur-3xl"></div>
+            {/* CTA Card */}
+            <article className="bg-primary text-white rounded-2xl sm:rounded-3xl p-5 sm:p-6 lg:p-8 flex flex-col justify-between overflow-hidden relative">
+              <div className="absolute -right-8 -top-8 sm:-right-12 sm:-top-12 w-32 h-32 sm:w-48 sm:h-48 bg-secondary-container/20 rounded-full blur-3xl"></div>
               <div className="relative z-10">
-                <h3 className="text-2xl font-bold mb-4 font-headline">Chưa tìm thấy sự kiện phù hợp?</h3>
-                <p className="text-white/70 text-sm font-medium leading-relaxed max-w-[200px]">Tổ chức sự kiện tác động của riêng bạn và nhận gấp ba điểm thưởng tháng này.</p>
+                <h3 className="text-lg sm:text-xl lg:text-2xl font-bold mb-2 sm:mb-4 font-headline text-white">Chưa tìm thấy sự kiện phù hợp?</h3>
+                <p className="text-white/70 text-xs sm:text-sm font-medium leading-relaxed max-w-[180px] sm:max-w-[200px]">Tổ chức sự kiện tác động của riêng bạn và nhận gấp ba điểm thưởng tháng này.</p>
               </div>
-              <button onClick={() => navigate('/organizer/events/create')} className="relative z-10 mt-8 bg-white text-primary w-full py-3.5 rounded-xl font-bold text-sm hover:bg-secondary-container transition-colors flex items-center justify-center gap-2">
-                <span className="material-symbols-outlined">add_circle</span>
-                Tạo Sự kiện Mới
+              <button
+                onClick={() => navigate('/organizer/events/create')}
+                className="relative z-10 mt-4 sm:mt-6 lg:mt-8 bg-white text-primary w-full py-2.5 sm:py-3 lg:py-3.5 rounded-lg sm:rounded-xl font-bold text-xs sm:text-sm hover:bg-secondary-container transition-colors flex items-center justify-center gap-2"
+              >
+                <span className="material-symbols-outlined text-base sm:text-lg">add_circle</span>
+                <span className="hidden xs:inline">Tạo Sự kiện Mới</span>
+                <span className="xs:hidden">Tạo sự kiện</span>
               </button>
             </article>
           </div>
         </section>
       </div>
+
+      {/* Floating Action Button - Mobile only */}
       <EcoFab onClick={() => navigate('/events')} />
     </div>
   );

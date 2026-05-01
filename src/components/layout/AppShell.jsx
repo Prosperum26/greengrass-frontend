@@ -4,9 +4,11 @@ import Footer from './Footer';
 
 export const AppShell = ({ children, contentClassName = '' }) => {
   return (
-    <div className="flex min-h-screen flex-col bg-surface">
+    <div className="flex min-h-screen flex-col bg-surface overflow-x-hidden">
       <Header />
-      <main className={`flex-1 pt-20 pb-8 ${contentClassName}`}>{children}</main>
+      <main className={`flex-1 pt-16 sm:pt-20 lg:pt-24 pb-8 sm:pb-12 lg:pb-16 ${contentClassName}`}>
+        {children}
+      </main>
       <Footer />
     </div>
   );
