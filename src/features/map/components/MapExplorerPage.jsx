@@ -159,17 +159,17 @@ export const MapExplorerPage = () => {
     <div className="relative isolate h-[60vh] md:h-[72vh] min-h-[400px] md:min-h-[520px] w-full overflow-hidden rounded-2xl bg-surface-high shadow-[0_20px_60px_rgba(33,26,20,0.08)]">
       {/* Mobile Backdrop Overlay */}
       {(isLeftPanelOpen || isRightPanelOpen) && (
-        <div 
-          className="lg:hidden fixed inset-0 z-25 bg-black/50 backdrop-blur-sm"
+        <div
+          className="xl:hidden fixed inset-0 z-25 bg-black/50 backdrop-blur-sm"
           onClick={() => {
             setIsLeftPanelOpen(false);
             setIsRightPanelOpen(false);
           }}
         />
       )}
-      
-      {/* Mobile Toggle Buttons */}
-      <div className="lg:hidden fixed bottom-4 left-4 z-30 flex flex-col gap-2">
+
+      {/* Toggle Buttons */}
+      <div className="xl:hidden fixed bottom-4 left-4 z-30 flex flex-col gap-2">
         <button
           type="button"
           onClick={() => {
@@ -177,8 +177,8 @@ export const MapExplorerPage = () => {
             setIsRightPanelOpen(false);
           }}
           className={`p-3 min-h-[44px] min-w-[44px] rounded-full shadow-lg transition-colors ${
-            isLeftPanelOpen 
-              ? 'bg-primary text-white' 
+            isLeftPanelOpen
+              ? 'bg-primary text-white'
               : 'bg-surface-high text-ink hover:bg-surface-highest'
           }`}
         >
@@ -193,42 +193,12 @@ export const MapExplorerPage = () => {
             setIsLeftPanelOpen(false);
           }}
           className={`p-3 min-h-[44px] min-w-[44px] rounded-full shadow-lg transition-colors ${
-            isRightPanelOpen 
-              ? 'bg-primary text-white' 
+            isRightPanelOpen
+              ? 'bg-primary text-white'
               : 'bg-surface-high text-ink hover:bg-surface-highest'
           }`}
         >
           <span className="material-symbols-outlined text-xl">
-            {isRightPanelOpen ? 'close' : 'info'}
-          </span>
-        </button>
-      </div>
-
-      {/* iPad-specific toggle buttons */}
-      <div className="hidden md:flex lg:hidden fixed bottom-4 left-4 z-30 gap-2">
-        <button
-          type="button"
-          onClick={() => setIsLeftPanelOpen(!isLeftPanelOpen)}
-          className={`p-2 min-h-[40px] min-w-[40px] rounded-lg shadow-md transition-colors ${
-            isLeftPanelOpen 
-              ? 'bg-primary text-white' 
-              : 'bg-surface-high text-ink hover:bg-surface-highest'
-          }`}
-        >
-          <span className="material-symbols-outlined text-lg">
-            {isLeftPanelOpen ? 'close' : 'layers'}
-          </span>
-        </button>
-        <button
-          type="button"
-          onClick={() => setIsRightPanelOpen(!isRightPanelOpen)}
-          className={`p-2 min-h-[40px] min-w-[40px] rounded-lg shadow-md transition-colors ${
-            isRightPanelOpen 
-              ? 'bg-primary text-white' 
-              : 'bg-surface-high text-ink hover:bg-surface-highest'
-          }`}
-        >
-          <span className="material-symbols-outlined text-lg">
             {isRightPanelOpen ? 'close' : 'info'}
           </span>
         </button>
@@ -243,10 +213,10 @@ export const MapExplorerPage = () => {
         />
       </div>
 
-      <div className={`pointer-events-none absolute left-0 top-0 bottom-0 z-10 flex flex-col gap-4 p-4 transition-transform duration-300 lg:pointer-events-auto ${
-        isLeftPanelOpen 
-          ? 'translate-x-0 w-full md:w-[320px] md:p-5' 
-          : '-translate-x-full w-full md:translate-x-0 md:w-[320px] md:p-5'
+      <div className={`pointer-events-none absolute left-0 top-0 bottom-0 z-10 flex flex-col gap-4 p-4 transition-transform duration-300 xl:pointer-events-auto ${
+        isLeftPanelOpen
+          ? 'translate-x-0 w-full md:w-[320px] md:p-5'
+          : '-translate-x-full w-full xl:translate-x-0 xl:w-[320px] xl:p-5'
       }`}>
         <div className="pointer-events-auto rounded-2xl bg-surface/85 p-4 shadow-[24px_0_38px_rgba(33,26,20,0.05)] backdrop-blur-xl">
           <div className="mb-4 flex items-center justify-between">
@@ -310,9 +280,9 @@ export const MapExplorerPage = () => {
       </div>
 
       <aside className={`absolute right-0 top-0 bottom-0 z-20 overflow-y-auto bg-surface shadow-[ -32px_0_48px_rgba(33,26,20,0.10)] transition-transform duration-300 ${
-        isRightPanelOpen 
-          ? 'translate-x-0 w-full md:w-[300px]' 
-          : 'translate-x-full w-full md:translate-x-0 md:w-[300px]'
+        isRightPanelOpen
+          ? 'translate-x-0 w-full md:w-[300px]'
+          : 'translate-x-full w-full xl:translate-x-0 xl:w-[300px]'
       }`}>
         <div className="space-y-6 p-6">
           <div>
