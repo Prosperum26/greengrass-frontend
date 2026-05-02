@@ -50,6 +50,7 @@ export const MapExplorerPage = () => {
   const [nearbyMarkers, setNearbyMarkers] = useState([]);
   const [isLeftPanelOpen, setIsLeftPanelOpen] = useState(false);
   const [isRightPanelOpen, setIsRightPanelOpen] = useState(false);
+  const [isLayerPanelOpen, setIsLayerPanelOpen] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -168,6 +169,14 @@ export const MapExplorerPage = () => {
         />
       )}
 
+      {/* Layer Panel Backdrop */}
+      {isLayerPanelOpen && (
+        <div
+          className="fixed inset-0 z-25 bg-black/30 backdrop-blur-sm"
+          onClick={() => setIsLayerPanelOpen(false)}
+        />
+      )}
+
       {/* Toggle Buttons */}
       <div className="xl:hidden fixed bottom-4 left-4 z-30 flex flex-col gap-2">
         <button
@@ -183,7 +192,7 @@ export const MapExplorerPage = () => {
           }`}
         >
           <span className="material-symbols-outlined text-xl">
-            {isLeftPanelOpen ? 'close' : 'layers'}
+            {isLeftPanelOpen ? 'close' : 'navigation'}
           </span>
         </button>
         <button
@@ -202,6 +211,44 @@ export const MapExplorerPage = () => {
             {isRightPanelOpen ? 'close' : 'info'}
           </span>
         </button>
+      </div>
+
+      {/* Layer Toggle Button - All Platforms */}
+      <div className="fixed bottom-4 left-20 z-30">
+        <button
+          type="button"
+          onClick={() => setIsLayerPanelOpen(!isLayerPanelOpen)}
+          className={`p-3 min-h-[44px] min-w-[44px] rounded-full shadow-lg transition-colors ${
+            isLayerPanelOpen
+              ? 'bg-primary text-white'
+              : 'bg-surface-high text-ink hover:bg-surface-highest'
+          }`}
+        >
+          <span className="material-symbols-outlined text-xl">
+            {isLayerPanelOpen ? 'close' : 'layers'}
+          </span>
+        </button>
+
+        {/* Layer Panel Popup */}
+        {isLayerPanelOpen && (
+          <div className="absolute bottom-14 left-0 w-64 rounded-2xl bg-surface/95 p-4 shadow-[0_20px_60px_rgba(33,26,20,0.15)] backdrop-blur-xl">
+            <h3 className="mb-4 text-[10px] font-bold uppercase tracking-widest text-ink/60">Lớp bản đồ</h3>
+            <div className="grid grid-cols-1 gap-2">
+              <label className="flex cursor-pointer items-center gap-3 rounded-lg p-3 transition-colors hover:bg-surface-highest active:bg-surface-highest min-h-[44px]">
+                <input checked={enabledLayers.events} onChange={() => toggleLayer('events')} className="h-5 w-5 rounded border-transparent bg-surface-highest text-primary focus:ring-primary/30" type="checkbox" />
+                <span className="text-sm font-medium">Sự kiện ({markers.length})</span>
+              </label>
+              <label className="flex cursor-not-allowed items-center gap-3 rounded-lg p-3 text-ink/50 min-h-[44px]">
+                <input checked={enabledLayers.recycling} onChange={() => toggleLayer('recycling')} className="h-5 w-5 rounded border-transparent bg-surface-highest text-primary focus:ring-primary/30" type="checkbox" disabled />
+                <span className="text-sm font-medium">Điểm tái chế (sắp có)</span>
+              </label>
+              <label className="flex cursor-not-allowed items-center gap-3 rounded-lg p-3 text-ink/50 min-h-[44px]">
+                <input checked={enabledLayers.ecoStations} onChange={() => toggleLayer('ecoStations')} className="h-5 w-5 rounded border-transparent bg-surface-highest text-primary focus:ring-primary/30" type="checkbox" disabled />
+                <span className="text-sm font-medium">Trạm xanh (sắp có)</span>
+              </label>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="absolute inset-0 z-0">
@@ -260,23 +307,6 @@ export const MapExplorerPage = () => {
           </button>
         </div>
 
-        <div className="pointer-events-auto rounded-2xl bg-surface/85 p-4 shadow-[24px_0_38px_rgba(33,26,20,0.05)] backdrop-blur-xl">
-          <h3 className="mb-4 text-[10px] font-bold uppercase tracking-widest text-ink/60">Lớp bản đồ</h3>
-          <div className="grid grid-cols-1 gap-2">
-            <label className="flex cursor-pointer items-center gap-3 rounded-lg p-3 transition-colors hover:bg-surface-highest active:bg-surface-highest min-h-[44px]">
-              <input checked={enabledLayers.events} onChange={() => toggleLayer('events')} className="h-5 w-5 rounded border-transparent bg-surface-highest text-primary focus:ring-primary/30" type="checkbox" />
-              <span className="text-sm font-medium">Sự kiện ({markers.length})</span>
-            </label>
-            <label className="flex cursor-not-allowed items-center gap-3 rounded-lg p-3 text-ink/50 min-h-[44px]">
-              <input checked={enabledLayers.recycling} onChange={() => toggleLayer('recycling')} className="h-5 w-5 rounded border-transparent bg-surface-highest text-primary focus:ring-primary/30" type="checkbox" disabled />
-              <span className="text-sm font-medium">Điểm tái chế (sắp có)</span>
-            </label>
-            <label className="flex cursor-not-allowed items-center gap-3 rounded-lg p-3 text-ink/50 min-h-[44px]">
-              <input checked={enabledLayers.ecoStations} onChange={() => toggleLayer('ecoStations')} className="h-5 w-5 rounded border-transparent bg-surface-highest text-primary focus:ring-primary/30" type="checkbox" disabled />
-              <span className="text-sm font-medium">Trạm xanh (sắp có)</span>
-            </label>
-          </div>
-        </div>
       </div>
 
       <aside className={`absolute right-0 top-0 bottom-0 z-20 overflow-y-auto bg-surface shadow-[ -32px_0_48px_rgba(33,26,20,0.10)] transition-transform duration-300 ${

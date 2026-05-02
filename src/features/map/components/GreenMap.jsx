@@ -103,7 +103,7 @@ export const GreenMap = ({
   return (
     <MapContainer center={mapCenter || defaultCenter} zoom={13} className="h-full w-full z-0">
       <FlyToLocation center={mapCenter} />
-      <TileLayer attribution='&copy; OpenStreetMap contributors' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+      <TileLayer attribution='&copy; Google Maps' url="https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}" />
       {validMarkers.map((point) => (
         <Marker
           key={point.id}
