@@ -48,6 +48,8 @@ export const MapExplorerPage = () => {
       : '',
   );
   const [nearbyMarkers, setNearbyMarkers] = useState([]);
+  const [isLeftPanelOpen, setIsLeftPanelOpen] = useState(false);
+  const [isRightPanelOpen, setIsRightPanelOpen] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -154,7 +156,84 @@ export const MapExplorerPage = () => {
   };
 
   return (
-    <div className="relative isolate h-[72vh] min-h-[520px] w-full overflow-hidden rounded-2xl bg-surface-high shadow-[0_20px_60px_rgba(33,26,20,0.08)]">
+    <div className="relative isolate h-[60vh] md:h-[72vh] min-h-[400px] md:min-h-[520px] w-full overflow-hidden rounded-2xl bg-surface-high shadow-[0_20px_60px_rgba(33,26,20,0.08)]">
+      {/* Mobile Backdrop Overlay */}
+      {(isLeftPanelOpen || isRightPanelOpen) && (
+        <div 
+          className="lg:hidden fixed inset-0 z-25 bg-black/50 backdrop-blur-sm"
+          onClick={() => {
+            setIsLeftPanelOpen(false);
+            setIsRightPanelOpen(false);
+          }}
+        />
+      )}
+      
+      {/* Mobile Toggle Buttons */}
+      <div className="lg:hidden fixed bottom-4 left-4 z-30 flex flex-col gap-2">
+        <button
+          type="button"
+          onClick={() => {
+            setIsLeftPanelOpen(!isLeftPanelOpen);
+            setIsRightPanelOpen(false);
+          }}
+          className={`p-3 min-h-[44px] min-w-[44px] rounded-full shadow-lg transition-colors ${
+            isLeftPanelOpen 
+              ? 'bg-primary text-white' 
+              : 'bg-surface-high text-ink hover:bg-surface-highest'
+          }`}
+        >
+          <span className="material-symbols-outlined text-xl">
+            {isLeftPanelOpen ? 'close' : 'layers'}
+          </span>
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setIsRightPanelOpen(!isRightPanelOpen);
+            setIsLeftPanelOpen(false);
+          }}
+          className={`p-3 min-h-[44px] min-w-[44px] rounded-full shadow-lg transition-colors ${
+            isRightPanelOpen 
+              ? 'bg-primary text-white' 
+              : 'bg-surface-high text-ink hover:bg-surface-highest'
+          }`}
+        >
+          <span className="material-symbols-outlined text-xl">
+            {isRightPanelOpen ? 'close' : 'info'}
+          </span>
+        </button>
+      </div>
+
+      {/* iPad-specific toggle buttons */}
+      <div className="hidden md:flex lg:hidden fixed bottom-4 left-4 z-30 gap-2">
+        <button
+          type="button"
+          onClick={() => setIsLeftPanelOpen(!isLeftPanelOpen)}
+          className={`p-2 min-h-[40px] min-w-[40px] rounded-lg shadow-md transition-colors ${
+            isLeftPanelOpen 
+              ? 'bg-primary text-white' 
+              : 'bg-surface-high text-ink hover:bg-surface-highest'
+          }`}
+        >
+          <span className="material-symbols-outlined text-lg">
+            {isLeftPanelOpen ? 'close' : 'layers'}
+          </span>
+        </button>
+        <button
+          type="button"
+          onClick={() => setIsRightPanelOpen(!isRightPanelOpen)}
+          className={`p-2 min-h-[40px] min-w-[40px] rounded-lg shadow-md transition-colors ${
+            isRightPanelOpen 
+              ? 'bg-primary text-white' 
+              : 'bg-surface-high text-ink hover:bg-surface-highest'
+          }`}
+        >
+          <span className="material-symbols-outlined text-lg">
+            {isRightPanelOpen ? 'close' : 'info'}
+          </span>
+        </button>
+      </div>
+
       <div className="absolute inset-0 z-0">
         <GreenMap
           center={center}
@@ -164,7 +243,11 @@ export const MapExplorerPage = () => {
         />
       </div>
 
-      <div className="pointer-events-none absolute left-0 top-0 bottom-0 z-10 flex w-full flex-col gap-4 p-4 md:w-[340px] md:p-5">
+      <div className={`pointer-events-none absolute left-0 top-0 bottom-0 z-10 flex flex-col gap-4 p-4 transition-transform duration-300 lg:pointer-events-auto ${
+        isLeftPanelOpen 
+          ? 'translate-x-0 w-full md:w-[320px] md:p-5' 
+          : '-translate-x-full w-full md:translate-x-0 md:w-[320px] md:p-5'
+      }`}>
         <div className="pointer-events-auto rounded-2xl bg-surface/85 p-4 shadow-[24px_0_38px_rgba(33,26,20,0.05)] backdrop-blur-xl">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="font-display text-base font-bold text-primary">Gợi ý Đường đi</h2>
@@ -201,7 +284,7 @@ export const MapExplorerPage = () => {
           </div>
           <button
             type="button"
-            className="mt-4 w-full rounded-xl bg-primary py-2.5 text-sm font-bold text-white shadow-[0_18px_48px_rgba(33,26,20,0.08)]"
+            className="mt-4 w-full rounded-xl bg-primary py-3 text-sm font-bold text-white shadow-[0_18px_48px_rgba(33,26,20,0.08)] transition-colors hover:bg-primary/90 active:scale-95 min-h-[44px]"
           >
             {selected ? `Chỉ đường đến ${selected.name || selected.title}` : 'Bắt đầu chỉ đường'}
           </button>
@@ -210,23 +293,27 @@ export const MapExplorerPage = () => {
         <div className="pointer-events-auto rounded-2xl bg-surface/85 p-4 shadow-[24px_0_38px_rgba(33,26,20,0.05)] backdrop-blur-xl">
           <h3 className="mb-4 text-[10px] font-bold uppercase tracking-widest text-ink/60">Lớp bản đồ</h3>
           <div className="grid grid-cols-1 gap-2">
-            <label className="flex cursor-pointer items-center gap-3 rounded-lg p-2 transition-colors hover:bg-surface-highest">
-              <input checked={enabledLayers.events} onChange={() => toggleLayer('events')} className="rounded border-transparent bg-surface-highest text-primary focus:ring-primary/30" type="checkbox" />
+            <label className="flex cursor-pointer items-center gap-3 rounded-lg p-3 transition-colors hover:bg-surface-highest active:bg-surface-highest min-h-[44px]">
+              <input checked={enabledLayers.events} onChange={() => toggleLayer('events')} className="h-5 w-5 rounded border-transparent bg-surface-highest text-primary focus:ring-primary/30" type="checkbox" />
               <span className="text-sm font-medium">Sự kiện ({markers.length})</span>
             </label>
-            <label className="flex cursor-not-allowed items-center gap-3 rounded-lg p-2 text-ink/50">
-              <input checked={enabledLayers.recycling} onChange={() => toggleLayer('recycling')} className="rounded border-transparent bg-surface-highest text-primary focus:ring-primary/30" type="checkbox" />
+            <label className="flex cursor-not-allowed items-center gap-3 rounded-lg p-3 text-ink/50 min-h-[44px]">
+              <input checked={enabledLayers.recycling} onChange={() => toggleLayer('recycling')} className="h-5 w-5 rounded border-transparent bg-surface-highest text-primary focus:ring-primary/30" type="checkbox" disabled />
               <span className="text-sm font-medium">Điểm tái chế (sắp có)</span>
             </label>
-            <label className="flex cursor-not-allowed items-center gap-3 rounded-lg p-2 text-ink/50">
-              <input checked={enabledLayers.ecoStations} onChange={() => toggleLayer('ecoStations')} className="rounded border-transparent bg-surface-highest text-primary focus:ring-primary/30" type="checkbox" />
+            <label className="flex cursor-not-allowed items-center gap-3 rounded-lg p-3 text-ink/50 min-h-[44px]">
+              <input checked={enabledLayers.ecoStations} onChange={() => toggleLayer('ecoStations')} className="h-5 w-5 rounded border-transparent bg-surface-highest text-primary focus:ring-primary/30" type="checkbox" disabled />
               <span className="text-sm font-medium">Trạm xanh (sắp có)</span>
             </label>
           </div>
         </div>
       </div>
 
-      <aside className="absolute right-0 top-0 bottom-0 z-20 w-full overflow-y-auto bg-surface shadow-[ -32px_0_48px_rgba(33,26,20,0.10)] md:w-[320px]">
+      <aside className={`absolute right-0 top-0 bottom-0 z-20 overflow-y-auto bg-surface shadow-[ -32px_0_48px_rgba(33,26,20,0.10)] transition-transform duration-300 ${
+        isRightPanelOpen 
+          ? 'translate-x-0 w-full md:w-[300px]' 
+          : 'translate-x-full w-full md:translate-x-0 md:w-[300px]'
+      }`}>
         <div className="space-y-6 p-6">
           <div>
             <span className="inline-flex rounded bg-accent px-2 py-1 text-[10px] font-extrabold uppercase tracking-widest text-white">
@@ -259,7 +346,7 @@ export const MapExplorerPage = () => {
                   type="button"
                   key={p.id}
                   onClick={() => setSelected(p)}
-                  className={`w-full rounded-2xl p-4 text-left transition ${
+                  className={`w-full rounded-2xl p-4 text-left transition active:scale-95 min-h-[60px] ${
                     p.id === selectedId ? 'bg-surface-highest' : 'bg-surface-low hover:bg-surface-highest'
                   }`}
                 >
