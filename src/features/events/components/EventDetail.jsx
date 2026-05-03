@@ -20,6 +20,7 @@ export const EventDetail = () => {
   const [error, setError] = useState('');
   const [uploadingGallery, setUploadingGallery] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
+  const [registrationStatus, setRegistrationStatus] = useState(null); // REGISTERED, CHECKED_IN, etc.
   const [isDeleting, setIsDeleting] = useState(false);
   const [showQrModal, setShowQrModal] = useState(false);
   const [qrDataUrl, setQrDataUrl] = useState('');
@@ -147,11 +148,18 @@ export const EventDetail = () => {
     const checkRegistration = async () => {
       try {
         const res = await eventsApi.checkRegistration(id);
-        setIsRegistered(res.data?.data?.registered || false);
+        const data = res.data?.data;
+        setIsRegistered(data?.registered || false);
+        setRegistrationStatus(data?.status || null);
+        // If already checked in, set checkInSuccess to true to hide form
+        if (data?.status === 'CHECKED_IN') {
+          setCheckInSuccess(true);
+        }
       } catch (err) {
         // If 404, user is not registered
         if (err.response?.status === 404) {
           setIsRegistered(false);
+          setRegistrationStatus(null);
         }
         // Other errors: keep current state
       }
@@ -409,7 +417,26 @@ export const EventDetail = () => {
               <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-bold tracking-wide text-primary">
                 {event.points} điểm
               </span>
+              {/* User registration status badge */}
+              {isRegistered && registrationStatus === 'CHECKED_IN' && (
+                <span className="rounded-full bg-secondary/20 px-3 py-1 text-xs font-bold tracking-wide text-secondary">
+                  ✓ Đã check-in
+                </span>
+              )}
+              {isRegistered && registrationStatus === 'REGISTERED' && (
+                <span className="rounded-full bg-accent/10 px-3 py-1 text-xs font-bold tracking-wide text-accent">
+                  Đã đăng ký
+                </span>
+              )}
             </div>
+
+            {/* Event completed notification */}
+            {event?.status === 'COMPLETED' && (
+              <div className="mt-6 rounded-2xl bg-ink/5 p-4 text-center">
+                <p className="font-bold text-ink/70">Sự kiện đã kết thúc</p>
+                <p className="text-sm text-ink/50 mt-1">Không thể đăng ký hoặc check-in cho sự kiện này nữa.</p>
+              </div>
+            )}
 
             <h1 className="mt-4 text-3xl font-semibold font-display tracking-tight text-primary md:text-4xl">{event.title}</h1>
             <p className="mt-3 max-w-3xl text-ink/75 leading-relaxed">{event.description}</p>
@@ -429,19 +456,20 @@ export const EventDetail = () => {
               </div>
             </div>
 
-            {canRegister && !isRegistered && (
+            {/* Registration buttons - hidden when event is COMPLETED */}
+            {canRegister && !isRegistered && event?.status !== 'COMPLETED' && (
               <button onClick={onRegister} className="mt-6 rounded-xl bg-accent px-6 py-3 text-sm font-semibold text-white hover:bg-accent-hover shadow-[0_20px_50px_rgba(33,26,20,0.10)]">
                 Đăng ký sự kiện
               </button>
             )}
-            {canRegister && isRegistered && (
+            {canRegister && isRegistered && event?.status !== 'COMPLETED' && registrationStatus !== 'CHECKED_IN' && (
               <button onClick={onUnregister} className="mt-6 rounded-xl bg-secondary px-6 py-3 text-sm font-semibold text-white hover:bg-secondary/90 shadow-[0_20px_50px_rgba(33,26,20,0.10)]">
                 Hủy đăng ký
               </button>
             )}
 
-            {/* Manual Check-in for registered users */}
-            {isRegistered && !checkInSuccess && (
+            {/* Manual Check-in for registered users - hidden when already checked in or event is COMPLETED */}
+            {isRegistered && !checkInSuccess && registrationStatus !== 'CHECKED_IN' && event?.status !== 'COMPLETED' && (
               <div className="mt-6 rounded-2xl bg-surface-highest p-4 shadow-[0_12px_32px_rgba(33,26,20,0.06)]">
                 <p className="text-sm font-semibold text-ink mb-3">Check-in bằng mã</p>
                 <div className="flex gap-2">
@@ -458,6 +486,7 @@ export const EventDetail = () => {
                       try {
                         await checkIn(id, manualToken.trim());
                         setCheckInSuccess(true);
+                        setRegistrationStatus('CHECKED_IN');
                         setManualToken('');
                       } catch (err) {
                         alert(err.response?.data?.message || 'Check-in thất bại');
@@ -477,8 +506,9 @@ export const EventDetail = () => {
 
             {checkInSuccess && (
               <div className="mt-6 rounded-2xl bg-secondary/15 p-4 text-center">
-                <p className="font-bold text-primary">Check-in thành công!</p>
-                <p className="text-sm text-ink/60 mt-1">Điểm thưởng của bạn sẽ được cập nhật sớm.</p>
+                <p className="font-bold text-primary">✓ Đã check-in thành công!</p>
+                <p className="text-sm text-ink/60 mt-1">Bạn đã hoàn tất check-in. Điểm thưởng sẽ được cập nhật sớm.</p>
+                <p className="text-xs text-ink/40 mt-2">Không thể hủy đăng ký sau khi đã check-in.</p>
               </div>
             )}
           </>
