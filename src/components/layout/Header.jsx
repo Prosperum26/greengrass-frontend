@@ -2,6 +2,7 @@ import React, { useMemo, memo, useState, useCallback, useRef, useEffect } from '
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthContext } from '../../hooks/useAuthContext';
 import { useNotifications } from '../../hooks/useNotifications';
+import { QRScanner } from '../../features/checkin/components/QRScanner';
 
 export const Header = memo(() => {
   const { user, isAuthenticated, logout, getRole } = useAuthContext();
@@ -27,6 +28,9 @@ export const Header = memo(() => {
   } = useNotifications();
   const [showNotifications, setShowNotifications] = useState(false);
   const notificationRef = useRef(null);
+
+  // QR Scanner state
+  const [showQrScanner, setShowQrScanner] = useState(false);
 
   // Get initial search value from URL if on events page
   const getInitialSearch = () => {
@@ -190,6 +194,15 @@ export const Header = memo(() => {
             <Link to="/profile" className="text-white/80 hover:text-white hover:bg-white/10 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 text-xs lg:text-sm px-3 lg:px-4 py-2 rounded-full">Đóng góp</Link>
             <Link to="/leafia" className="hidden md:block text-white/80 hover:text-white hover:bg-white/10 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 text-xs lg:text-sm px-2 lg:px-4 py-2 rounded-full">Leafia</Link>
             <Link to="/leaderboard" className="text-white/80 hover:text-white hover:bg-white/10 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 text-xs lg:text-sm px-3 lg:px-4 py-2 rounded-full">Xếp hạng</Link>
+            {isAuthenticated && (
+              <button
+                onClick={() => setShowQrScanner(true)}
+                className="text-white/80 hover:text-white hover:bg-white/10 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 text-xs lg:text-sm px-3 lg:px-4 py-2 rounded-full flex items-center gap-1"
+              >
+                <span className="material-symbols-outlined text-sm">qr_code_scanner</span>
+                Quét QR
+              </button>
+            )}
           </div>
 
           <div className="flex items-center gap-2 sm:gap-4 border-l border-white/10 pl-2 sm:pl-4 lg:pl-6">
@@ -375,6 +388,16 @@ export const Header = memo(() => {
               <MobileNavItem to="/leafia" icon="psychiatry" label="Leafia" onClick={() => setIsMobileMenuOpen(false)} />
               <MobileNavItem to="/leaderboard" icon="emoji_events" label="Bảng xếp hạng" onClick={() => setIsMobileMenuOpen(false)} />
               <MobileNavItem to="/map" icon="map" label="Bản đồ" onClick={() => setIsMobileMenuOpen(false)} />
+              
+              {isAuthenticated && (
+                <button
+                  onClick={() => { setShowQrScanner(true); setIsMobileMenuOpen(false); }}
+                  className="flex items-center gap-3 px-4 py-3 text-white/80 hover:text-white hover:bg-white/10 rounded-xl transition-colors w-full text-left"
+                >
+                  <span className="material-symbols-outlined text-xl">qr_code_scanner</span>
+                  <span className="font-medium">Quét QR Check-in</span>
+                </button>
+              )}
 
               {!isAuthenticated && (
                 <div className="pt-4 mt-4 border-t border-white/10 space-y-2">
@@ -406,6 +429,45 @@ export const Header = memo(() => {
                   </button>
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+      {/* QR Scanner Modal */}
+      {showQrScanner && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
+            <div className="p-4 border-b border-gray-100 flex justify-between items-center">
+              <h3 className="font-bold text-lg text-gray-800">Quét mã QR Check-in</h3>
+              <button
+                onClick={() => setShowQrScanner(false)}
+                className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+              >
+                <span className="material-symbols-outlined text-gray-600">close</span>
+              </button>
+            </div>
+            <div className="p-4">
+              <QRScanner
+                onScan={(token) => {
+                  // Parse URL from token and navigate
+                  try {
+                    const url = new URL(token);
+                    const path = url.pathname;
+                    const searchParams = url.search;
+                    navigate(`${path}${searchParams}`);
+                    setShowQrScanner(false);
+                  } catch {
+                    // If not a URL, try to extract eventId from token format
+                    alert('Mã QR không hợp lệ. Vui lòng quét mã QR check-in của sự kiện.');
+                  }
+                }}
+                onError={(err) => {
+                  console.error('QR Scan error:', err);
+                }}
+              />
+              <p className="mt-4 text-sm text-gray-500 text-center">
+                Quét mã QR tại sự kiện để check-in
+              </p>
             </div>
           </div>
         </div>
