@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { eventsApi } from '../../../api';
+import { eventsApi, usersApi } from '../../../api';
 import { useError } from '../../../hooks/useError';
 import { useDebounce } from '../../../hooks/useDebounce';
 import { getErrorMessage } from '../../../utils/errorMessages';
 import { EventCard } from '../../events/components/EventCard';
-import { EcoFab, FilterHub, MapPreviewCard } from '../../../components/eco';
+import { EcoFab, FilterHub, MapPreviewCard, PartnerMarquee } from '../../../components/eco';
 
 const sortOptions = [
   { value: 'startTime:asc', label: 'Thời gian bắt đầu (Cũ → Mới)' },
@@ -24,6 +24,7 @@ export const HomePage = () => {
   const [featuredEvents, setFeaturedEvents] = useState([]);
   const [liveEventCount, setLiveEventCount] = useState(0);
   const [upcomingEventCount, setUpcomingEventCount] = useState(0);
+  const [organizers, setOrganizers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [keywordInput, setKeywordInput] = useState('');
   const [status, setStatus] = useState('ALL');
@@ -39,7 +40,7 @@ export const HomePage = () => {
         const [sortBy, sortOrder] = sort.split(':');
         const [eventsRes, liveRes, upcomingRes] = await Promise.all([
           eventsApi.getAll({
-            limit: 6,
+            limit: 5,
             page: 1,
             keyword: debouncedKeyword || undefined,
             status: status === 'ALL' ? undefined : status,
@@ -62,6 +63,10 @@ export const HomePage = () => {
         setFeaturedEvents(items.map((event, idx) => ({ ...event, verified: idx < 2 })));
         setLiveEventCount(liveRes.data?.data?.pagination?.total || 0);
         setUpcomingEventCount(upcomingRes.data?.data?.pagination?.total || 0);
+
+        // Load organizers
+        const organizersRes = await usersApi.getOrganizers();
+        setOrganizers(organizersRes.data || []);
       } catch (err) {
         const message = getErrorMessage(err);
         addError(message, { type: 'error' });
@@ -113,6 +118,7 @@ export const HomePage = () => {
             status={status}
             onStatusChange={setStatus}
           />
+          <PartnerMarquee partners={organizers} />
         </aside>
 
         {/* Mobile Filter - Shown only on mobile/tablet */}
@@ -159,23 +165,16 @@ export const HomePage = () => {
               />
             ))}
 
-            {/* CTA Card */}
-            <article className="bg-primary text-white rounded-2xl sm:rounded-3xl p-5 sm:p-6 lg:p-8 flex flex-col justify-between overflow-hidden relative">
-              <div className="absolute -right-8 -top-8 sm:-right-12 sm:-top-12 w-32 h-32 sm:w-48 sm:h-48 bg-secondary-container/20 rounded-full blur-3xl"></div>
-              <div className="relative z-10">
-                <h3 className="text-lg sm:text-xl lg:text-2xl font-bold mb-2 sm:mb-4 font-headline text-white">Chưa tìm thấy sự kiện phù hợp?</h3>
-                <p className="text-white/70 text-xs sm:text-sm font-medium leading-relaxed max-w-[180px] sm:max-w-[200px]">Tổ chức sự kiện tác động của riêng bạn và nhận gấp ba điểm thưởng tháng này.</p>
-              </div>
-              <button
-                onClick={() => navigate('/organizer/events/create')}
-                className="relative z-10 mt-4 sm:mt-6 lg:mt-8 bg-white text-primary w-full py-2.5 sm:py-3 lg:py-3.5 rounded-lg sm:rounded-xl font-bold text-xs sm:text-sm hover:bg-secondary-container transition-colors flex items-center justify-center gap-2"
-              >
-                <span className="material-symbols-outlined text-base sm:text-lg">add_circle</span>
-                <span className="hidden xs:inline">Tạo Sự kiện Mới</span>
-                <span className="xs:hidden">Tạo sự kiện</span>
-              </button>
-            </article>
           </div>
+
+          {/* View More Button */}
+          <button
+            onClick={() => navigate('/events')}
+            className="mt-6 sm:mt-8 w-full bg-surface-container-high text-primary py-3 sm:py-4 rounded-xl sm:rounded-2xl font-bold text-sm sm:text-base hover:bg-primary hover:text-white hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-2"
+          >
+            <span>Xem thêm sự kiện</span>
+            <span className="material-symbols-outlined text-base sm:text-lg">arrow_forward</span>
+          </button>
         </section>
       </div>
 

@@ -8,6 +8,7 @@ export const usersApi = {
   getMyEvents: () => apiClient.get('/users/me/events'),
   getMyOrganizedEvents: () => apiClient.get('/users/me/organized-events'),
   getMyPoints: () => apiClient.get('/users/me/points'),
+  getOrganizers: () => apiClient.get('/users/organizers', { skipAuth: true }),
   uploadAvatar: (formData) => apiClient.post('/users/me/avatar', formData, {
     headers: { 'Content-Type': 'multipart/form-data' }
   }),

@@ -238,7 +238,9 @@ html {
 
 /* Button press effect */
 .btn-press {
-  transition: transform 0.1s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.1s ease,
+    box-shadow 0.2s ease;
 }
 
 .btn-press:active {
@@ -299,4 +301,22 @@ html {
   line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+/* Marquee animation for PartnerMarquee */
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 15s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
 }
