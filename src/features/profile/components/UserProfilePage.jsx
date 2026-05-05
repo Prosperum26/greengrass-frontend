@@ -318,23 +318,75 @@ const UserProfilePage = () => {
             <section>
               <div className="mb-6 flex items-center justify-between">
                 <h2 className="text-2xl font-extrabold font-display text-primary">Huy hiệu đã nhận</h2>
-                <button type="button" className="text-primary font-bold text-sm hover:underline">Xem tất cả</button>
+                {(points?.badges?.length || 0) > 4 && (
+                  <button type="button" className="text-primary font-bold text-sm hover:underline">Xem tất cả ({points.badges.length})</button>
+                )}
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
-                {(points?.badges || []).slice(0, 4).map((badge) => (
-                  <div key={badge.name} className="rounded-[2rem] bg-surface-low p-6 text-center space-y-3 transition-transform hover:-translate-y-1 shadow-[0_18px_48px_rgba(33,26,20,0.06)]">
-                    <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary shadow-[0_14px_32px_rgba(33,26,20,0.08)]">
-                      {badge.iconUrl ? (
-                        <img src={badge.iconUrl} alt={badge.name} className="h-10 w-10 object-contain" />
-                      ) : (
-                        <span className="text-2xl font-black">★</span>
-                      )}
-                    </div>
-                    <p className="font-display font-bold text-sm">{badge.name}</p>
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-ink/90">Đã mở khóa</span>
+              {(points?.badges || []).length === 0 ? (
+                <div className="rounded-3xl bg-surface-low p-8 text-center">
+                  <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-surface-high text-ink/40">
+                    <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                    </svg>
                   </div>
-                ))}
-              </div>
+                  <p className="text-ink/60 font-medium">Chưa có huy hiệu nào</p>
+                  <p className="mt-1 text-sm text-ink/40">Tham gia sự kiện và tích điểm để nhận huy hiệu!</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {(points?.badges || []).slice(0, 4).map((badge, index) => {
+                    const badgeId = badge.id || badge.badge?.id || index;
+                    const badgeName = badge.badge?.name || badge.name;
+                    const badgeDesc = badge.badge?.description || badge.description;
+                    const badgeIcon = badge.badge?.iconUrl || badge.iconUrl;
+                    const isFirstStep = badgeName === 'First Green Step';
+
+                    return (
+                      <div
+                        key={badgeId}
+                        title={badgeDesc}
+                        className={`group relative rounded-2xl p-5 text-center transition-all duration-300 hover:scale-105 hover:shadow-lg cursor-pointer ${
+                          isFirstStep
+                            ? 'bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-200'
+                            : 'bg-surface-low border border-surface-high'
+                        }`}
+                      >
+                        {isFirstStep && (
+                          <div className="absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-amber-400 text-white text-xs shadow-md">
+                            1st
+                          </div>
+                        )}
+                        <div className={`mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full shadow-md transition-transform group-hover:scale-110 ${
+                          isFirstStep
+                            ? 'bg-gradient-to-br from-amber-400 to-orange-500 text-white'
+                            : 'bg-primary/10 text-primary'
+                        }`}>
+                          {badgeIcon ? (
+                            <img src={badgeIcon} alt={badgeName} className="h-8 w-8 object-contain" />
+                          ) : isFirstStep ? (
+                            <svg className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                          ) : (
+                            <span className="text-xl font-black">★</span>
+                          )}
+                        </div>
+                        <p className={`font-display font-bold text-sm mb-1 ${isFirstStep ? 'text-amber-800' : 'text-ink'}`}>
+                          {badgeName}
+                        </p>
+                        <span className={`text-[10px] font-bold uppercase tracking-wider ${isFirstStep ? 'text-amber-600' : 'text-primary'}`}>
+                          {isFirstStep ? '⭐ Đặc biệt' : 'Đã mở khóa'}
+                        </span>
+                        {badgeDesc && (
+                          <p className="mt-2 text-xs text-ink/50 line-clamp-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            {badgeDesc}
+                          </p>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </section>
 
             <section>

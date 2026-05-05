@@ -1,6 +1,6 @@
 // usePoints Hook
 import { useState, useCallback } from 'react';
-import { usersApi } from '../../../api';
+import { pointsApi } from '../../../api';
 
 export const usePoints = () => {
   const [points, setPoints] = useState(0);
@@ -13,9 +13,9 @@ export const usePoints = () => {
   const fetchPoints = useCallback(async () => {
     setIsLoading(true);
     try {
-      const { data } = await usersApi.getPoints();
-      setPoints(data.total);
-      setHistory(data.history);
+      const { data } = await pointsApi.getMe();
+      setPoints(data.totalPoints ?? 0);
+      setHistory(data.history ?? []);
       return data;
     } catch (err) {
       setError(err.response?.data?.message || 'Không thể tải điểm');
@@ -28,8 +28,8 @@ export const usePoints = () => {
   const fetchBadges = useCallback(async () => {
     setIsLoading(true);
     try {
-      const { data } = await usersApi.getBadges();
-      setBadges(data);
+      const { data } = await pointsApi.getMyBadges();
+      setBadges(data ?? []);
       return data;
     } catch (err) {
       setError(err.response?.data?.message || 'Không thể tải huy hiệu');
@@ -42,8 +42,8 @@ export const usePoints = () => {
   const fetchLeaderboard = useCallback(async (params = {}) => {
     setIsLoading(true);
     try {
-      const { data } = await usersApi.getLeaderboard(params);
-      setLeaderboard(data.entries);
+      const { data } = await pointsApi.getLeaderboard(params);
+      setLeaderboard(data ?? []);
       return data;
     } catch (err) {
       setError(err.response?.data?.message || 'Không thể tải bảng xếp hạng');
