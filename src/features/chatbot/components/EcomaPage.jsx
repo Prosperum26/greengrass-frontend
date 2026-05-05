@@ -24,11 +24,16 @@ const LeafiaPage = () => {
     void loadRecommendations();
   }, []);
 
-  const sendMessage = async (text) => {
+  const sendMessage = async (text, isQuickSuggestion = false) => {
     const trimmed = text.trim();
     if (!trimmed || isSending) return;
 
-    const nextMessages = [...messages, { role: 'user', text: trimmed }];
+    // Add context for quick suggestions
+    const messageText = isQuickSuggestion 
+      ? `[Gợi ý nhanh] ${trimmed}` 
+      : trimmed;
+
+    const nextMessages = [...messages, { role: 'user', text: messageText }];
     setMessages(nextMessages);
     setInput('');
     setIsSending(true);
@@ -40,7 +45,7 @@ const LeafiaPage = () => {
       }));
 
       const { data } = await assistantApi.chat({
-        message: trimmed,
+        message: messageText,
         history,
       });
 
@@ -79,7 +84,7 @@ const LeafiaPage = () => {
               <button
                 key={`${idx}-${item}`}
                 type="button"
-                onClick={() => sendMessage(item)}
+                onClick={() => sendMessage(item, true)}
                 className="w-full rounded-xl bg-surface-low px-4 py-3 text-left text-sm text-ink hover:bg-surface transition-colors"
               >
                 {item}
