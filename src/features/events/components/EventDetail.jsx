@@ -34,6 +34,19 @@ export const EventDetail = () => {
   const fileInputRef = useRef(null);
   const coverInputRef = useRef(null);
   const qrWriterRef = useRef(null);
+  
+  // Edit form states
+  const [editForm, setEditForm] = useState({
+    title: '',
+    description: '',
+    location: '',
+    latitude: '',
+    longitude: '',
+    checkinRadius: '',
+    startTime: '',
+    endTime: ''
+  });
+  const [saving, setSaving] = useState(false);
 
   const userId = useMemo(() => getUserId(), [getUserId]);
   const role = useMemo(() => getRole(), [getRole]);
@@ -323,6 +336,62 @@ export const EventDetail = () => {
     }
   };
 
+  
+  const handleSaveEdit = async () => {
+    if (!event) return;
+    
+    setSaving(true);
+    try {
+      const updateData = {
+        title: editForm.title,
+        description: editForm.description,
+        location: editForm.location,
+        startTime: new Date(editForm.startTime).toISOString(),
+        endTime: new Date(editForm.endTime).toISOString()
+      };
+      
+      // Only include location fields if they're provided
+      if (editForm.latitude && editForm.longitude) {
+        updateData.latitude = parseFloat(editForm.latitude);
+        updateData.longitude = parseFloat(editForm.longitude);
+      }
+      
+      if (editForm.checkinRadius) {
+        updateData.checkinRadius = parseInt(editForm.checkinRadius);
+      }
+      
+      await eventsApi.update(id, updateData);
+      
+      // Refresh event data
+      const updatedEvent = await eventsApi.getById(id);
+      setEvent(updatedEvent.data);
+      
+      alert('Cập nhật sự kiện thành công!');
+    } catch (err) {
+      const msg = err.response?.data?.message || 'Không thể cập nhật sự kiện';
+      alert(msg);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // Initialize edit form when switching to edit tab
+  const initializeEditForm = () => {
+    if (!event) return;
+    
+    setEditForm({
+      title: event.title || '',
+      description: event.description || '',
+      location: event.location || '',
+      latitude: event.latitude || '',
+      longitude: event.longitude || '',
+      checkinRadius: event.checkinRadius || '',
+      startTime: new Date(event.startTime).toISOString().slice(0, 16),
+      endTime: new Date(event.endTime).toISOString().slice(0, 16)
+    });
+  };
+
+  
   const handleCoverSelect = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -445,6 +514,15 @@ export const EventDetail = () => {
               <div className="rounded-2xl bg-surface-highest p-4 shadow-[0_12px_32px_rgba(33,26,20,0.06)]">
                 <p className="text-xs font-semibold uppercase tracking-wide text-ink/45">Địa điểm</p>
                 <p className="mt-2 font-medium text-ink">{event.location}</p>
+                {event.checkinRadius && (
+                  <div className="mt-2 flex items-center gap-2">
+                    <svg className="h-4 w-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    <span className="text-sm text-ink/75">Phạm vi check-in: {event.checkinRadius}m</span>
+                  </div>
+                )}
               </div>
               <div className="rounded-2xl bg-surface-highest p-4 shadow-[0_12px_32px_rgba(33,26,20,0.06)]">
                 <p className="text-xs font-semibold uppercase tracking-wide text-ink/45">Thời gian bắt đầu</p>
@@ -561,12 +639,133 @@ export const EventDetail = () => {
         {(isAdmin || isEventOwner) && (
           <section className="mt-10">
             <div className="mb-4 flex flex-wrap gap-2">
-              {['participants', 'checkin', 'qr', 'gallery'].map((tab) => (
-                <button key={tab} onClick={() => setActiveTab(tab)} className={`rounded-xl px-3 py-2 text-sm font-medium ${activeTab === tab ? 'bg-primary text-white' : 'bg-surface-highest text-ink hover:bg-surface-high'}`}>
-                  {tab.toUpperCase()}
+              {['edit', 'participants', 'checkin', 'qr', 'gallery'].map((tab) => (
+                <button 
+                  key={tab} 
+                  onClick={() => {
+                    if (tab === 'edit') {
+                      initializeEditForm();
+                    }
+                    setActiveTab(tab);
+                  }} 
+                  className={`rounded-xl px-3 py-2 text-sm font-medium ${activeTab === tab ? 'bg-primary text-white' : 'bg-surface-highest text-ink hover:bg-surface-high'}`}
+                >
+                  {tab === 'edit' ? 'CHỈNH SỬA' : tab.toUpperCase()}
                 </button>
               ))}
             </div>
+
+            {activeTab === 'edit' && (
+              <div className="rounded-2xl bg-surface-highest p-6 shadow-[0_12px_32px_rgba(33,26,20,0.06)]">
+                <h3 className="text-lg font-semibold text-ink mb-4">Chỉnh sửa thông tin sự kiện</h3>
+                
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-ink mb-1">Tên sự kiện</label>
+                    <input
+                      type="text"
+                      value={editForm.title}
+                      onChange={(e) => setEditForm(prev => ({ ...prev, title: e.target.value }))}
+                      className="w-full rounded-xl bg-white px-4 py-3 text-sm text-ink placeholder:text-ink/40 outline-none focus:ring-2 focus:ring-primary/25"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-ink mb-1">Mô tả</label>
+                    <textarea
+                      value={editForm.description}
+                      onChange={(e) => setEditForm(prev => ({ ...prev, description: e.target.value }))}
+                      rows={3}
+                      className="w-full rounded-xl bg-white px-4 py-3 text-sm text-ink placeholder:text-ink/40 outline-none focus:ring-2 focus:ring-primary/25"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-ink mb-1">Địa điểm</label>
+                    <input
+                      type="text"
+                      value={editForm.location}
+                      onChange={(e) => setEditForm(prev => ({ ...prev, location: e.target.value }))}
+                      className="w-full rounded-xl bg-white px-4 py-3 text-sm text-ink placeholder:text-ink/40 outline-none focus:ring-2 focus:ring-primary/25"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-ink mb-1">Vĩ độ (Latitude)</label>
+                      <input
+                        type="number"
+                        step="any"
+                        value={editForm.latitude}
+                        onChange={(e) => setEditForm(prev => ({ ...prev, latitude: e.target.value }))}
+                        placeholder="10.762622"
+                        className="w-full rounded-xl bg-white px-4 py-3 text-sm text-ink placeholder:text-ink/40 outline-none focus:ring-2 focus:ring-primary/25"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-ink mb-1">Kinh độ (Longitude)</label>
+                      <input
+                        type="number"
+                        step="any"
+                        value={editForm.longitude}
+                        onChange={(e) => setEditForm(prev => ({ ...prev, longitude: e.target.value }))}
+                        placeholder="106.660172"
+                        className="w-full rounded-xl bg-white px-4 py-3 text-sm text-ink placeholder:text-ink/40 outline-none focus:ring-2 focus:ring-primary/25"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-ink mb-1">Bán kính check-in (mét)</label>
+                    <input
+                      type="number"
+                      value={editForm.checkinRadius}
+                      onChange={(e) => setEditForm(prev => ({ ...prev, checkinRadius: e.target.value }))}
+                      placeholder="50"
+                      className="w-full rounded-xl bg-white px-4 py-3 text-sm text-ink placeholder:text-ink/40 outline-none focus:ring-2 focus:ring-primary/25"
+                    />
+                    <p className="mt-1 text-xs text-ink/50">Người dùng phải trong phạm vi này để check-in. Để trống nếu không giới hạn.</p>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-ink mb-1">Thời gian bắt đầu</label>
+                      <input
+                        type="datetime-local"
+                        value={editForm.startTime}
+                        onChange={(e) => setEditForm(prev => ({ ...prev, startTime: e.target.value }))}
+                        className="w-full rounded-xl bg-white px-4 py-3 text-sm text-ink placeholder:text-ink/40 outline-none focus:ring-2 focus:ring-primary/25"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-ink mb-1">Thời gian kết thúc</label>
+                      <input
+                        type="datetime-local"
+                        value={editForm.endTime}
+                        onChange={(e) => setEditForm(prev => ({ ...prev, endTime: e.target.value }))}
+                        className="w-full rounded-xl bg-white px-4 py-3 text-sm text-ink placeholder:text-ink/40 outline-none focus:ring-2 focus:ring-primary/25"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex gap-3 pt-4">
+                    <button
+                      onClick={handleSaveEdit}
+                      disabled={saving}
+                      className="rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-white hover:bg-primary/90 disabled:opacity-50 transition-colors"
+                    >
+                      {saving ? 'Đang lưu...' : 'Lưu thay đổi'}
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('participants')}
+                      className="rounded-xl bg-surface-high px-6 py-3 text-sm font-semibold text-ink hover:bg-surface-highest transition-colors"
+                    >
+                      Hủy
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {activeTab === 'checkin' && (
               <>

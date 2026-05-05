@@ -8,4 +8,5 @@ export const pointsApi = {
   getMyBadges: () => apiClient.get('/points/badges/me'),
   getHistory: (params) => apiClient.get('/points/history', { params }),
   getMyRank: () => apiClient.get('/points/rank'),
+  checkBadges: () => apiClient.post('/points/check-badges'),
 };

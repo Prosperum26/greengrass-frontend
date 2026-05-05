@@ -46,6 +46,17 @@ const UserProfilePage = () => {
     }
   };
 
+  const handleCheckBadges = async () => {
+    try {
+      await pointsApi.checkBadges();
+      // Reload data to get updated badges
+      await loadData();
+      alert('Huy hiệu First Green Step đã được kiểm tra và cập nhật!');
+    } catch (err) {
+      alert(err.response?.data?.message || 'Không thể kiểm tra huy hiệu');
+    }
+  };
+
   const handleAvatarSelect = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -343,6 +354,14 @@ const UserProfilePage = () => {
                   </div>
                   <p className="text-ink/60 font-medium">Chưa có huy hiệu nào</p>
                   <p className="mt-1 text-sm text-ink/40">Tham gia sự kiện và tích điểm để nhận huy hiệu!</p>
+                  {events.some(e => e.status === 'CHECKED_IN' || e.status === 'COMPLETED') && (
+                    <button
+                      onClick={handleCheckBadges}
+                      className="mt-4 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors text-sm"
+                    >
+                      Kiểm tra huy hiệu First Green Step
+                    </button>
+                  )}
                 </div>
               ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
