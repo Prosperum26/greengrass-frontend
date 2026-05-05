@@ -369,7 +369,6 @@ const UserProfilePage = () => {
                     const badgeId = badge.id || badge.badge?.id || index;
                     const badgeName = badge.badge?.name || badge.name;
                     const badgeDesc = badge.badge?.description || badge.description;
-                    const badgeIcon = badge.badge?.iconUrl || badge.iconUrl;
                     const isFirstStep = badgeName === 'First Green Step';
 
                     return (
@@ -392,14 +391,26 @@ const UserProfilePage = () => {
                             ? 'bg-gradient-to-br from-amber-400 to-orange-500 text-white'
                             : 'bg-primary/10 text-primary'
                         }`}>
-                          {badgeIcon ? (
-                            <img src={badgeIcon} alt={badgeName} className="h-8 w-8 object-contain" />
-                          ) : isFirstStep ? (
-                            <svg className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                          {isFirstStep ? (
+                            <svg className="h-7 w-7" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                            </svg>
+                          ) : badgeName === 'Green Beginner' ? (
+                            <svg className="h-7 w-7" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
+                            </svg>
+                          ) : badgeName === 'Eco Enthusiast' ? (
+                            <svg className="h-7 w-7" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                            </svg>
+                          ) : badgeName === 'Green Champion' ? (
+                            <svg className="h-7 w-7" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                             </svg>
                           ) : (
-                            <span className="text-xl font-black">★</span>
+                            <svg className="h-7 w-7" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
+                            </svg>
                           )}
                         </div>
                         <p className={`font-display font-bold text-sm mb-1 ${isFirstStep ? 'text-amber-800' : 'text-ink'}`}>
