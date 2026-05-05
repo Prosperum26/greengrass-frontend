@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { pointsApi, usersApi } from '../../../api';
 import { ImpactPill } from '../../../components/eco';
@@ -75,25 +75,37 @@ const UserProfilePage = () => {
     }
   };
 
+  const loadData = useCallback(async () => {
+    try {
+      const [userRes, eventsRes, pointsRes, _rankRes] = await Promise.all([
+        usersApi.getMe(),
+        usersApi.getMyEvents(),
+        pointsApi.getMe(),
+        pointsApi.getMyRank(),
+      ]);
+      setUser(userRes.data);
+      setEvents(eventsRes.data || []);
+      setPoints(pointsRes.data);
+      setRank(_rankRes?.data); // rank data stored but not displayed currently
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
-    const load = async () => {
-      try {
-        const [userRes, eventsRes, pointsRes, _rankRes] = await Promise.all([
-          usersApi.getMe(),
-          usersApi.getMyEvents(),
-          pointsApi.getMe(),
-          pointsApi.getMyRank(),
-        ]);
-        setUser(userRes.data);
-        setEvents(eventsRes.data || []);
-        setPoints(pointsRes.data);
-        setRank(_rankRes?.data); // rank data stored but not displayed currently
-      } finally {
-        setLoading(false);
+    void loadData();
+  }, [loadData]);
+
+  // Refresh data when page becomes visible (e.g., after check-in)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        void loadData();
       }
     };
-    void load();
-  }, []);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [loadData]);
 
   // Event categorization for future display enhancements
   const _joinedEvents = useMemo(() => events.filter((item) => item.status !== 'COMPLETED'), [events]);

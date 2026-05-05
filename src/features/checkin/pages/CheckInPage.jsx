@@ -1,11 +1,12 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { useParams, useSearchParams, Link } from "react-router-dom";
-import { eventsApi, usersApi } from "../../../api";
+import { useParams, useSearchParams, Link, useNavigate } from "react-router-dom";
+import { eventsApi, usersApi, pointsApi } from "../../../api";
 import { QRScanner } from "../components/QRScanner";
 import { useCheckIn } from "../hooks/useCheckIn";
 
 export const CheckInPage = () => {
   const { eventId } = useParams();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const urlToken = searchParams.get("token");
   const [event, setEvent] = useState(null);
@@ -14,6 +15,7 @@ export const CheckInPage = () => {
   const [isRegistered, setIsRegistered] = useState(false);
   const [checkingRegistration, setCheckingRegistration] = useState(true);
   const [isRegistering, setIsRegistering] = useState(false);
+  const [newBadges, setNewBadges] = useState([]);
   const { checkIn, isLoading, error } = useCheckIn();
 
   const submit = useCallback(
@@ -21,7 +23,23 @@ export const CheckInPage = () => {
       if (!token) return;
       setStatus("submitting");
       try {
+        // Get current badges before check-in
+        const { data: beforeData } = await pointsApi.getMyBadges();
+        const beforeBadgeIds = new Set((beforeData || []).map(b => b.badgeId || b.id));
+
         await checkIn(eventId, token);
+
+        // Get updated badges after check-in
+        const { data: afterData } = await pointsApi.getMyBadges();
+        const afterBadges = afterData || [];
+
+        // Find newly earned badges
+        const newlyEarned = afterBadges.filter(b => {
+          const id = b.badgeId || b.id;
+          return !beforeBadgeIds.has(id);
+        });
+
+        setNewBadges(newlyEarned);
         setStatus("success");
       } catch {
         setStatus("error");
@@ -230,13 +248,47 @@ export const CheckInPage = () => {
           )}
 
           {status === "success" && (
-            <div className="w-full rounded-3xl bg-secondary/15 p-6 text-center">
+            <div className="w-full rounded-3xl bg-secondary/15 p-6 text-center space-y-4">
               <p className="font-extrabold text-primary text-lg">
                 Check-in thành công
               </p>
-              <p className="mt-1 text-sm text-ink/60">
+              <p className="text-sm text-ink/60">
                 Điểm thưởng của bạn sẽ được cập nhật sớm.
               </p>
+
+              {newBadges.length > 0 && (
+                <div className="rounded-2xl bg-amber-50 border-2 border-amber-200 p-4">
+                  <p className="text-amber-800 font-bold text-sm mb-3">
+                    Huy hiệu mới đã nhận được!
+                  </p>
+                  <div className="flex flex-wrap justify-center gap-2">
+                    {newBadges.map((badge, idx) => {
+                      const name = badge.badge?.name || badge.name;
+                      const icon = badge.badge?.iconUrl || badge.iconUrl;
+                      const isFirstStep = name === 'First Green Step';
+                      return (
+                        <div key={idx} className={`flex items-center gap-2 px-3 py-2 rounded-xl ${isFirstStep ? 'bg-amber-100' : 'bg-white'}`}>
+                          {icon ? (
+                            <img src={icon} alt={name} className="w-6 h-6 object-contain" />
+                          ) : (
+                            <span className="text-lg">{isFirstStep ? '⚡' : '★'}</span>
+                          )}
+                          <span className={`text-xs font-bold ${isFirstStep ? 'text-amber-800' : 'text-primary'}`}>
+                            {name}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              <button
+                onClick={() => navigate('/profile')}
+                className="w-full rounded-2xl bg-primary py-3 text-sm font-bold text-white hover:bg-primary/90 transition"
+              >
+                Xem hồ sơ & huy hiệu
+              </button>
             </div>
           )}
         </div>
