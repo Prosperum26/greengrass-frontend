@@ -20,11 +20,15 @@ export const useCheckIn = () => {
     }
   }, []);
 
-  const checkIn = useCallback(async (eventId, qrToken) => {
+  const checkIn = useCallback(async (eventId, qrToken, userLatitude, userLongitude) => {
     setIsLoading(true);
     setError(null);
     try {
-      const { data } = await checkinApi.checkIn(eventId, qrToken);
+      const { data } = await checkinApi.checkIn(eventId, {
+        qrToken,
+        userLatitude,
+        userLongitude,
+      });
       return data;
     } catch (err) {
       setError(err.response?.data?.message || 'Check-in thất bại');

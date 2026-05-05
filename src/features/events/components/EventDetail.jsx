@@ -290,9 +290,9 @@ export const EventDetail = () => {
       return;
     }
 
-    const headers = ['User ID', 'Trạng thái', 'Thời gian check-in'];
+    const headers = ['Tên người dùng', 'Trạng thái', 'Thời gian check-in'];
     const rows = checkedIn.map((c) => [
-      c.userId || '-',
+      c.userName || '-',
       c.status || '-',
       c.checkInTime ? new Date(c.checkInTime).toLocaleString('vi-VN') : '-',
     ]);
@@ -588,7 +588,7 @@ export const EventDetail = () => {
                 ) : (
                   checkedIn.map((item, idx) => (
                     <div key={`checkin-${item.userId || idx}-${idx}`} className="mb-3 rounded-xl bg-surface-highest p-4 text-sm shadow-[0_16px_44px_rgba(33,26,20,0.06)]">
-                      User ID: {item.userId} - Trạng thái: {item.status} - Check-in: {item.checkInTime ? new Date(item.checkInTime).toLocaleString('vi-VN') : '-'}
+                      Tên người dùng: {item.userName} - Trạng thái: {item.status} - Check-in: {item.checkInTime ? new Date(item.checkInTime).toLocaleString('vi-VN') : '-'}
                     </div>
                   ))
                 )}

@@ -11,23 +11,93 @@ export const CheckInPage = () => {
   const urlToken = searchParams.get("token");
   const [event, setEvent] = useState(null);
   const [qrToken, setQrToken] = useState(urlToken || "");
-  const [status, setStatus] = useState("idle"); // idle | submitting | success | error | not_registered
+  const [status, setStatus] = useState("idle"); // idle | submitting | success | error | not_registered | out_of_range | location_denied
   const [isRegistered, setIsRegistered] = useState(false);
   const [checkingRegistration, setCheckingRegistration] = useState(true);
   const [isRegistering, setIsRegistering] = useState(false);
   const [newBadges, setNewBadges] = useState([]);
   const { checkIn, isLoading, error } = useCheckIn();
 
+  // Location states
+  const [distanceToEvent, setDistanceToEvent] = useState(null);
+  const [requiredRadius, setRequiredRadius] = useState(50);
+  const [LOCATION_ERROR, setLocationError] = useState(null);
+
+  // Get user's current location
+  const getUserLocation = useCallback(() => {
+    if (!navigator.geolocation) {
+      setLocationError('Trình duyệt của bạn không hỗ trợ định vị GPS');
+      return Promise.reject(new Error('Geolocation not supported'));
+    }
+
+    return new Promise((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const location = {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          };
+          resolve(location);
+        },
+        (error) => {
+          let errorMessage = 'Không thể lấy vị trí của bạn';
+          
+          switch (error.code) {
+            case error.PERMISSION_DENIED:
+              errorMessage = 'Bạn đã từ chối quyền truy cập vị trí. Vui lòng bật định vị và thử lại.';
+              break;
+            case error.POSITION_UNAVAILABLE:
+              errorMessage = 'Thông tin vị trí không có sẵn.';
+              break;
+            case error.TIMEOUT:
+              errorMessage = 'Hết thời gian chờ lấy vị trí.';
+              break;
+          }
+          
+          setLocationError(errorMessage);
+          reject(new Error(errorMessage));
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 60000,
+        }
+      );
+    });
+  }, []);
+
   const submit = useCallback(
     async (token) => {
       if (!token) return;
       setStatus("submitting");
       try {
+        // Get user location first
+        let location = null;
+        try {
+          location = await getUserLocation();
+        } catch {
+          // If location is required but denied, show error
+          if (event?.checkinRadius > 0) {
+            setStatus("location_denied");
+            return;
+          }
+          // Continue without location if not required
+        }
+
         // Get current badges before check-in
         const { data: beforeData } = await pointsApi.getMyBadges();
         const beforeBadgeIds = new Set((beforeData || []).map(b => b.badgeId || b.id));
 
-        await checkIn(eventId, token);
+        // Call checkIn API with location data
+        const response = await checkIn(eventId, token, location?.latitude, location?.longitude);
+
+        // Check if check-in failed due to distance
+        if (response && !response.success && response.distanceToEvent) {
+          setDistanceToEvent(response.distanceToEvent);
+          setRequiredRadius(response.requiredRadius || 50);
+          setStatus("out_of_range");
+          return;
+        }
 
         // Get updated badges after check-in
         const { data: afterData } = await pointsApi.getMyBadges();
@@ -41,18 +111,30 @@ export const CheckInPage = () => {
 
         setNewBadges(newlyEarned);
         setStatus("success");
-      } catch {
-        setStatus("error");
+      } catch (err) {
+        // Handle specific error cases
+        if (err.response?.data?.message?.includes('vị trí') || 
+            err.response?.data?.message?.includes('location')) {
+          setStatus("location_denied");
+        } else {
+          setStatus("error");
+        }
       }
     },
-    [checkIn, eventId],
+    [checkIn, eventId, getUserLocation, event?.checkinRadius],
   );
 
   useEffect(() => {
     const load = async () => {
       try {
         const { data } = await eventsApi.getById(eventId);
-        setEvent(data?.data || data);
+        const eventData = data?.data || data;
+        setEvent(eventData);
+        
+        // Set required radius from event data
+        if (eventData?.checkinRadius) {
+          setRequiredRadius(eventData.checkinRadius);
+        }
 
         // Check if user is registered for this event
         const myEventsRes = await usersApi.getMyEvents();
@@ -229,6 +311,63 @@ export const CheckInPage = () => {
                 </button>
               </>
             )}
+
+          {status === "location_denied" && (
+            <div className="w-full rounded-3xl bg-accent/10 p-6 text-center">
+              <p className="font-extrabold text-accent text-lg">
+                Cần quyền truy cập vị trí
+              </p>
+              <p className="mt-2 text-sm text-ink/70">
+                {LOCATION_ERROR || "Bạn cần cấp quyền truy cập vị trí để check-in sự kiện này."}
+              </p>
+              <div className="mt-4 space-y-2">
+                <button
+                  onClick={() => {
+                    setStatus("idle");
+                    setLocationError(null);
+                  }}
+                  className="w-full rounded-2xl bg-accent px-4 py-3 text-sm font-bold text-white hover:bg-accent-hover transition"
+                >
+                  Thử lại
+                </button>
+                <button
+                  onClick={() => setStatus("idle")}
+                  className="w-full rounded-2xl bg-surface-highest px-4 py-3 text-sm font-bold text-ink hover:bg-surface-high transition"
+                >
+                  Bỏ qua
+                </button>
+              </div>
+            </div>
+          )}
+
+          {status === "out_of_range" && (
+            <div className="w-full rounded-3xl bg-accent/10 p-6 text-center">
+              <p className="font-extrabold text-accent text-lg">
+                Bạn đang quá xa sự kiện
+              </p>
+              <p className="mt-2 text-sm text-ink/70">
+                Bạn đang cách sự kiện <span className="font-bold">{Math.round(distanceToEvent || 0)}m</span>. 
+                Vui lòng di chuyển đến trong phạm vi <span className="font-bold">{requiredRadius}m</span> để check-in.
+              </p>
+              <div className="mt-4 space-y-2">
+                <Link
+                  to={`/map?eventId=${eventId}&showCheckinRadius=true`}
+                  className="block w-full rounded-2xl bg-primary px-4 py-3 text-sm font-bold text-white hover:bg-primary/90 transition"
+                >
+                  Xem bản đồ chỉ đường
+                </Link>
+                <button
+                  onClick={() => {
+                    setStatus("idle");
+                    setDistanceToEvent(null);
+                  }}
+                  className="w-full rounded-2xl bg-surface-highest px-4 py-3 text-sm font-bold text-ink hover:bg-surface-high transition"
+                >
+                  Thử lại sau
+                </button>
+              </div>
+            </div>
+          )}
 
           {status === "error" && (
             <div className="w-full rounded-3xl bg-accent/10 p-6 text-center">
