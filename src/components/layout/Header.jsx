@@ -189,15 +189,31 @@ export const Header = memo(() => {
 
         <div className="flex items-center gap-2 sm:gap-4 lg:gap-6">
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-1 lg:gap-2">
+          <div className="hidden lg:flex items-center gap-1 lg:gap-2">
             <Link to="/events" className="text-accent font-bold text-xs lg:text-sm tracking-wide px-3 lg:px-4 py-2 rounded-full hover:bg-white/10 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300">Khám phá</Link>
             <Link to="/profile" className="text-white/80 hover:text-white hover:bg-white/10 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 text-xs lg:text-sm px-3 lg:px-4 py-2 rounded-full">Đóng góp</Link>
-            <Link to="/leafia" className="hidden md:block text-white/80 hover:text-white hover:bg-white/10 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 text-xs lg:text-sm px-2 lg:px-4 py-2 rounded-full">Leafia</Link>
+            <Link to="/leafia" className="hidden lg:block text-white/80 hover:text-white hover:bg-white/10 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 text-xs lg:text-sm px-2 lg:px-4 py-2 rounded-full">Leafia</Link>
             <Link to="/leaderboard" className="text-white/80 hover:text-white hover:bg-white/10 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 text-xs lg:text-sm px-3 lg:px-4 py-2 rounded-full">Xếp hạng</Link>
             {isAuthenticated && (
               <button
                 onClick={() => setShowQrScanner(true)}
                 className="text-white/80 hover:text-white hover:bg-white/10 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 text-xs lg:text-sm px-3 lg:px-4 py-2 rounded-full flex items-center gap-1"
+              >
+                <span className="material-symbols-outlined text-sm">qr_code_scanner</span>
+                Quét QR
+              </button>
+            )}
+          </div>
+
+          {/* Tablet Navigation - Medium screens */}
+          <div className="hidden md:flex lg:hidden items-center gap-2">
+            <Link to="/events" className="text-accent font-bold text-xs tracking-wide px-3 py-2 rounded-full hover:bg-white/10 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300">Khám phá</Link>
+            <Link to="/profile" className="text-white/80 hover:text-white hover:bg-white/10 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 text-xs px-3 py-2 rounded-full">Đóng góp</Link>
+            <Link to="/leaderboard" className="text-white/80 hover:text-white hover:bg-white/10 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 text-xs px-3 py-2 rounded-full">Xếp hạng</Link>
+            {isAuthenticated && (
+              <button
+                onClick={() => setShowQrScanner(true)}
+                className="text-white/80 hover:text-white hover:bg-white/10 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 text-xs px-3 py-2 rounded-full flex items-center gap-1"
               >
                 <span className="material-symbols-outlined text-sm">qr_code_scanner</span>
                 Quét QR
