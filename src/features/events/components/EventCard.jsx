@@ -1,7 +1,7 @@
 import React, { memo, useState } from 'react';
 
 export const EventCard = memo(({ event, onRegister, onDetail }) => {
-  const { title, location, points, status, verified, startTime, coverImageUrl } = event;
+  const { title, location, points, status, startTime, coverImageUrl } = event;
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const dateText = startTime ? new Date(startTime).toLocaleString() : null;
 
@@ -41,13 +41,6 @@ export const EventCard = memo(({ event, onRegister, onDetail }) => {
           )}
 
           <div className="absolute top-2 sm:top-4 left-2 sm:left-4 flex gap-1.5 sm:gap-2 flex-wrap">
-            {verified && (
-              <span className="bg-white/90 backdrop-blur text-primary text-[9px] sm:text-[10px] font-extrabold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-md sm:rounded-lg flex items-center gap-0.5 sm:gap-1">
-                <span className="material-symbols-outlined text-[12px] sm:text-[14px]" style={{fontVariationSettings: "'FILL' 1"}}>verified</span>
-                <span className="hidden xs:inline">ĐÃ XÁC THỰC</span>
-                <span className="xs:hidden">XÁC THỰC</span>
-              </span>
-            )}
             <span className="bg-primary/90 backdrop-blur text-white text-[9px] sm:text-[10px] font-extrabold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-md sm:rounded-lg">
               {points} ĐIỂM
             </span>
