@@ -191,7 +191,10 @@ export const EventDetail = () => {
   // Countdown timer for QR refresh
   useEffect(() => {
     if (!showQrModal) return;
-    
+
+    // Reset countdown when modal opens
+    setQrCountdown(30);
+
     const timer = setInterval(() => {
       setQrCountdown((prev) => {
         if (prev <= 1) {
@@ -339,47 +342,85 @@ export const EventDetail = () => {
   
   const handleSaveEdit = async () => {
     if (!event) return;
-    
+
+    // Validation
+    if (!editForm.title.trim()) {
+      alert('Vui lòng nhập tên sự kiện');
+      return;
+    }
+    if (!editForm.location.trim()) {
+      alert('Vui lòng nhập địa điểm');
+      return;
+    }
+
     setSaving(true);
     try {
       const updateData = {
-        title: editForm.title,
+        title: editForm.title.trim(),
         description: editForm.description,
-        location: editForm.location,
+        location: editForm.location.trim(),
         startTime: new Date(editForm.startTime).toISOString(),
         endTime: new Date(editForm.endTime).toISOString()
       };
-      
-      // Only include location fields if they're provided
-      if (editForm.latitude && editForm.longitude) {
-        updateData.latitude = parseFloat(editForm.latitude);
-        updateData.longitude = parseFloat(editForm.longitude);
-      }
-      
-      // Handle checkinRadius: 0 or empty = unlimited (backend will set to 20076000)
-      if (editForm.checkinRadius === '' || editForm.checkinRadius === '0' || editForm.checkinRadius === 0) {
-        updateData.checkinRadius = 0; // Backend converts 0 to 20076000
-      } else if (!isNaN(editForm.checkinRadius)) {
-        const radius = parseInt(editForm.checkinRadius);
-        if (radius >= 20 && radius <= 2000) {
-          updateData.checkinRadius = radius;
+
+      // Include location fields if provided (handle independently)
+      if (editForm.latitude !== '' && editForm.latitude !== null && editForm.latitude !== undefined) {
+        const lat = parseFloat(editForm.latitude);
+        if (!isNaN(lat) && lat >= -90 && lat <= 90) {
+          updateData.latitude = lat;
         }
       }
-      
+      if (editForm.longitude !== '' && editForm.longitude !== null && editForm.longitude !== undefined) {
+        const lng = parseFloat(editForm.longitude);
+        if (!isNaN(lng) && lng >= -180 && lng <= 180) {
+          updateData.longitude = lng;
+        }
+      }
+
+      // Handle checkinRadius: 0, '' or null = unlimited (backend converts 0 to 20076000)
+      const radiusValue = editForm.checkinRadius;
+      if (radiusValue === '' || radiusValue === null || radiusValue === undefined || radiusValue === '0' || radiusValue === 0) {
+        updateData.checkinRadius = 0; // Unlimited radius
+      } else {
+        const radius = parseInt(radiusValue);
+        if (!isNaN(radius) && radius >= 20 && radius <= 2000) {
+          updateData.checkinRadius = radius;
+        } else {
+          alert('Phạm vi check-in phải từ 20-2000m hoặc để trống/0 cho không giới hạn');
+          setSaving(false);
+          return;
+        }
+      }
+
       await eventsApi.update(id, updateData);
-      
+
       // Refresh event data
       const updatedEvent = await eventsApi.getById(id);
       const eventData = updatedEvent.data?.data || updatedEvent.data;
       setEvent(eventData);
-      
-      // Also update edit form with new values
-      setEditForm(prev => ({
-        ...prev,
-        checkinRadius: eventData?.checkinRadius ?? ''
-      }));
-      
-      alert('Cập nhật sự kiện thành công!');
+
+      // Re-initialize edit form with updated values
+      initializeEditForm();
+
+      // Also refresh organizer data (checked-in list and QR token) to ensure QR stays dynamic
+      // Check ownership using freshly fetched eventData
+      const isStillEventOwner = isOrganizer && eventData?.organizerId === userId;
+      if (isAdmin || isStillEventOwner) {
+        try {
+          const [checkedInRes, qrRes] = await Promise.all([
+            eventsApi.getCheckedIn(id),
+            eventsApi.getQrCode(id),
+          ]);
+          setCheckedIn(checkedInRes.data || []);
+          setQrToken(qrRes.data?.qrToken || '');
+        } catch {
+          // Silently fail if can't refresh QR data
+        }
+      }
+
+      alert('Cập nhật sự kiện thành công! Trang sẽ tải lại...');
+      // Hard reload page to ensure fresh state
+      window.location.reload();
     } catch (err) {
       const msg = err.response?.data?.message || 'Không thể cập nhật sự kiện';
       alert(msg);
@@ -391,16 +432,26 @@ export const EventDetail = () => {
   // Initialize edit form when switching to edit tab
   const initializeEditForm = () => {
     if (!event) return;
-    
+
+    // Convert checkinRadius: 20076000 (unlimited/half earth) shows as 0 in form
+    const radius = event.checkinRadius === 20076000 ? 0 : (event.checkinRadius || '');
+
+    // Format datetime for datetime-local input (YYYY-MM-DDThh:mm) in local timezone
+    const toLocalISO = (dateStr) => {
+      const date = new Date(dateStr);
+      const pad = (n) => n.toString().padStart(2, '0');
+      return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+    };
+
     setEditForm({
       title: event.title || '',
       description: event.description || '',
       location: event.location || '',
       latitude: event.latitude || '',
       longitude: event.longitude || '',
-      checkinRadius: event.checkinRadius || '',
-      startTime: new Date(event.startTime).toISOString().slice(0, 16),
-      endTime: new Date(event.endTime).toISOString().slice(0, 16)
+      checkinRadius: radius,
+      startTime: toLocalISO(event.startTime),
+      endTime: toLocalISO(event.endTime)
     });
   };
 
