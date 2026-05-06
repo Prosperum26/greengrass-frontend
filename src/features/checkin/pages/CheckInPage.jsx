@@ -19,6 +19,7 @@ export const CheckInPage = () => {
   const [status, setStatus] = useState("idle"); // idle | submitting | success | error | not_registered | out_of_range | location_denied | already_checked_in | event_completed | invalid_qr
   const [isRegistered, setIsRegistered] = useState(false);
   const [checkingRegistration, setCheckingRegistration] = useState(true);
+  const [checkRegError, setCheckRegError] = useState(null); // Error when checking registration
   const [isRegistering, setIsRegistering] = useState(false);
   const [newBadges, setNewBadges] = useState([]);
   const [errorDetails, setErrorDetails] = useState(null); // { type, title, message, action }
@@ -250,6 +251,7 @@ export const CheckInPage = () => {
 
   // Check registration status
   const checkRegistrationStatus = useCallback(async () => {
+    setCheckRegError(null);
     try {
       // Try to use dedicated registration check API first
       try {
@@ -278,6 +280,7 @@ export const CheckInPage = () => {
       return registered;
     } catch (err) {
       console.error('Error checking registration:', err);
+      setCheckRegError('Không thể kiểm tra trạng thái đăng ký. Vui lòng tải lại trang.');
       // Keep current state on error, don't assume false
       return isRegistered;
     }
@@ -407,7 +410,24 @@ export const CheckInPage = () => {
             </div>
           )}
 
-          {!checkingRegistration && !isRegistered && !isRegistering && (
+          {checkRegError && (
+            <div className="w-full rounded-3xl bg-accent/10 p-6 text-center">
+              <p className="font-extrabold text-accent text-lg">
+                Không thể kiểm tra đăng ký
+              </p>
+              <p className="mt-2 text-sm text-ink/70">
+                {checkRegError}
+              </p>
+              <button
+                onClick={() => window.location.reload()}
+                className="mt-4 w-full rounded-2xl bg-accent py-3 text-sm font-bold text-white hover:bg-accent-hover transition"
+              >
+                Tải lại trang
+              </button>
+            </div>
+          )}
+
+          {!checkingRegistration && !checkRegError && !isRegistered && !isRegistering && (
             <div className="w-full rounded-3xl bg-accent/10 p-6 text-center">
               <p className="font-extrabold text-accent text-lg">
                 Chưa đăng ký sự kiện
@@ -436,6 +456,7 @@ export const CheckInPage = () => {
           )}
 
           {!checkingRegistration &&
+            !checkRegError &&
             isRegistered &&
             status !== "success" &&
             status !== "error" &&

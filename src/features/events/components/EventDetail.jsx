@@ -356,7 +356,7 @@ export const EventDetail = () => {
         updateData.longitude = parseFloat(editForm.longitude);
       }
       
-      if (editForm.checkinRadius) {
+      if (editForm.checkinRadius !== '' && editForm.checkinRadius != null) {
         updateData.checkinRadius = parseInt(editForm.checkinRadius);
       }
       
@@ -366,6 +366,12 @@ export const EventDetail = () => {
       const updatedEvent = await eventsApi.getById(id);
       const eventData = updatedEvent.data?.data || updatedEvent.data;
       setEvent(eventData);
+      
+      // Also update edit form with new values
+      setEditForm(prev => ({
+        ...prev,
+        checkinRadius: eventData?.checkinRadius ?? ''
+      }));
       
       alert('Cập nhật sự kiện thành công!');
     } catch (err) {
@@ -532,10 +538,10 @@ export const EventDetail = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
                   <p className="font-medium text-ink">
-                    {event.checkinRadius ? `${event.checkinRadius}m` : 'Không giới hạn'}
+                    {event.checkinRadius != null ? `${event.checkinRadius}m` : 'Không giới hạn'}
                   </p>
                 </div>
-                {event.checkinRadius ? (
+                {event.checkinRadius != null ? (
                   <p className="mt-1 text-xs text-ink/50">Bán kính từ địa điểm sự kiện</p>
                 ) : (
                   <p className="mt-1 text-xs text-ink/50">Có thể check-in từ bất kỳ đâu</p>
