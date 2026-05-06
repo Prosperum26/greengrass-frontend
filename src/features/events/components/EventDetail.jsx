@@ -743,13 +743,7 @@ export const EventDetail = () => {
                       min="0"
                       max="2000"
                       value={editForm.checkinRadius}
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        // Allow empty, 0, or numbers between 20-2000
-                        if (value === '' || value === '0' || (!isNaN(value) && (parseInt(value) >= 20 && parseInt(value) <= 2000))) {
-                          setEditForm(prev => ({ ...prev, checkinRadius: value }));
-                        }
-                      }}
+                      onChange={(e) => setEditForm(prev => ({ ...prev, checkinRadius: e.target.value }))}
                       placeholder="50"
                       className="w-full rounded-xl bg-white px-4 py-3 text-sm text-ink placeholder:text-ink/40 outline-none focus:ring-2 focus:ring-primary/25"
                     />
