@@ -5,6 +5,7 @@ import { useError } from '../../../hooks/useError';
 import { useDebounce } from '../../../hooks/useDebounce';
 import { getErrorMessage } from '../../../utils/errorMessages';
 import { EventCard } from '../../events/components/EventCard';
+import { EventCardSkeleton } from '../../../components/common/EventCardSkeleton';
 import { EcoFab, FilterHub, MapPreviewCard, PartnerMarquee } from '../../../components/eco';
 
 const sortOptions = [
@@ -152,20 +153,34 @@ export const HomePage = () => {
             </div>
           </div>
 
-          {loading && <p className="text-sm sm:text-base text-on-surface-variant/60 py-4">Đang tải các sự kiện...</p>}
-
-          {/* Events Grid - Responsive */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 lg:gap-6">
-            {featuredEvents.map((event) => (
-              <EventCard
-                key={event.id}
-                event={event}
-                onDetail={(id) => navigate(`/events/${id}`)}
-                onRegister={(id) => navigate(`/events/${id}`)}
-              />
-            ))}
-
-          </div>
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 lg:gap-6">
+              {[...Array(4)].map((_, index) => (
+                <EventCardSkeleton key={index} />
+              ))}
+            </div>
+          ) : (
+            <>
+              {/* Events Grid - Responsive */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 lg:gap-6">
+                {featuredEvents.map((event, index) => (
+                  <div
+                    key={event.id}
+                    style={{
+                      animation: 'fadeInUp 0.6s ease-out forwards',
+                      animationDelay: `${index * 0.1}s`
+                    }}
+                  >
+                    <EventCard
+                      event={event}
+                      onDetail={(id) => navigate(`/events/${id}`)}
+                      onRegister={(id) => navigate(`/events/${id}`)}
+                    />
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
 
           {/* View More Button */}
           <button

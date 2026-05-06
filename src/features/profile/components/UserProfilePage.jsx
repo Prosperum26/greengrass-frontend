@@ -2,6 +2,8 @@ import React, { useCallback, useEffect, useMemo, useState, useRef } from 'react'
 import { Link } from 'react-router-dom';
 import { pointsApi, usersApi } from '../../../api';
 import { ImpactPill } from '../../../components/eco';
+import { CelebrationEffect } from '../../../components/common/CelebrationEffect';
+import { AnimatedPointsDisplay } from '../../../features/gamification/components/AnimatedPointsDisplay';
 
 const EVENT_MILESTONES = [1, 5, 10, 20, 35, 50];
 const POINT_MILESTONES = [50, 100, 200, 300, 400, 500];
@@ -13,6 +15,8 @@ const UserProfilePage = () => {
   const [points, setPoints] = useState(null);
   const [_rank, setRank] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [newBadges, setNewBadges] = useState([]);
+  const [celebrationActive, setCelebrationActive] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [isEditingName, setIsEditingName] = useState(false);
   const [newFullName, setNewFullName] = useState('');
@@ -48,10 +52,29 @@ const UserProfilePage = () => {
 
   const handleCheckBadges = async () => {
     try {
+      const previousBadges = points?.badges || [];
       await pointsApi.checkBadges();
       // Reload data to get updated badges
       await loadData();
-      alert('Huy hiệu First Green Step đã được kiểm tra và cập nhật!');
+      const newBadgesData = points?.badges || [];
+      
+      // Check if new badges were unlocked
+      const unlockedBadges = newBadgesData.filter(newBadge => 
+        !previousBadges.some(oldBadge => 
+          (oldBadge.id || oldBadge.badge?.id) === (newBadge.id || newBadge.badge?.id)
+        )
+      );
+      
+      if (unlockedBadges.length > 0) {
+        setNewBadges(unlockedBadges);
+        setCelebrationActive(true);
+        setTimeout(() => setCelebrationActive(false), 3000);
+        
+        const badgeNames = unlockedBadges.map(b => b.badge?.name || b.name).join(', ');
+        alert(`🎉 Chúc mừng! Bạn đã mở khóa huy hiệu mới: ${badgeNames}`);
+      } else {
+        alert('Huy hiệu First Green Step đã được kiểm tra và cập nhật!');
+      }
     } catch (err) {
       alert(err.response?.data?.message || 'Không thể kiểm tra huy hiệu');
     }
@@ -143,6 +166,7 @@ const UserProfilePage = () => {
 
   return (
     <div className="min-h-screen bg-surface text-ink">
+      <CelebrationEffect active={celebrationActive} />
       <div className="mx-auto max-w-7xl p-6 lg:p-12 text-ink">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           <div className="lg:col-span-4 space-y-8">
@@ -284,8 +308,12 @@ const UserProfilePage = () => {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="rounded-3xl bg-surface-highest p-5 shadow-[0_16px_44px_rgba(33,26,20,0.06)]">
-                <span className="text-3xl font-black text-primary">{user.totalPoints.toLocaleString()}</span>
-                <p className="text-[10px] font-bold uppercase tracking-wider text-ink/90">Điểm tác động</p>
+                <AnimatedPointsDisplay 
+                  points={user.totalPoints || 0} 
+                  previousPoints={0} 
+                  showLevelUp={false} 
+                />
+                <p className="text-[10px] font-bold uppercase tracking-wider text-ink/90 mt-2">Điểm tác động</p>
               </div>
               <div className="rounded-3xl bg-surface-highest p-5 shadow-[0_16px_44px_rgba(33,26,20,0.06)]">
                 <div className="flex items-center gap-2">
@@ -370,6 +398,9 @@ const UserProfilePage = () => {
                     const badgeName = badge.badge?.name || badge.name;
                     const badgeDesc = badge.badge?.description || badge.description;
                     const isFirstStep = badgeName === 'First Green Step';
+                    const isNewBadge = newBadges.some(newBadge => 
+                      (newBadge.id || newBadge.badge?.id) === badgeId
+                    );
 
                     return (
                       <div
@@ -379,7 +410,13 @@ const UserProfilePage = () => {
                           isFirstStep
                             ? 'bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-200'
                             : 'bg-surface-low border border-surface-high'
-                        }`}
+                        } ${isNewBadge ? 'animate-bounce-subtle' : ''}`}
+                        style={{
+                          animation: isNewBadge 
+                            ? 'bounce 1s ease-in-out, fadeInUp 0.6s ease-out forwards' 
+                            : 'fadeInUp 0.6s ease-out forwards',
+                          animationDelay: `${index * 0.1}s`
+                        }}
                       >
                         {isFirstStep && (
                           <div className="absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-amber-400 text-white text-xs shadow-md">

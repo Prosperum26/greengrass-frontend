@@ -1,20 +1,39 @@
-import React, { memo } from 'react';
+import React, { memo, useState } from 'react';
 
 export const EventCard = memo(({ event, onRegister, onDetail }) => {
   const { title, location, points, status, verified, startTime, coverImageUrl } = event;
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
   const dateText = startTime ? new Date(startTime).toLocaleString() : null;
 
+  // Generate stable random delay using index from parent component
+  const getAnimationDelay = () => {
+    const hash = event.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    return (hash % 10) * 0.03; // 0 to 0.27 seconds
+  };
+
   return (
-    <article className="bg-surface-container-low rounded-2xl sm:rounded-3xl p-3 sm:p-4 group hover:bg-surface-container-high transition-all duration-500 flex flex-col justify-between hover:shadow-[0_30px_60px_rgba(35,70,18,0.15)] hover:-translate-y-2 relative overflow-hidden">
+    <article 
+      className="bg-surface-container-low rounded-2xl sm:rounded-3xl p-3 sm:p-4 group hover:bg-surface-container-high transition-all duration-500 flex flex-col justify-between hover:shadow-[0_30px_60px_rgba(35,70,18,0.15)] hover:-translate-y-2 relative overflow-hidden animate-fadeInUp"
+      style={{
+        animation: 'fadeInUp 0.6s ease-out forwards',
+        animationDelay: `${getAnimationDelay()}s`
+      }}
+    >
       <div>
         <div className="relative aspect-[16/10] rounded-xl sm:rounded-2xl overflow-hidden mb-4 sm:mb-5">
           {coverImageUrl ? (
-            <img
-              src={coverImageUrl}
-              alt={title}
-              loading="lazy"
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-            />
+            <>
+              {!isImageLoaded && (
+                <div className="absolute inset-0 bg-gradient-to-br from-surface-container-highest to-surface-container-low animate-pulse" />
+              )}
+              <img
+                src={coverImageUrl}
+                alt={title}
+                loading="lazy"
+                onLoad={() => setIsImageLoaded(true)}
+                className={`w-full h-full object-cover transition-all duration-700 group-hover:scale-110 ${isImageLoaded ? 'opacity-100' : 'opacity-0'}`}
+              />
+            </>
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-primary/10 via-surface-container-highest to-secondary/10 flex items-center justify-center">
               <span className="material-symbols-outlined text-3xl sm:text-4xl text-primary/30">image</span>
@@ -79,21 +98,26 @@ export const EventCard = memo(({ event, onRegister, onDetail }) => {
             onClick={() => onRegister(event.id)}
             className="w-full bg-accent text-white py-2.5 sm:py-3 rounded-lg sm:rounded-xl font-bold text-xs sm:text-sm tracking-wide hover:shadow-[0_10px_30px_rgba(247,90,13,0.4)] hover:-translate-y-0.5 active:scale-[0.98] transition-all duration-300 relative overflow-hidden group/btn"
           >
+            <span className="absolute inset-0 bg-gradient-to-r from-accent to-accent-hover opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300" />
             <span className="relative z-10 flex items-center justify-center gap-1.5 sm:gap-2">
               <span className="material-symbols-outlined text-sm sm:text-base group-hover/btn:rotate-12 transition-transform duration-300">add_circle</span>
               <span className="hidden xs:inline">Tham gia sự kiện</span>
               <span className="xs:hidden">Tham gia</span>
             </span>
-            <div className="absolute inset-0 bg-gradient-to-r from-accent to-accent-hover opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300" />
+            {/* Ripple effect */}
+            <span className="absolute inset-0 -translate-x-full group-hover/btn:translate-x-0 bg-white/20 transition-transform duration-700 ease-out" />
           </button>
         )}
         <button
           type="button"
           onClick={() => onDetail?.(event.id)}
-          className="w-full bg-surface-container-highest text-primary py-2.5 sm:py-3 rounded-lg sm:rounded-xl font-bold text-xs sm:text-sm tracking-wide hover:bg-primary hover:text-white hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-1.5 sm:gap-2 group/detail"
+          className="w-full bg-surface-container-highest text-primary py-2.5 sm:py-3 rounded-lg sm:rounded-xl font-bold text-xs sm:text-sm tracking-wide hover:bg-primary hover:text-white hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-1.5 sm:gap-2 group/detail relative overflow-hidden"
         >
-          <span className="material-symbols-outlined text-sm sm:text-base group-hover/detail:translate-x-1 transition-transform duration-300">arrow_forward</span>
-          Chi tiết
+          <span className="absolute inset-0 bg-gradient-to-r from-primary to-primary-hover opacity-0 group-hover/detail:opacity-100 transition-opacity duration-300" />
+          <span className="relative z-10 flex items-center justify-center gap-1.5 sm:gap-2">
+            <span className="material-symbols-outlined text-sm sm:text-base group-hover/detail:translate-x-1 transition-transform duration-300">arrow_forward</span>
+            <span>Chi tiết</span>
+          </span>
         </button>
       </div>
     </article>
