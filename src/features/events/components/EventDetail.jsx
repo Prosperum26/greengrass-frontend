@@ -536,23 +536,6 @@ export const EventDetail = () => {
                 <p className="text-xs font-semibold uppercase tracking-wide text-ink/45">Thời gian kết thúc</p>
                 <p className="mt-2 font-medium text-ink">{new Date(event.endTime).toLocaleString()}</p>
               </div>
-              <div className="rounded-2xl bg-surface-highest p-4 shadow-[0_12px_32px_rgba(33,26,20,0.06)]">
-                <p className="text-xs font-semibold uppercase tracking-wide text-ink/45">Phạm vi check-in</p>
-                <div className="mt-2 flex items-center gap-2">
-                  <svg className="h-4 w-4 text-primary flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                  <p className="font-medium text-ink">
-                    {event.checkinRadius && event.checkinRadius > 0 && event.checkinRadius < 20076000 ? `${event.checkinRadius}m` : 'Không giới hạn'}
-                  </p>
-                </div>
-                {event.checkinRadius && event.checkinRadius > 0 && event.checkinRadius < 20076000 ? (
-                  <p className="mt-1 text-xs text-ink/50">Bán kính từ địa điểm sự kiện</p>
-                ) : (
-                  <p className="mt-1 text-xs text-ink/50">Có thể check-in từ bất kỳ đâu (nửa chu vi Trái Đất)</p>
-                )}
-              </div>
             </div>
 
             {/* Registration buttons - hidden when event is COMPLETED */}

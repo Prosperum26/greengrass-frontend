@@ -8,6 +8,7 @@ import {
 import { eventsApi, usersApi, pointsApi } from "../../../api";
 import { QRScanner } from "../components/QRScanner";
 import { useCheckIn } from "../hooks/useCheckIn";
+import { Award, Zap, Star, Trophy, Leaf, Globe, Heart, Target } from "lucide-react";
 
 export const CheckInPage = () => {
   const { eventId } = useParams();
@@ -671,34 +672,60 @@ export const CheckInPage = () => {
               </p>
 
               {newBadges.length > 0 && (
-                <div className="rounded-2xl bg-amber-50 border-2 border-amber-200 p-4">
-                  <p className="text-amber-800 font-bold text-sm mb-3">
-                    Huy hiệu mới đã nhận được!
-                  </p>
-                  <div className="flex flex-wrap justify-center gap-2">
+                <div className="rounded-2xl bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-200 p-5">
+                  <div className="flex items-center justify-center gap-2 mb-4">
+                    <Trophy className="w-5 h-5 text-amber-600" />
+                    <p className="text-amber-800 font-bold text-sm">
+                      Huy hiệu mới đã nhận được!
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap justify-center gap-3">
                     {newBadges.map((badge, idx) => {
-                      const name = badge.badge?.name || badge.name;
-                      const icon = badge.badge?.iconUrl || badge.iconUrl;
-                      const isFirstStep = name === "First Green Step";
+                      const name = badge.badge?.name || badge.name || "Huy hiệu";
+                      const isFirstStep = name.toLowerCase().includes("first") || name.toLowerCase().includes("green step");
+                      const isChampion = name.toLowerCase().includes("champion");
+                      const isEarth = name.toLowerCase().includes("earth") || name.toLowerCase().includes("globe");
+                      
+                      // Select icon based on badge name
+                      let IconComponent = Award;
+                      let iconColor = "text-primary";
+                      let bgColor = "bg-white";
+                      
+                      if (isFirstStep) {
+                        IconComponent = Zap;
+                        iconColor = "text-amber-600";
+                        bgColor = "bg-amber-100";
+                      } else if (isChampion) {
+                        IconComponent = Trophy;
+                        iconColor = "text-purple-600";
+                        bgColor = "bg-purple-100";
+                      } else if (isEarth) {
+                        IconComponent = Globe;
+                        iconColor = "text-green-600";
+                        bgColor = "bg-green-100";
+                      } else if (name.toLowerCase().includes("leaf") || name.toLowerCase().includes("eco")) {
+                        IconComponent = Leaf;
+                        iconColor = "text-emerald-600";
+                        bgColor = "bg-emerald-100";
+                      } else if (name.toLowerCase().includes("heart") || name.toLowerCase().includes("love")) {
+                        IconComponent = Heart;
+                        iconColor = "text-rose-600";
+                        bgColor = "bg-rose-100";
+                      } else if (name.toLowerCase().includes("target") || name.toLowerCase().includes("goal")) {
+                        IconComponent = Target;
+                        iconColor = "text-blue-600";
+                        bgColor = "bg-blue-100";
+                      }
+                      
                       return (
                         <div
                           key={idx}
-                          className={`flex items-center gap-2 px-3 py-2 rounded-xl ${isFirstStep ? "bg-amber-100" : "bg-white"}`}
+                          className={`flex flex-col items-center gap-2 p-3 rounded-xl ${bgColor} shadow-sm min-w-[100px]`}
                         >
-                          {icon ? (
-                            <img
-                              src={icon}
-                              alt={name}
-                              className="w-6 h-6 object-contain"
-                            />
-                          ) : (
-                            <span className="text-lg">
-                              {isFirstStep ? "⚡" : "★"}
-                            </span>
-                          )}
-                          <span
-                            className={`text-xs font-bold ${isFirstStep ? "text-amber-800" : "text-primary"}`}
-                          >
+                          <div className={`p-2 rounded-full bg-white/80 ${iconColor}`}>
+                            <IconComponent className="w-6 h-6" />
+                          </div>
+                          <span className={`text-xs font-bold text-center ${iconColor}`}>
                             {name}
                           </span>
                         </div>
