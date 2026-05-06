@@ -610,7 +610,7 @@ export const EventDetail = () => {
                     value={manualToken}
                     onChange={(e) => setManualToken(e.target.value)}
                     placeholder="Nhập mã check-in do ban tổ chức cung cấp"
-                    className="flex-1 rounded-xl bg-white px-4 py-3 text-sm text-ink placeholder:text-ink/40 outline-none focus:ring-2 focus:ring-primary/25"
+                    className="flex-1 rounded-xl bg-white dark:bg-surface-container px-4 py-3 text-sm text-ink dark:text-on-surface placeholder:text-ink/40 dark:placeholder:text-on-surface/50 outline-none focus:ring-2 focus:ring-primary/25"
                   />
                   <button
                     onClick={async () => {
@@ -628,7 +628,7 @@ export const EventDetail = () => {
                       }
                     }}
                     disabled={checkingIn || !manualToken.trim()}
-                    className="rounded-xl bg-accent px-4 py-3 text-sm font-semibold text-white hover:bg-accent-hover disabled:opacity-50 transition-colors"
+                    className="rounded-xl bg-[#F75A0D] dark:bg-[#A8D38E] px-4 py-3 text-sm font-semibold text-white hover:bg-[#F34508] dark:hover:bg-[#8bc34a] disabled:opacity-50 transition-colors"
                   >
                     {checkingIn ? 'Đang xử lý...' : 'Check-in'}
                   </button>

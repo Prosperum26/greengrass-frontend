@@ -89,9 +89,9 @@ export const EventCard = memo(({ event, onRegister, onDetail }) => {
           <button
             type="button"
             onClick={() => onRegister(event.id)}
-            className="w-full bg-accent text-white py-2.5 sm:py-3 rounded-lg sm:rounded-xl font-bold text-xs sm:text-sm tracking-wide hover:shadow-[0_10px_30px_rgba(247,90,13,0.4)] hover:-translate-y-0.5 active:scale-[0.98] transition-all duration-300 relative overflow-hidden group/btn"
+            className="w-full bg-[#F75A0D] dark:bg-[#A8D38E] text-white py-2.5 sm:py-3 rounded-lg sm:rounded-xl font-bold text-xs sm:text-sm tracking-wide hover:shadow-[0_10px_30px_rgba(247,90,13,0.4)] dark:hover:shadow-[0_10px_30px_rgba(168,211,142,0.4)] hover:-translate-y-0.5 active:scale-[0.98] transition-all duration-300 relative overflow-hidden group/btn"
           >
-            <span className="absolute inset-0 bg-gradient-to-r from-accent to-accent-hover opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300" />
+            <span className="absolute inset-0 bg-gradient-to-r from-[#F75A0D] to-[#F34508] dark:from-[#A8D38E] dark:to-[#8bc34a] opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300" />
             <span className="relative z-10 flex items-center justify-center gap-1.5 sm:gap-2">
               <span className="material-symbols-outlined text-sm sm:text-base group-hover/btn:rotate-12 transition-transform duration-300">add_circle</span>
               <span className="hidden xs:inline">Tham gia sự kiện</span>
