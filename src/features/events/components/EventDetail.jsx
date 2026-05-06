@@ -716,62 +716,62 @@ export const EventDetail = () => {
                 
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-ink mb-1">Tên sự kiện</label>
+                    <label className="block text-sm font-medium text-ink dark:text-on-surface mb-1">Tên sự kiện</label>
                     <input
                       type="text"
                       value={editForm.title}
                       onChange={(e) => setEditForm(prev => ({ ...prev, title: e.target.value }))}
-                      className="w-full rounded-xl bg-white px-4 py-3 text-sm text-ink placeholder:text-ink/40 outline-none focus:ring-2 focus:ring-primary/25"
+                      className="w-full rounded-xl bg-white dark:bg-surface-container px-4 py-3 text-sm text-ink dark:text-on-surface placeholder:text-ink/40 dark:placeholder:text-on-surface/50 outline-none focus:ring-2 focus:ring-primary/25"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-ink mb-1">Mô tả</label>
+                    <label className="block text-sm font-medium text-ink dark:text-on-surface mb-1">Mô tả</label>
                     <textarea
                       value={editForm.description}
                       onChange={(e) => setEditForm(prev => ({ ...prev, description: e.target.value }))}
                       rows={3}
-                      className="w-full rounded-xl bg-white px-4 py-3 text-sm text-ink placeholder:text-ink/40 outline-none focus:ring-2 focus:ring-primary/25"
+                      className="w-full rounded-xl bg-white dark:bg-surface-container px-4 py-3 text-sm text-ink dark:text-on-surface placeholder:text-ink/40 dark:placeholder:text-on-surface/50 outline-none focus:ring-2 focus:ring-primary/25"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-ink mb-1">Địa điểm</label>
+                    <label className="block text-sm font-medium text-ink dark:text-on-surface mb-1">Địa điểm</label>
                     <input
                       type="text"
                       value={editForm.location}
                       onChange={(e) => setEditForm(prev => ({ ...prev, location: e.target.value }))}
-                      className="w-full rounded-xl bg-white px-4 py-3 text-sm text-ink placeholder:text-ink/40 outline-none focus:ring-2 focus:ring-primary/25"
+                      className="w-full rounded-xl bg-white dark:bg-surface-container px-4 py-3 text-sm text-ink dark:text-on-surface placeholder:text-ink/40 dark:placeholder:text-on-surface/50 outline-none focus:ring-2 focus:ring-primary/25"
                     />
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-ink mb-1">Vĩ độ (Latitude)</label>
+                      <label className="block text-sm font-medium text-ink dark:text-on-surface mb-1">Vĩ độ (Latitude)</label>
                       <input
                         type="number"
                         step="any"
                         value={editForm.latitude}
                         onChange={(e) => setEditForm(prev => ({ ...prev, latitude: e.target.value }))}
                         placeholder="10.762622"
-                        className="w-full rounded-xl bg-white px-4 py-3 text-sm text-ink placeholder:text-ink/40 outline-none focus:ring-2 focus:ring-primary/25"
+                        className="w-full rounded-xl bg-white dark:bg-surface-container px-4 py-3 text-sm text-ink dark:text-on-surface placeholder:text-ink/40 dark:placeholder:text-on-surface/50 outline-none focus:ring-2 focus:ring-primary/25"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-ink mb-1">Kinh độ (Longitude)</label>
+                      <label className="block text-sm font-medium text-ink dark:text-on-surface mb-1">Kinh độ (Longitude)</label>
                       <input
                         type="number"
                         step="any"
                         value={editForm.longitude}
                         onChange={(e) => setEditForm(prev => ({ ...prev, longitude: e.target.value }))}
                         placeholder="106.660172"
-                        className="w-full rounded-xl bg-white px-4 py-3 text-sm text-ink placeholder:text-ink/40 outline-none focus:ring-2 focus:ring-primary/25"
+                        className="w-full rounded-xl bg-white dark:bg-surface-container px-4 py-3 text-sm text-ink dark:text-on-surface placeholder:text-ink/40 dark:placeholder:text-on-surface/50 outline-none focus:ring-2 focus:ring-primary/25"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-ink mb-1">Phạm vi check-in (m)</label>
+                    <label className="block text-sm font-medium text-ink dark:text-on-surface mb-1">Phạm vi check-in (m)</label>
                     <input
                       type="number"
                       min="0"
@@ -779,28 +779,28 @@ export const EventDetail = () => {
                       value={editForm.checkinRadius}
                       onChange={(e) => setEditForm(prev => ({ ...prev, checkinRadius: e.target.value }))}
                       placeholder="50"
-                      className="w-full rounded-xl bg-white px-4 py-3 text-sm text-ink placeholder:text-ink/40 outline-none focus:ring-2 focus:ring-primary/25"
+                      className="w-full rounded-xl bg-white dark:bg-surface-container px-4 py-3 text-sm text-ink dark:text-on-surface placeholder:text-ink/40 dark:placeholder:text-on-surface/50 outline-none focus:ring-2 focus:ring-primary/25"
                     />
-                    <p className="mt-1 text-xs text-ink/50">Từ 20-2000m. Để 0 hoặc trống = không giới hạn (nửa chu vi Trái Đất).</p>
+                    <p className="mt-1 text-xs text-ink/50 dark:text-on-surface-variant/70">Từ 20-2000m. Để 0 hoặc trống = không giới hạn (nửa chu vi Trái Đất).</p>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-ink mb-1">Thời gian bắt đầu</label>
+                      <label className="block text-sm font-medium text-ink dark:text-on-surface mb-1">Thời gian bắt đầu</label>
                       <input
                         type="datetime-local"
                         value={editForm.startTime}
                         onChange={(e) => setEditForm(prev => ({ ...prev, startTime: e.target.value }))}
-                        className="w-full rounded-xl bg-white px-4 py-3 text-sm text-ink placeholder:text-ink/40 outline-none focus:ring-2 focus:ring-primary/25"
+                        className="w-full rounded-xl bg-white dark:bg-surface-container px-4 py-3 text-sm text-ink dark:text-on-surface placeholder:text-ink/40 dark:placeholder:text-on-surface/50 outline-none focus:ring-2 focus:ring-primary/25"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-ink mb-1">Thời gian kết thúc</label>
+                      <label className="block text-sm font-medium text-ink dark:text-on-surface mb-1">Thời gian kết thúc</label>
                       <input
                         type="datetime-local"
                         value={editForm.endTime}
                         onChange={(e) => setEditForm(prev => ({ ...prev, endTime: e.target.value }))}
-                        className="w-full rounded-xl bg-white px-4 py-3 text-sm text-ink placeholder:text-ink/40 outline-none focus:ring-2 focus:ring-primary/25"
+                        className="w-full rounded-xl bg-white dark:bg-surface-container px-4 py-3 text-sm text-ink dark:text-on-surface placeholder:text-ink/40 dark:placeholder:text-on-surface/50 outline-none focus:ring-2 focus:ring-primary/25"
                       />
                     </div>
                   </div>
