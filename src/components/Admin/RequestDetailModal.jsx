@@ -8,7 +8,7 @@ const RequestDetailModal = ({ request, onClose, onApprove, onReject, onDelete, i
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="bg-brown-900 border border-[#859448]/20 rounded-2xl shadow-xl w-full max-w-md overflow-hidden">
+      <div className="bg-[#251E18] dark:bg-[#1a1612] border border-[#859448]/20 rounded-2xl shadow-xl w-full max-w-md overflow-hidden">
         <div className="p-6">
           <h2 className="text-xl font-bold text-white mb-4">CHI TIẾT YÊU CẦU</h2>
           
@@ -34,7 +34,7 @@ const RequestDetailModal = ({ request, onClose, onApprove, onReject, onDelete, i
                 <textarea
                   value={rejectReason}
                   onChange={(e) => setRejectReason(e.target.value)}
-                  className="w-full bg-[#3D362B] border border-white/10 rounded-xl p-3 text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-red-500/50"
+                  className="w-full bg-[#3D362B] dark:bg-surface-container border border-white/10 dark:border-white/5 rounded-xl p-3 text-white placeholder-white/30 dark:placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-red-500/50"
                   placeholder="Nhập lý do..."
                   rows={3}
                 />
@@ -43,7 +43,7 @@ const RequestDetailModal = ({ request, onClose, onApprove, onReject, onDelete, i
           </div>
         </div>
 
-        <div className="flex bg-[#3D362B]/50 p-4 gap-3 justify-end border-t border-white/5">
+        <div className="flex bg-[#3D362B]/50 dark:bg-surface-container/50 p-4 gap-3 justify-end border-t border-white/5 dark:border-white/10">
           <button 
             onClick={onClose} 
             disabled={isProcessing}

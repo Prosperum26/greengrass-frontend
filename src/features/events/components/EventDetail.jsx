@@ -572,7 +572,7 @@ export const EventDetail = () => {
             )}
 
             <h1 className="mt-4 text-3xl font-semibold font-display tracking-tight text-primary md:text-4xl">{event.title}</h1>
-            <p className="mt-3 max-w-3xl text-ink/75 leading-relaxed">{event.description}</p>
+            <p className="mt-3 w-full text-ink/75 leading-relaxed">{event.description}</p>
 
             <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               <div className="rounded-2xl bg-surface-highest p-4 shadow-[0_12px_32px_rgba(33,26,20,0.06)]">
