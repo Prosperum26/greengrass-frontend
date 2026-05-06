@@ -16,11 +16,12 @@ export const CheckInPage = () => {
   const urlToken = searchParams.get("token");
   const [event, setEvent] = useState(null);
   const [qrToken, setQrToken] = useState(urlToken || "");
-  const [status, setStatus] = useState("idle"); // idle | submitting | success | error | not_registered | out_of_range | location_denied
+  const [status, setStatus] = useState("idle"); // idle | submitting | success | error | not_registered | out_of_range | location_denied | already_checked_in | event_completed | invalid_qr
   const [isRegistered, setIsRegistered] = useState(false);
   const [checkingRegistration, setCheckingRegistration] = useState(true);
   const [isRegistering, setIsRegistering] = useState(false);
   const [newBadges, setNewBadges] = useState([]);
+  const [errorDetails, setErrorDetails] = useState(null); // { type, title, message, action }
   const { checkIn, isLoading, error } = useCheckIn();
 
   // Location states
@@ -131,24 +132,93 @@ export const CheckInPage = () => {
         setStatus("success");
       } catch (err) {
         // Handle specific error cases from error response
-        const errorMessage = err.response?.data?.message || "";
+        const errorMessage = err.response?.data?.message || err.message || '';
+        const statusCode = err.response?.status;
 
-        if (
-          errorMessage.includes("vị trí") ||
-          errorMessage.includes("location") ||
-          errorMessage.includes("GPS")
-        ) {
+        // Check for specific error types
+        if (errorMessage.includes('vị trí') ||
+            errorMessage.includes('location') ||
+            errorMessage.includes('GPS') ||
+            errorMessage.includes('coordinates')) {
+          setErrorDetails({
+            type: 'location',
+            title: 'Cần quyền truy cập vị trí',
+            message: errorMessage || 'Vui lòng bật định vị và cho phép truy cập vị trí để check-in.',
+            action: 'retry'
+          });
           setStatus("location_denied");
-        } else if (
-          errorMessage.includes("khoảng cách") ||
-          errorMessage.includes("xa") ||
-          errorMessage.includes("phạm vi") ||
-          errorMessage.includes("range") ||
-          errorMessage.includes("distance")
-        ) {
-          // Try to extract distance info from error if available
+        } else if (errorMessage.includes('khoảng cách') ||
+                   errorMessage.includes('xa') ||
+                   errorMessage.includes('phạm vi') ||
+                   errorMessage.includes('range') ||
+                   errorMessage.includes('distance') ||
+                   (statusCode === 400 && errorMessage.includes('m away'))) {
+          setErrorDetails({
+            type: 'out_of_range',
+            title: 'Bạn đang quá xa sự kiện',
+            message: errorMessage || 'Vui lòng di chuyển đến gần địa điểm sự kiện hơn để check-in.',
+            action: 'map'
+          });
           setStatus("out_of_range");
+        } else if (errorMessage.includes('register') ||
+                   errorMessage.includes('đăng ký') ||
+                   errorMessage.includes('NOT_REGISTERED')) {
+          setErrorDetails({
+            type: 'not_registered',
+            title: 'Chưa đăng ký sự kiện',
+            message: 'Bạn cần đăng ký sự kiện trước khi check-in.',
+            action: 'register'
+          });
+          // Trigger registration check refresh
+          setIsRegistered(false);
+        } else if (errorMessage.includes('already checked in') ||
+                   errorMessage.includes('đã check-in') ||
+                   errorMessage.includes('CHECKED_IN') ||
+                   statusCode === 409) {
+          setErrorDetails({
+            type: 'already_checked_in',
+            title: 'Đã check-in rồi',
+            message: 'Bạn đã check-in cho sự kiện này rồi. Không cần check-in lại.',
+            action: 'view_profile'
+          });
+          setStatus("already_checked_in");
+        } else if (errorMessage.includes('expired') ||
+                   errorMessage.includes('hết hạn') ||
+                   errorMessage.includes('Invalid') ||
+                   errorMessage.includes('invalid') ||
+                   errorMessage.includes('QR')) {
+          setErrorDetails({
+            type: 'invalid_qr',
+            title: 'Mã QR không hợp lệ',
+            message: 'Mã QR đã hết hạn hoặc không đúng. Vui lòng quét lại mã QR mới từ ban tổ chức.',
+            action: 'retry_scan'
+          });
+          setStatus("invalid_qr");
+        } else if (errorMessage.includes('completed') ||
+                   errorMessage.includes('kết thúc') ||
+                   errorMessage.includes('COMPLETED')) {
+          setErrorDetails({
+            type: 'event_completed',
+            title: 'Sự kiện đã kết thúc',
+            message: 'Sự kiện này đã kết thúc, không thể check-in.',
+            action: 'back'
+          });
+          setStatus("event_completed");
+        } else if (statusCode === 404) {
+          setErrorDetails({
+            type: 'event_not_found',
+            title: 'Không tìm thấy sự kiện',
+            message: 'Sự kiện không tồn tại hoặc đã bị xóa.',
+            action: 'back'
+          });
+          setStatus("error");
         } else {
+          setErrorDetails({
+            type: 'unknown',
+            title: 'Check-in thất bại',
+            message: errorMessage || 'Đã có lỗi xảy ra. Vui lòng thử lại.',
+            action: 'retry'
+          });
           setStatus("error");
         }
       }
@@ -323,7 +393,10 @@ export const CheckInPage = () => {
             status !== "success" &&
             status !== "error" &&
             status !== "out_of_range" &&
-            status !== "location_denied" && (
+            status !== "location_denied" &&
+            status !== "already_checked_in" &&
+            status !== "event_completed" &&
+            status !== "invalid_qr" && (
               <>
                 <QRScanner
                   onScan={(token) => {
@@ -409,20 +482,102 @@ export const CheckInPage = () => {
             </div>
           )}
 
-          {status === "error" && (
-            <div className="w-full rounded-3xl bg-accent/10 p-6 text-center">
-              <p className="font-extrabold text-accent text-lg">
-                Check-in thất bại
+          {/* Already Checked In State */}
+          {status === "already_checked_in" && (
+            <div className="w-full rounded-3xl bg-secondary/15 p-6 text-center">
+              <div className="text-4xl mb-3">✓</div>
+              <p className="font-extrabold text-primary text-lg">
+                {errorDetails?.title || "Đã check-in rồi"}
               </p>
               <p className="mt-2 text-sm text-ink/70">
-                {error || "Mã QR không hợp lệ hoặc đã hết hạn."}
+                {errorDetails?.message || "Bạn đã check-in cho sự kiện này rồi."}
               </p>
               <button
-                onClick={() => setStatus("idle")}
-                className="mt-4 w-full rounded-2xl bg-accent px-4 py-3 text-sm font-bold text-white hover:bg-accent-hover transition"
+                onClick={() => navigate('/profile')}
+                className="mt-4 w-full rounded-2xl bg-primary px-4 py-3 text-sm font-bold text-white hover:bg-primary/90 transition"
               >
-                Thử lại
+                Xem hồ sơ
               </button>
+            </div>
+          )}
+
+          {/* Event Completed State */}
+          {status === "event_completed" && (
+            <div className="w-full rounded-3xl bg-ink/10 p-6 text-center">
+              <div className="text-4xl mb-3">🏁</div>
+              <p className="font-extrabold text-ink text-lg">
+                {errorDetails?.title || "Sự kiện đã kết thúc"}
+              </p>
+              <p className="mt-2 text-sm text-ink/70">
+                {errorDetails?.message || "Sự kiện này đã kết thúc, không thể check-in."}
+              </p>
+              <button
+                onClick={() => navigate('/events')}
+                className="mt-4 w-full rounded-2xl bg-primary px-4 py-3 text-sm font-bold text-white hover:bg-primary/90 transition"
+              >
+                Xem sự kiện khác
+              </button>
+            </div>
+          )}
+
+          {/* Invalid QR State */}
+          {status === "invalid_qr" && (
+            <div className="w-full rounded-3xl bg-accent/10 p-6 text-center">
+              <div className="text-4xl mb-3">📷</div>
+              <p className="font-extrabold text-accent text-lg">
+                {errorDetails?.title || "Mã QR không hợp lệ"}
+              </p>
+              <p className="mt-2 text-sm text-ink/70">
+                {errorDetails?.message || "Mã QR đã hết hạn hoặc không đúng."}
+              </p>
+              <div className="mt-4 space-y-2">
+                <button
+                  onClick={() => {
+                    setStatus("idle");
+                    setQrToken("");
+                    setErrorDetails(null);
+                  }}
+                  className="w-full rounded-2xl bg-accent px-4 py-3 text-sm font-bold text-white hover:bg-accent-hover transition"
+                >
+                  Quét lại mã QR
+                </button>
+                <button
+                  onClick={() => setStatus("idle")}
+                  className="w-full rounded-2xl bg-surface-highest px-4 py-3 text-sm font-bold text-ink hover:bg-surface-high transition"
+                >
+                  Nhập mã thủ công
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Generic Error State */}
+          {status === "error" && (
+            <div className="w-full rounded-3xl bg-accent/10 p-6 text-center">
+              <div className="text-4xl mb-3">⚠️</div>
+              <p className="font-extrabold text-accent text-lg">
+                {errorDetails?.title || "Check-in thất bại"}
+              </p>
+              <p className="mt-2 text-sm text-ink/70">
+                {errorDetails?.message || error || "Đã có lỗi xảy ra. Vui lòng thử lại."}
+              </p>
+              <div className="mt-4 space-y-2">
+                <button
+                  onClick={() => {
+                    setStatus("idle");
+                    setErrorDetails(null);
+                  }}
+                  className="w-full rounded-2xl bg-accent px-4 py-3 text-sm font-bold text-white hover:bg-accent-hover transition"
+                >
+                  Thử lại
+                </button>
+                <button
+                  onClick={() => navigate('/help')}
+                  className="w-full rounded-2xl bg-surface-highest px-4 py-3 text-sm font-bold text-ink hover:bg-surface-high transition"
+                >
+                  Liên hệ hỗ trợ
+                </button>
+              </div>
             </div>
           )}
 

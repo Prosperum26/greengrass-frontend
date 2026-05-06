@@ -510,19 +510,10 @@ export const EventDetail = () => {
             <h1 className="mt-4 text-3xl font-semibold font-display tracking-tight text-primary md:text-4xl">{event.title}</h1>
             <p className="mt-3 max-w-3xl text-ink/75 leading-relaxed">{event.description}</p>
 
-            <div className="mt-6 grid gap-4 md:grid-cols-3">
+            <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
               <div className="rounded-2xl bg-surface-highest p-4 shadow-[0_12px_32px_rgba(33,26,20,0.06)]">
                 <p className="text-xs font-semibold uppercase tracking-wide text-ink/45">Địa điểm</p>
                 <p className="mt-2 font-medium text-ink">{event.location}</p>
-                {event.checkinRadius && (
-                  <div className="mt-2 flex items-center gap-2">
-                    <svg className="h-4 w-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                    <span className="text-sm text-ink/75">Phạm vi check-in: {event.checkinRadius}m</span>
-                  </div>
-                )}
               </div>
               <div className="rounded-2xl bg-surface-highest p-4 shadow-[0_12px_32px_rgba(33,26,20,0.06)]">
                 <p className="text-xs font-semibold uppercase tracking-wide text-ink/45">Thời gian bắt đầu</p>
@@ -531,6 +522,23 @@ export const EventDetail = () => {
               <div className="rounded-2xl bg-surface-highest p-4 shadow-[0_12px_32px_rgba(33,26,20,0.06)]">
                 <p className="text-xs font-semibold uppercase tracking-wide text-ink/45">Thời gian kết thúc</p>
                 <p className="mt-2 font-medium text-ink">{new Date(event.endTime).toLocaleString()}</p>
+              </div>
+              <div className="rounded-2xl bg-surface-highest p-4 shadow-[0_12px_32px_rgba(33,26,20,0.06)]">
+                <p className="text-xs font-semibold uppercase tracking-wide text-ink/45">Phạm vi check-in</p>
+                <div className="mt-2 flex items-center gap-2">
+                  <svg className="h-4 w-4 text-primary flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  <p className="font-medium text-ink">
+                    {event.checkinRadius ? `${event.checkinRadius}m` : 'Không giới hạn'}
+                  </p>
+                </div>
+                {event.checkinRadius ? (
+                  <p className="mt-1 text-xs text-ink/50">Bán kính từ địa điểm sự kiện</p>
+                ) : (
+                  <p className="mt-1 text-xs text-ink/50">Có thể check-in từ bất kỳ đâu</p>
+                )}
               </div>
             </div>
 
