@@ -24,6 +24,28 @@ export const CheckInPage = () => {
   const [errorDetails, setErrorDetails] = useState(null); // { type, title, message, action }
   const { checkIn, isLoading, error } = useCheckIn();
 
+  // Helper to extract token from URL if QR contains full URL
+  const extractTokenFromUrl = useCallback((input) => {
+    if (!input) return '';
+    
+    // Check if input is a URL
+    if (input.includes('http://') || input.includes('https://') || input.includes('/checkin/')) {
+      try {
+        // Try to parse as full URL
+        const url = new URL(input);
+        const token = url.searchParams.get('token');
+        if (token) return token;
+      } catch {
+        // If URL parsing fails, try regex extraction
+        const match = input.match(/[?&]token=([^&]+)/);
+        if (match) return match[1];
+      }
+    }
+    
+    // If not a URL, assume it's just the token
+    return input;
+  }, []);
+
   // Location states
   const [distanceToEvent, setDistanceToEvent] = useState(null);
   const [requiredRadius, setRequiredRadius] = useState(50);
@@ -226,6 +248,41 @@ export const CheckInPage = () => {
     [checkIn, eventId, getUserLocation, event?.checkinRadius],
   );
 
+  // Check registration status
+  const checkRegistrationStatus = useCallback(async () => {
+    try {
+      // Try to use dedicated registration check API first
+      try {
+        const checkRes = await eventsApi.checkRegistration(eventId);
+        const isReg = checkRes?.data?.data?.registered || checkRes?.data?.registered || false;
+        setIsRegistered(isReg);
+        return isReg;
+      } catch (checkErr) {
+        // If 404, user is not registered - this is expected for new users
+        if (checkErr.response?.status === 404) {
+          setIsRegistered(false);
+          return false;
+        }
+        // For other errors, fall back to myEvents method
+      }
+
+      // Fallback: Check from my events list
+      const myEventsRes = await usersApi.getMyEvents();
+      const rawMyEvents = myEventsRes?.data?.data || myEventsRes?.data || [];
+      const myEvents = Array.isArray(rawMyEvents) ? rawMyEvents : [];
+      const registered = myEvents.some(
+        (item) =>
+          String(item?.id) === eventId || String(item?.eventId) === eventId,
+      );
+      setIsRegistered(registered);
+      return registered;
+    } catch (err) {
+      console.error('Error checking registration:', err);
+      // Keep current state on error, don't assume false
+      return isRegistered;
+    }
+  }, [eventId, isRegistered]);
+
   useEffect(() => {
     const load = async () => {
       try {
@@ -238,44 +295,34 @@ export const CheckInPage = () => {
           setRequiredRadius(eventData.checkinRadius);
         }
 
-        // Check if user is registered for this event
-        const myEventsRes = await usersApi.getMyEvents();
-        const rawMyEvents = myEventsRes?.data?.data || myEventsRes?.data || [];
-        const myEvents = Array.isArray(rawMyEvents) ? rawMyEvents : [];
-        const registered = myEvents.some(
-          (item) =>
-            String(item?.id) === eventId || String(item?.eventId) === eventId,
-        );
-        setIsRegistered(registered);
+        // Check registration status
+        const registered = await checkRegistrationStatus();
 
         // If registered and has token from URL, auto-submit
         if (registered && urlToken) {
           void submit(urlToken);
         }
-      } catch {
-        // Silent fail
+      } catch (err) {
+        console.error('Error loading event:', err);
       } finally {
         setCheckingRegistration(false);
       }
     };
     void load();
-  }, [eventId, urlToken, submit]);
+  }, [eventId, urlToken, submit, checkRegistrationStatus]);
 
   const handleRegister = async () => {
     setIsRegistering(true);
     try {
       await eventsApi.register(eventId);
-      setIsRegistered(true);
       // Re-check registration to ensure state is synced
-      const myEventsRes = await usersApi.getMyEvents();
-      const rawMyEvents = myEventsRes?.data?.data || myEventsRes?.data || [];
-      const myEvents = Array.isArray(rawMyEvents) ? rawMyEvents : [];
-      const registered = myEvents.some(
-        (item) =>
-          String(item?.id) === eventId || String(item?.eventId) === eventId,
-      );
-      setIsRegistered(registered);
-      alert("Đăng ký thành công! Vui lòng quét lại mã QR để check-in.");
+      const registered = await checkRegistrationStatus();
+      if (registered) {
+        alert("Đăng ký thành công! Vui lòng quét lại mã QR để check-in.");
+      } else {
+        setIsRegistered(true); // Optimistic update
+        alert("Đăng ký thành công! Vui lòng quét lại mã QR để check-in.");
+      }
     } catch (err) {
       if (err.response?.status === 409) {
         // Already registered, update state
@@ -399,9 +446,21 @@ export const CheckInPage = () => {
             status !== "invalid_qr" && (
               <>
                 <QRScanner
-                  onScan={(token) => {
+                  onScan={(rawToken) => {
+                    // Extract token from URL if QR contains full URL
+                    const token = extractTokenFromUrl(rawToken);
                     setQrToken(token);
-                    void submit(token);
+                    if (token) {
+                      void submit(token);
+                    } else {
+                      setErrorDetails({
+                        type: 'invalid_qr',
+                        title: 'Mã QR không hợp lệ',
+                        message: 'Không tìm thấy mã check-in trong QR code. Vui lòng quét lại mã QR từ ban tổ chức.',
+                        action: 'retry_scan'
+                      });
+                      setStatus("invalid_qr");
+                    }
                   }}
                   onError={() => {}}
                 />
