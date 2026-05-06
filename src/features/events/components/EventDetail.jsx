@@ -364,7 +364,8 @@ export const EventDetail = () => {
       
       // Refresh event data
       const updatedEvent = await eventsApi.getById(id);
-      setEvent(updatedEvent.data);
+      const eventData = updatedEvent.data?.data || updatedEvent.data;
+      setEvent(eventData);
       
       alert('Cập nhật sự kiện thành công!');
     } catch (err) {
