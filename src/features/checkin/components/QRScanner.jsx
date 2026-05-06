@@ -65,7 +65,7 @@ export const QRScanner = ({ onScan, onError, className = '' }) => {
 
   return (
     <section className={`w-full ${className}`}>
-      <div className="rounded-3xl bg-ink overflow-hidden shadow-[0_20px_60px_rgba(33,26,20,0.16)]">
+      <div className="rounded-3xl bg-surface-variant dark:bg-surface-container-lowest overflow-hidden shadow-[0_20px_60px_rgba(var(--shadow-color),var(--shadow-opacity))]">
         <div className="relative aspect-square">
           {hasCamera ? (
             <>
@@ -76,7 +76,7 @@ export const QRScanner = ({ onScan, onError, className = '' }) => {
               </div>
             </>
           ) : (
-            <div className="h-full w-full flex items-center justify-center text-white/80">
+            <div className="h-full w-full flex items-center justify-center text-on-surface dark:text-white/80">
               Không có camera
             </div>
           )}
@@ -88,7 +88,7 @@ export const QRScanner = ({ onScan, onError, className = '' }) => {
           <button
             type="button"
             onClick={stopScanning}
-            className="flex-1 rounded-2xl bg-surface-highest px-4 py-3 text-sm font-bold text-primary hover:bg-surface-high"
+            className="flex-1 rounded-2xl bg-surface-highest dark:bg-surface-container px-4 py-3 text-sm font-bold text-primary hover:bg-surface-high dark:hover:bg-surface-container-high"
           >
             Dừng quét
           </button>
@@ -96,14 +96,14 @@ export const QRScanner = ({ onScan, onError, className = '' }) => {
           <button
             type="button"
             onClick={startScanning}
-            className="flex-1 rounded-2xl bg-primary px-4 py-3 text-sm font-bold text-white shadow-[0_18px_48px_rgba(33,26,20,0.10)]"
+            className="flex-1 rounded-2xl bg-primary px-4 py-3 text-sm font-bold text-white shadow-[0_18px_48px_rgba(var(--shadow-color),var(--shadow-opacity))]"
           >
             Bắt đầu quét
           </button>
         )}
       </div>
 
-      <p className="mt-3 text-center text-xs font-medium text-ink/60">
+      <p className="mt-3 text-center text-xs font-medium text-ink/60 dark:text-on-surface-variant/80">
         Đưa mã QR vào khung hình để quét.
       </p>
     </section>
