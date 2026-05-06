@@ -4,8 +4,8 @@
 
 | Component    | Repository Link                                                                                                                                            |
 | :----------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Frontend** | [GitHub Repo](https://github.com/Prosperum26/frontendly-frontend)                                                                                          |
-| **Backend**  | [![Backend Repo](https://img.shields.io/badge/Repository-Backend-blue?style=for-the-badge&logo=github)](https://github.com/Prosperum26/frontendly-backend) |
+| **Frontend** | [GitHub Repo](https://github.com/Prosperum26/greengrass-frontend)                                                                                          |
+| **Backend**  | [![Backend Repo](https://img.shields.io/badge/Repository-Backend-blue?style=for-the-badge&logo=github)](https://github.com/Prosperum26/greengrass-backend) |
 
 <p align="center">
   <strong>Nền tảng Sự kiện Môi trường - Frontend</strong>
