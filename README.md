@@ -1,10 +1,11 @@
 # Greengrass Frontend
 
 ## 🔗 Project Links
-| Component | Repository Link |
-| :--- | :--- |
-| **Frontend** | [GitHub Repo](https://github.com/Prosperum26/frontendly-frontend) |
-| **Backend** | [![Backend Repo](https://img.shields.io/badge/Repository-Backend-blue?style=for-the-badge&logo=github)](https://github.com/Prosperum26/frontendly-backend) |
+
+| Component    | Repository Link                                                                                                                                            |
+| :----------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Frontend** | [GitHub Repo](https://github.com/Prosperum26/frontendly-frontend)                                                                                          |
+| **Backend**  | [![Backend Repo](https://img.shields.io/badge/Repository-Backend-blue?style=for-the-badge&logo=github)](https://github.com/Prosperum26/frontendly-backend) |
 
 <p align="center">
   <strong>Nền tảng Sự kiện Môi trường - Frontend</strong>
@@ -26,11 +27,12 @@ Greengrass Frontend là ứng dụng React hiện đại cho nền tảng sự k
 
 ### Các tính năng chính
 
+- **Trang chủ**: Dashboard tổng quan với thông tin sự kiện nổi bật và thống kê cá nhân
 - **Khám phá sự kiện**: Duyệt và tìm kiếm sự kiện môi trường với tích hợp bản đồ
 - **Quản lý sự kiện**: Tạo, đăng ký và quản lý việc tham gia sự kiện
 - **Check-in QR**: Quét mã QR để xác nhận tham dự sự kiện
 - **Gamification**: Tích điểm, nhận huy hiệu và theo dõi bảng xếp hạng
-- **Tính năng real-time**: Thông báo và cập nhật trực tiếp
+- **Chatbot**: Trợ lý AI hỗ trợ người dùng
 - **Thiết kế responsive**: Tối ưu cho mọi kích thước thiết bị
 
 ---
@@ -69,11 +71,14 @@ greengrass-frontend/
 │   │   └── common/       # Toast, Loading, ErrorBoundary
 │   ├── features/          # Module theo tính năng
 │   │   ├── auth/         # Đăng nhập, Đăng ký, OAuth
+│   │   ├── home/         # Trang chủ, Dashboard
 │   │   ├── events/       # Danh sách, chi tiết, đăng ký sự kiện
 │   │   ├── checkin/      # Quét QR, xác thực GPS
 │   │   ├── gamification/ # Điểm, huy hiệu, bảng xếp hạng
 │   │   ├── map/          # Bản đồ tương tác với marker
-│   │   └── profile/      # Hồ sơ người dùng, lịch sử
+│   │   ├── profile/      # Hồ sơ người dùng, lịch sử
+│   │   ├── forum/        # Diễn đàn thảo luận
+│   │   └── chatbot/      # Trợ lý AI
 │   ├── contexts/          # React contexts (Auth, Error)
 │   ├── hooks/             # Custom React hooks
 │   ├── pages/             # Component cấp page
@@ -111,8 +116,8 @@ cd greengrass-frontend
 # Cài đặt dependencies
 yarn install
 
-# Copy file môi trường
-cp .env.example .env
+# Tạo file môi trường
+cp .env.example .env  # (tạo thủ công nếu chưa có .env.example)
 ```
 
 ### Phát triển
@@ -133,20 +138,18 @@ yarn preview
 
 ### Biến môi trường
 
-Tạo file `.env` dựa trên `.env.example`:
+Tạo file `.env` trong thư mục gốc:
 
 ```env
 # Bắt buộc
 VITE_API_URL=http://localhost:3000        # URL API backend
-VITE_APP_NAME=GreenGrass                    # Tên ứng dụng
+VITE_APP_NAME=GreenGrass                   # Tên ứng dụng
 
 # Tùy chọn
-VITE_API_TIMEOUT=10000                      # Timeout API (ms)
+VITE_API_TIMEOUT=10000                     # Timeout API (ms)
 VITE_DEBUG=false                           # Chế độ debug
 VITE_ANALYTICS_ENABLED=false               # Analytics
 ```
-
-Xem `.env.example` để biết đầy đủ tùy chọn cấu hình.
 
 ---
 
@@ -193,33 +196,28 @@ Thư mục `dist/` chứa build tĩnh và có thể triển khai lên:
 
 ### GitHub Actions Workflow
 
-Dự án bao gồm pipeline CI/CD tự động (`.github/workflows/deploy.yml`):
+Dự án bao gồm pipeline CI tự động (`.github/workflows/deploy.yml`):
 
 ```yaml
+name: Code Quality
 on:
   push:
-    branches: [main]
+    branches: [main, master]
   pull_request:
-    branches: [main]
+    branches: [main, master]
 
 jobs:
-  build-and-deploy:
+  lint-and-test:
     steps:
-      - Checkout code
-      - Setup Node.js
-      - Cài đặt dependencies
-      - Chạy linter
-      - Build ứng dụng
-      - Triển khai lên Vercel
+      - Checkout Repository
+      - Setup Node.js 20
+      - Setup Yarn
+      - Cache Dependencies
+      - Install Dependencies
+      - Run Linter
 ```
 
-### Secrets cần thiết
-
-Cấu hình trong GitHub Settings > Secrets:
-
-- `VERCEL_TOKEN` - Vercel API token
-- `VERCEL_ORG_ID` - Vercel organization ID
-- `VERCEL_PROJECT_ID` - Vercel project ID
+Workflow chạy linter trên mỗi push/PR để đảm bảo chất lượng code.
 
 ---
 
