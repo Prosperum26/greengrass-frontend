@@ -463,14 +463,14 @@ export const Header = memo(() => {
       {/* QR Scanner Modal */}
       {showQrScanner && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="bg-surface dark:bg-surface-container rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
+          <div className="bg-surface dark:bg-[#1a1612] rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
             <div className="p-4 border-b border-outline dark:border-outline/30 flex justify-between items-center">
-              <h3 className="font-bold text-lg text-on-surface dark:text-on-surface">Quét mã QR Check-in</h3>
+              <h3 className="font-bold text-lg text-on-surface dark:text-white">Quét mã QR Check-in</h3>
               <button
                 onClick={() => setShowQrScanner(false)}
                 className="p-2 rounded-full hover:bg-surface-highest dark:hover:bg-surface-container-high transition-colors"
               >
-                <span className="material-symbols-outlined text-on-surface-variant dark:text-on-surface-variant">close</span>
+                <span className="material-symbols-outlined text-on-surface-variant dark:text-white/80">close</span>
               </button>
             </div>
             <div className="p-4">
@@ -492,7 +492,7 @@ export const Header = memo(() => {
                   console.error('QR Scan error:', err);
                 }}
               />
-              <p className="mt-4 text-sm text-on-surface-variant dark:text-on-surface-variant text-center">
+              <p className="mt-4 text-sm text-on-surface-variant dark:text-white/70 text-center">
                 Quét mã QR tại sự kiện để check-in
               </p>
             </div>
