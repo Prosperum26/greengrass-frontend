@@ -92,7 +92,7 @@ export const Leaderboard = () => {
           {topThree.map((u) => (
             <div
               key={u.userId}
-              className={`rounded-3xl p-6 text-center space-y-4 shadow-[0_20px_60px_rgba(33,26,20,0.08)] ${
+              className={`rounded-3xl p-6 text-center space-y-4 shadow-[0_20px_60px_rgba(var(--shadow-color),var(--shadow-opacity))] ${
                 u.rank === 1
                   ? "bg-primary text-white md:w-64 -translate-y-5"
                   : "bg-surface-low text-ink md:w-56"
@@ -155,7 +155,7 @@ export const Leaderboard = () => {
 
       <section className="mt-10 grid grid-cols-1 lg:grid-cols-12 gap-8">
         <div className="lg:col-span-4 space-y-8">
-          <div className="rounded-3xl bg-surface-highest p-8 shadow-[0_24px_70px_rgba(33,26,20,0.08)] space-y-6">
+          <div className="rounded-3xl bg-surface-highest p-8 shadow-[0_24px_70px_rgba(var(--shadow-color),var(--shadow-opacity))] space-y-6">
             <div className="flex items-center justify-between">
               <h4 className="text-xl font-bold font-display text-primary">
                 Tiến độ Cộng đồng
@@ -163,7 +163,7 @@ export const Leaderboard = () => {
               <select
                 value={timeframe}
                 onChange={(e) => setTimeframe(e.target.value)}
-                className="rounded-xl bg-surface-high px-3 py-2 text-sm text-ink outline-none focus:ring-2 focus:ring-primary/30"
+                className="rounded-xl bg-surface px-3 py-2 text-sm text-on-surface outline-none focus:ring-2 focus:ring-primary/30 dark:bg-surface-container border border-outline dark:border-outline/30"
               >
                 <option value="all">Tất cả</option>
                 <option value="weekly">Hàng tuần</option>
@@ -211,7 +211,7 @@ export const Leaderboard = () => {
           </div>
         </div>
 
-        <div className="lg:col-span-8 rounded-3xl bg-surface-low p-8 shadow-[0_24px_70px_rgba(33,26,20,0.08)]">
+        <div className="lg:col-span-8 rounded-3xl bg-surface-low p-8 shadow-[0_24px_70px_rgba(var(--shadow-color),var(--shadow-opacity))]">
           <div className="mb-8 flex items-end justify-between gap-4">
             <div>
               <h4 className="text-3xl font-bold font-display text-primary">

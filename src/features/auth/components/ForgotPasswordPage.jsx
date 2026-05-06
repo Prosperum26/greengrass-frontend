@@ -55,27 +55,27 @@ const ForgotPasswordPage = () => {
 
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-[80vh] py-12 bg-[#fafafa]">
+        <div className="flex flex-col items-center justify-center min-h-[80vh] py-12 bg-surface">
 
             {/* Tiêu đề */}
-            <h1 className="text-[36px] font-bold mb-10 text-black tracking-wide text-center">
+            <h1 className="text-[36px] font-bold mb-10 text-on-surface tracking-wide text-center">
                 Quên mật khẩu
             </h1>
 
             {/* Khung Form (Kích thước max-w-[500px] giống hệt form Login cho cân đối) */}
-            <div className="w-full max-w-[500px] p-10 bg-white border border-gray-200 rounded-lg shadow-sm">
+            <div className="w-full max-w-[500px] p-10 bg-surface-high border border-outline rounded-lg shadow-[0_32px_80px_rgba(33,26,20,0.10)] dark:border-outline/30">
 
                 <form onSubmit={handleSendSubmit} className="flex flex-col gap-5">
 
                     {/* Nhóm Email */}
                     <div className="flex flex-col gap-1 items-start">
-                        <label className="text-[15px] text-gray-800 font-medium">Email</label>
+                        <label className="text-[15px] text-on-surface font-medium">Email</label>
                         <input
                             type="email"
                             placeholder="Nhập email bạn đã đăng ký"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-md outline-none focus:border-gray-500 transition-colors"
+                            className="w-full px-4 py-3 border border-outline rounded-md outline-none focus:border-primary/50 transition-colors bg-surface-container dark:bg-surface-container-high dark:border-outline/30 text-on-surface placeholder:text-on-surface/50"
                         />
                     </div>
 
@@ -101,13 +101,13 @@ const ForgotPasswordPage = () => {
                 <div className="mt-6 flex flex-col items-start gap-3">
                     <Link
                         to="/login"
-                        className="text-[14px] text-gray-600 hover:text-black underline underline-offset-4 decoration-1"
+                        className="text-[14px] text-on-surface-variant hover:text-on-surface underline underline-offset-4 decoration-1"
                     >
                         Đăng nhập
                     </Link>
                     <Link
                         to="/register"
-                        className="text-[14px] text-gray-600 hover:text-black underline underline-offset-4 decoration-1"
+                        className="text-[14px] text-on-surface-variant hover:text-on-surface underline underline-offset-4 decoration-1"
                     >
                         Bạn chưa có tài khoản?
                     </Link>

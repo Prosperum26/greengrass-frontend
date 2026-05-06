@@ -35,6 +35,19 @@ body {
   background: #059669;
 }
 
+/* Dark mode scrollbar */
+html.dark ::-webkit-scrollbar-track {
+  background: #1f2937;
+}
+
+html.dark ::-webkit-scrollbar-thumb {
+  background: #4b5563;
+}
+
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
+}
+
 /* Leaflet Map Customization (for future use) */
 .leaflet-container {
   font-family: inherit;
@@ -230,9 +243,19 @@ html {
   color: inherit;
 }
 
+html.dark ::selection {
+  background: rgba(168, 211, 142, 0.3);
+  color: inherit;
+}
+
 /* Focus visible styles */
 *:focus-visible {
   outline: 2px solid rgba(35, 70, 18, 0.5);
+  outline-offset: 2px;
+}
+
+html.dark *:focus-visible {
+  outline: 2px solid rgba(168, 211, 142, 0.5);
   outline-offset: 2px;
 }
 

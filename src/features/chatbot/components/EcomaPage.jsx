@@ -69,7 +69,7 @@ const LeafiaPage = () => {
   return (
     <div className="px-4 py-8 md:px-6">
       <div className="mx-auto max-w-6xl grid grid-cols-1 gap-6 lg:grid-cols-12">
-        <aside className="lg:col-span-4 rounded-3xl bg-surface-highest p-6 shadow-[0_20px_60px_rgba(33,26,20,0.08)]">
+        <aside className="lg:col-span-4 rounded-3xl bg-surface-highest p-6 shadow-[0_20px_60px_rgba(var(--shadow-color),var(--shadow-opacity))]">
           <h1 className="text-3xl font-display font-bold text-primary tracking-tight">Leafia AI 🌿</h1>
           <p className="mt-2 text-ink/75">
             Trợ lý môi trường thân thiện giúp bạn tìm hoạt động xanh và hiểu cách dùng nền tảng.
@@ -93,7 +93,7 @@ const LeafiaPage = () => {
           </div>
         </aside>
 
-        <section className="lg:col-span-8 rounded-3xl bg-surface-highest shadow-[0_20px_60px_rgba(33,26,20,0.08)] flex flex-col min-h-[70vh]">
+        <section className="lg:col-span-8 rounded-3xl bg-surface-highest shadow-[0_20px_60px_rgba(var(--shadow-color),var(--shadow-opacity))] flex flex-col min-h-[70vh]">
           <div className="border-b border-ink/10 px-6 py-4">
             <p className="text-sm font-semibold text-primary">Chat with Leafia 🌱</p>
           </div>
@@ -140,7 +140,7 @@ const LeafiaPage = () => {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Hỏi Leafia về sự kiện, phân loại rác, điểm thưởng..."
-                className="flex-1 rounded-xl border border-ink/10 bg-white/80 px-4 py-3 text-ink placeholder:text-ink/50 outline-none focus:ring-2 focus:ring-primary/30"
+                className="flex-1 rounded-xl border border-ink/10 bg-surface-container px-4 py-3 text-on-surface placeholder:text-on-surface/50 outline-none focus:ring-2 focus:ring-primary/30 dark:bg-surface-container-high dark:border-outline/30"
                 maxLength={500}
               />
               <button

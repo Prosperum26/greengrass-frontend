@@ -238,12 +238,70 @@
 }
 
 :root {
+  /* Material Design 3 Light Theme Colors (RGB values) */
+  --on-surface-variant: 67, 73, 62;
+  --on-primary-fixed-variant: 44, 79, 26;
+  --tertiary-fixed: 255, 219, 207;
+  --tertiary: 114, 35, 0;
+  --primary-container: 58, 94, 39;
+  --surface-container: 250, 235, 225;
+  --on-secondary: 255, 255, 255;
+  --outline: 115, 121, 108;
+  --secondary-fixed: 218, 235, 149;
+  --surface-container-high: 244, 230, 220;
+  --surface-container-low: 255, 241, 232;
+  --primary-fixed-dim: 168, 211, 142;
+  --error-container: 255, 218, 214;
+  --surface-tint: 67, 104, 48;
+  --on-primary-fixed: 7, 33, 0;
+  --surface-container-highest: 238, 224, 214;
+  --outline-variant: 195, 201, 186;
+  --secondary-fixed-dim: 190, 206, 123;
+  --background: 255, 248, 245;
+  --surface-container-lowest: 255, 255, 255;
+  --surface-bright: 255, 248, 245;
+  --primary: 35, 70, 18;
+  --on-error: 255, 255, 255;
+  --tertiary-container: 153, 50, 0;
+  --secondary-container: 215, 232, 146;
+  --surface: 255, 248, 245;
+  --inverse-surface: 55, 47, 40;
+  --inverse-on-surface: 253, 238, 228;
+  --on-primary-container: 172, 214, 146;
+  --on-surface: 33, 26, 20;
+  --on-tertiary-container: 255, 186, 161;
+  --surface-dim: 229, 215, 206;
+  --on-error-container: 147, 0, 10;
+  --on-tertiary-fixed: 56, 13, 0;
+  --error: 186, 26, 26;
+  --on-secondary-fixed-variant: 63, 76, 5;
+  --on-secondary-container: 91, 105, 34;
+  --on-background: 33, 26, 20;
+  --secondary: 87, 100, 30;
+  --inverse-primary: 168, 211, 142;
+  --primary-fixed: 196, 239, 168;
+  --on-secondary-fixed: 24, 30, 0;
+  --tertiary-fixed-dim: 255, 181, 154;
+  --on-tertiary-fixed-variant: 129, 41, 0;
+  --on-primary: 255, 255, 255;
+  --on-tertiary: 255, 255, 255;
+  --surface-variant: 238, 224, 214;
+
+  /* Additional theme-aware colors */
+  --accent: 247, 90, 13;
+  --accent-hover: 243, 69, 8;
+  --ink: 33, 26, 20;
+  --brown-800: 61, 54, 43;
+  --brown-900: 37, 30, 24;
+  --primary-light: 133, 148, 72;
+
+  /* Legacy variables */
   --text: #6b6375;
   --text-h: #08060d;
   --bg: #fff;
   --border: #e5e4e7;
   --code-bg: #f4f3ec;
-  --accent: #aa3bff;
+  --legacy-accent: #aa3bff;
   --accent-bg: rgba(170, 59, 255, 0.1);
   --accent-border: rgba(170, 59, 255, 0.5);
   --social-bg: rgba(244, 243, 236, 0.5);
@@ -258,7 +316,7 @@
   font-size: clamp(14px, 0.5vw + 13px, 18px);
   line-height: 1.5;
   letter-spacing: 0.01em;
-  color-scheme: light dark;
+  color-scheme: light;
   color: var(--text);
   background: var(--bg);
   font-synthesis: none;
@@ -285,6 +343,117 @@
   #social .button-icon {
     filter: invert(1) brightness(2);
   }
+}
+
+/* Dark mode class-based styles for Tailwind */
+html.dark {
+  /* Material Design 3 Dark Theme Colors (RGB values) */
+  --on-surface-variant: 196, 202, 186;
+  --on-primary-fixed-variant: 168, 211, 142;
+  --tertiary-fixed: 56, 13, 0;
+  --tertiary: 255, 181, 154;
+  --primary-container: 172, 214, 146;
+  --surface-container: 44, 38, 32;
+  --on-secondary: 255, 255, 255;
+  --outline: 141, 147, 133;
+  --secondary-fixed: 24, 30, 0;
+  --surface-container-high: 55, 47, 40;
+  --surface-container-low: 37, 31, 26;
+  --primary-fixed-dim: 67, 104, 48;
+  --error-container: 147, 0, 10;
+  --surface-tint: 168, 211, 142;
+  --on-primary-fixed: 7, 33, 0;
+  --surface-container-highest: 67, 58, 51;
+  --outline-variant: 68, 74, 63;
+  --secondary-fixed-dim: 87, 100, 30;
+  --background: 22, 18, 14;
+  --surface-container-lowest: 17, 14, 11;
+  --surface-bright: 62, 53, 46;
+  --primary: 168, 211, 142;
+  --on-error: 105, 0, 5;
+  --tertiary-container: 129, 41, 0;
+  --secondary-container: 63, 76, 5;
+  --surface: 22, 18, 14;
+  --inverse-surface: 253, 238, 228;
+  --inverse-on-surface: 55, 47, 40;
+  --on-primary-container: 35, 70, 18;
+  --on-surface: 241, 225, 215;
+  --on-tertiary-container: 255, 219, 207;
+  --surface-dim: 17, 14, 11;
+  --on-error-container: 255, 180, 171;
+  --on-tertiary-fixed: 255, 219, 207;
+  --error: 255, 180, 171;
+  --on-secondary-fixed-variant: 218, 235, 149;
+  --on-secondary-container: 218, 235, 149;
+  --on-background: 241, 225, 215;
+  --secondary: 190, 206, 123;
+  --inverse-primary: 67, 104, 48;
+  --primary-fixed: 35, 70, 18;
+  --on-secondary-fixed: 87, 100, 30;
+  --tertiary-fixed-dim: 114, 35, 0;
+  --on-tertiary-fixed-variant: 255, 181, 154;
+  --on-primary: 35, 70, 18;
+  --on-tertiary: 56, 13, 0;
+  --surface-variant: 68, 74, 63;
+
+  /* Additional theme-aware colors */
+  --accent: 255, 133, 102;
+  --accent-hover: 255, 150, 120;
+  --ink: 241, 225, 215;
+  --brown-800: 200, 190, 180;
+  --brown-900: 241, 225, 215;
+  --primary-light: 190, 206, 123;
+  --shadow-color: 0, 0, 0;
+  --shadow-opacity: 0.3;
+
+  /* Legacy variables */
+  --text: #9ca3af;
+  --text-h: #f3f4f6;
+  --bg: #16171d;
+  --border: #2e303a;
+  --code-bg: #1f2028;
+  --accent: #c084fc;
+  --accent-bg: rgba(192, 132, 252, 0.15);
+  --accent-border: rgba(192, 132, 252, 0.5);
+  --social-bg: rgba(47, 48, 58, 0.5);
+  --shadow:
+    rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
+  color-scheme: dark;
+}
+
+html.dark body {
+  background: rgb(var(--background));
+  color: rgb(var(--on-surface));
+}
+
+html.dark h1,
+html.dark h2 {
+  color: var(--text-h);
+}
+
+/* Dark mode scrollbar */
+html.dark ::-webkit-scrollbar-track {
+  background: #1f2937;
+}
+
+html.dark ::-webkit-scrollbar-thumb {
+  background: #4b5563;
+}
+
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
+}
+
+/* Dark mode shimmer */
+html.dark .shimmer {
+  background: linear-gradient(90deg, #374151 25%, #4b5563 50%, #374151 75%);
+  background-size: 1000px 100%;
+}
+
+/* Test accent color */
+.test-accent {
+  background-color: rgb(var(--accent));
+  border: 2px solid rgb(var(--accent));
 }
 
 body {

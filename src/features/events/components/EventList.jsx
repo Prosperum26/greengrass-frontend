@@ -64,7 +64,7 @@ export const EventList = () => {
           <select
             value={sort}
             onChange={(e) => setSort(e.target.value)}
-            className="rounded-lg border border-surface-variant bg-white px-2 sm:px-3 py-2 text-xs sm:text-sm text-on-surface outline-none focus:ring-2 focus:ring-primary/40 hover:bg-surface-container-highest transition-colors min-w-[140px] sm:min-w-[180px]"
+            className="rounded-lg border border-surface-variant bg-surface px-2 sm:px-3 py-2 text-xs sm:text-sm text-on-surface outline-none focus:ring-2 focus:ring-primary/40 hover:bg-surface-container-highest transition-colors min-w-[140px] sm:min-w-[180px] dark:bg-surface-container"
           >
             {sortOptions.map((option) => (
               <option key={option.value} value={option.value}>

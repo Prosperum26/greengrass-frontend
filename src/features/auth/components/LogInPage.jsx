@@ -11,7 +11,7 @@ const LoginPage = () => {
     const [searchParams] = useSearchParams();
     const redirectUrl = searchParams.get('redirect');
     const [showPassword, setShowPassword] = useState(false);
-    const fieldBaseClass = 'w-full rounded-xl border border-ink/10 bg-white/80 px-4 py-3 text-ink placeholder:text-ink/45 outline-none transition focus:ring-2';
+    const fieldBaseClass = 'w-full rounded-xl border border-ink/10 bg-surface-container px-4 py-3 text-on-surface placeholder:text-on-surface/45 outline-none transition focus:ring-2 dark:bg-surface-container-high dark:border-outline/30';
     
     const {
         register,
@@ -42,7 +42,7 @@ const LoginPage = () => {
 
     return (
         <div className="flex min-h-screen items-center justify-center bg-surface px-4 py-12">
-            <div className="w-full max-w-[520px] rounded-2xl bg-surface-high p-8 shadow-[0_32px_80px_rgba(33,26,20,0.10)]">
+            <div className="w-full max-w-[520px] rounded-2xl bg-surface-high p-8 shadow-[0_32px_80px_rgba(var(--shadow-color),var(--shadow-opacity))]">
             <h1 className="mb-8 text-center text-3xl font-semibold uppercase text-ink font-display tracking-tight">
                 Đăng nhập
             </h1>
@@ -101,7 +101,7 @@ const LoginPage = () => {
                     <button
                         type="submit"
                         disabled={isLoading || isSubmitting}
-                        className={`mt-2 w-full rounded-xl py-3 text-sm font-medium text-white transition-colors ${isLoading || isSubmitting ? 'cursor-not-allowed bg-primary-light/60' : 'bg-primary hover:bg-primary-light'} shadow-[0_20px_50px_rgba(33,26,20,0.10)]`}
+                        className={`mt-2 w-full rounded-xl py-3 text-sm font-medium text-white transition-colors ${isLoading || isSubmitting ? 'cursor-not-allowed bg-primary-light/60' : 'bg-primary hover:bg-primary-light'} shadow-[0_20px_50px_rgba(var(--shadow-color),var(--shadow-opacity))]`}
                     >
                         {isLoading || isSubmitting ? 'Đang xử lý...' : 'Sinh viên / Ban tổ chức Đăng nhập'}
                     </button>

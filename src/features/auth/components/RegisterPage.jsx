@@ -13,7 +13,7 @@ const RegisterPage = () => {
     });
     const { register: registerUser, isLoading, error: apiError } = useAuthContext();
     const navigate = useNavigate();
-    const fieldBaseClass = 'w-full rounded-xl border border-ink/10 bg-white/80 px-4 py-3 text-ink placeholder:text-ink/45 outline-none transition focus:ring-2';
+    const fieldBaseClass = 'w-full rounded-xl border border-ink/10 bg-surface-container px-4 py-3 text-on-surface placeholder:text-on-surface/45 outline-none transition focus:ring-2 dark:bg-surface-container-high dark:border-outline/30';
 
     const onSubmit = async (data) => {
         if (accountType === 'ORGANIZER' && !data.organizationName) {
@@ -36,7 +36,7 @@ const RegisterPage = () => {
 
     return (
         <div className="flex min-h-screen items-center justify-center bg-surface px-4 py-12">
-            <div className="w-full max-w-[720px] rounded-2xl bg-surface-high p-8 shadow-[0_32px_80px_rgba(33,26,20,0.10)]">
+            <div className="w-full max-w-[720px] rounded-2xl bg-surface-high p-8 shadow-[0_32px_80px_rgba(var(--shadow-color),var(--shadow-opacity))]">
             <h1 className="mb-6 text-center text-3xl font-semibold text-ink font-display tracking-tight">Tạo tài khoản</h1>
 
             <div className="mb-6 flex items-center justify-center gap-3">
@@ -50,7 +50,7 @@ const RegisterPage = () => {
               <button 
                 type="button" 
                 onClick={() => setAccountType('ORGANIZER')} 
-                className={`rounded-xl px-4 py-2 text-sm font-medium transition-colors ${accountType === 'ORGANIZER' ? 'bg-accent text-white' : 'bg-surface-highest text-ink/70 hover:bg-surface-container-high'}`}
+                className={`rounded-xl px-4 py-2 text-sm font-medium transition-colors ${accountType === 'ORGANIZER' ? 'bg-secondary text-white' : 'bg-surface-highest text-ink/70 hover:bg-surface-container-high'}`}
               >
                 Bạn là Ban tổ chức?
               </button>
@@ -157,7 +157,7 @@ const RegisterPage = () => {
                     <button
                         type="submit"
                         disabled={isLoading || isSubmitting}
-                        className={`mt-4 w-full rounded-xl py-3.5 text-sm font-medium text-white transition-colors ${isLoading || isSubmitting ? 'cursor-not-allowed bg-primary-light/60' : 'bg-primary hover:bg-primary-light'} shadow-[0_20px_50px_rgba(33,26,20,0.10)]`}
+                        className={`mt-4 w-full rounded-xl py-3.5 text-sm font-medium text-white transition-colors ${isLoading || isSubmitting ? 'cursor-not-allowed bg-primary-light/60' : 'bg-primary hover:bg-primary-light'} shadow-[0_20px_50px_rgba(var(--shadow-color),var(--shadow-opacity))]`}
                     >
                         {isLoading || isSubmitting ? 'Đang xử lý...' : accountType === 'ORGANIZER' ? 'Gửi yêu cầu ban tổ chức' : 'Đăng ký'}
                     </button>

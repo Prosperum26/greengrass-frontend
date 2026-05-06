@@ -2,6 +2,7 @@ import React, { useMemo, memo, useState, useCallback, useRef, useEffect } from '
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthContext } from '../../hooks/useAuthContext';
 import { useNotifications } from '../../hooks/useNotifications';
+import { useTheme } from '../../hooks/useTheme';
 import { QRScanner } from '../../features/checkin/components/QRScanner';
 
 export const Header = memo(() => {
@@ -146,6 +147,7 @@ export const Header = memo(() => {
 
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
   const toggleMobileSearch = () => setIsMobileSearchOpen(!isMobileSearchOpen);
+  const { isDark, toggleTheme } = useTheme();
 
   return (
     <>
@@ -222,6 +224,15 @@ export const Header = memo(() => {
           </div>
 
           <div className="flex items-center gap-2 sm:gap-4 border-l border-white/10 pl-2 sm:pl-4 lg:pl-6">
+            {/* Theme Toggle */}
+            <button
+              onClick={toggleTheme}
+              className="material-symbols-outlined text-white/80 hover:text-white hover:bg-white/15 p-2 sm:p-2.5 rounded-full transition-all duration-300 hover:shadow-lg hover:scale-110 flex items-center justify-center active:scale-95"
+              aria-label={isDark ? 'Chuyển sang chế độ sáng' : 'Chuyển sang chế độ tối'}
+            >
+              {isDark ? 'light_mode' : 'dark_mode'}
+            </button>
+
             {/* Notification Button */}
             <div className="relative" ref={notificationRef}>
               <button
