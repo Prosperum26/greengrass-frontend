@@ -356,8 +356,14 @@ export const EventDetail = () => {
         updateData.longitude = parseFloat(editForm.longitude);
       }
       
-      if (editForm.checkinRadius !== '' && editForm.checkinRadius != null) {
-        updateData.checkinRadius = parseInt(editForm.checkinRadius);
+      // Handle checkinRadius: 0 or empty = unlimited (backend will set to 20076000)
+      if (editForm.checkinRadius === '' || editForm.checkinRadius === '0' || editForm.checkinRadius === 0) {
+        updateData.checkinRadius = 0; // Backend converts 0 to 20076000
+      } else if (!isNaN(editForm.checkinRadius)) {
+        const radius = parseInt(editForm.checkinRadius);
+        if (radius >= 20 && radius <= 2000) {
+          updateData.checkinRadius = radius;
+        }
       }
       
       await eventsApi.update(id, updateData);
@@ -538,13 +544,13 @@ export const EventDetail = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
                   <p className="font-medium text-ink">
-                    {event.checkinRadius != null ? `${event.checkinRadius}m` : 'Không giới hạn'}
+                    {event.checkinRadius && event.checkinRadius > 0 && event.checkinRadius < 20076000 ? `${event.checkinRadius}m` : 'Không giới hạn'}
                   </p>
                 </div>
-                {event.checkinRadius != null ? (
+                {event.checkinRadius && event.checkinRadius > 0 && event.checkinRadius < 20076000 ? (
                   <p className="mt-1 text-xs text-ink/50">Bán kính từ địa điểm sự kiện</p>
                 ) : (
-                  <p className="mt-1 text-xs text-ink/50">Có thể check-in từ bất kỳ đâu</p>
+                  <p className="mt-1 text-xs text-ink/50">Có thể check-in từ bất kỳ đâu (nửa chu vi Trái Đất)</p>
                 )}
               </div>
             </div>
@@ -731,15 +737,23 @@ export const EventDetail = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-ink mb-1">Bán kính check-in (mét)</label>
+                    <label className="block text-sm font-medium text-ink mb-1">Phạm vi check-in (m)</label>
                     <input
                       type="number"
+                      min="0"
+                      max="2000"
                       value={editForm.checkinRadius}
-                      onChange={(e) => setEditForm(prev => ({ ...prev, checkinRadius: e.target.value }))}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        // Allow empty, 0, or numbers between 20-2000
+                        if (value === '' || value === '0' || (!isNaN(value) && (parseInt(value) >= 20 && parseInt(value) <= 2000))) {
+                          setEditForm(prev => ({ ...prev, checkinRadius: value }));
+                        }
+                      }}
                       placeholder="50"
                       className="w-full rounded-xl bg-white px-4 py-3 text-sm text-ink placeholder:text-ink/40 outline-none focus:ring-2 focus:ring-primary/25"
                     />
-                    <p className="mt-1 text-xs text-ink/50">Người dùng phải trong phạm vi này để check-in. Để trống nếu không giới hạn.</p>
+                    <p className="mt-1 text-xs text-ink/50">Từ 20-2000m. Để 0 hoặc trống = không giới hạn (nửa chu vi Trái Đất).</p>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

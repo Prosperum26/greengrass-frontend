@@ -20,6 +20,7 @@ const CreateEventPage = () => {
     endTime: '',
     points: 10,
     qrSecret: '',
+    checkinRadius: '', // Default empty (unlimited)
   });
 
   const [errors, setErrors] = useState({});
@@ -90,6 +91,17 @@ const CreateEventPage = () => {
     }
 
     if (!formData.qrSecret) newErrors.qrSecret = 'Mã bí mật QR Check-in là bắt buộc';
+    
+    if (formData.checkinRadius !== '' && formData.checkinRadius !== 0 && formData.checkinRadius !== '0') {
+      const radius = parseInt(formData.checkinRadius);
+      if (isNaN(radius)) {
+        newErrors.checkinRadius = 'Phạm vi không hợp lệ';
+      } else if (radius < 20) {
+        newErrors.checkinRadius = 'Phạm vi tối thiểu 20m';
+      } else if (radius > 2000) {
+        newErrors.checkinRadius = 'Phạm vi tối đa 2000m';
+      }
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -131,6 +143,11 @@ const CreateEventPage = () => {
       payload.append('endTime', new Date(formData.endTime).toISOString());
       payload.append('points', formData.points);
       payload.append('qrSecret', formData.qrSecret);
+      // Handle checkinRadius: 0 or empty = unlimited
+      const radiusValue = formData.checkinRadius === '' || formData.checkinRadius === '0' || formData.checkinRadius === 0 
+        ? 0 
+        : parseInt(formData.checkinRadius);
+      payload.append('checkinRadius', radiusValue);
       
       if (coverImage) {
         payload.append('coverImage', coverImage);
@@ -306,6 +323,25 @@ const CreateEventPage = () => {
               placeholder="event-secret-code-123"
               error={errors.qrSecret}
             />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Input
+              label="Phạm vi check-in (m)"
+              name="checkinRadius"
+              type="number"
+              min="0"
+              max="2000"
+              value={formData.checkinRadius}
+              onChange={handleChange}
+              placeholder="50"
+              error={errors.checkinRadius}
+            />
+            <div className="flex items-end pb-3">
+              <p className="text-xs text-ink/50">
+                * Từ 20-2000m, để 0 hoặc trống = không giới hạn
+              </p>
+            </div>
           </div>
 
           <div className="flex items-center justify-end gap-4 pt-4 border-t border-ink/10">
