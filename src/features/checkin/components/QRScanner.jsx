@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { BrowserMultiFormatReader } from '@zxing/browser';
 import { NotFoundException } from '@zxing/library';
 
@@ -7,6 +7,7 @@ export const QRScanner = ({ onScan, onError, className = '' }) => {
   const [hasCamera, setHasCamera] = useState(true);
   const videoRef = useRef(null);
   const readerRef = useRef(null);
+  const scannedRef = useRef(false);
 
   useEffect(() => {
     readerRef.current = new BrowserMultiFormatReader();
@@ -19,21 +20,24 @@ export const QRScanner = ({ onScan, onError, className = '' }) => {
     };
   }, []);
 
-  const stopScanning = () => {
+  const stopScanning = useCallback(() => {
     try {
       readerRef.current?.reset?.();
     } catch {
       // ignore
     }
     setIsScanning(false);
-  };
+  }, []);
 
-  const startScanning = async () => {
+  const startScanning = useCallback(async () => {
     try {
       const video = videoRef.current;
       if (!video) return;
 
+      // Reset scanned state when starting new scan
+      scannedRef.current = false;
       setIsScanning(true);
+      
       const devices = await BrowserMultiFormatReader.listVideoInputDevices();
       if (!devices?.length) {
         setHasCamera(false);
@@ -43,7 +47,8 @@ export const QRScanner = ({ onScan, onError, className = '' }) => {
 
       const preferredDeviceId = devices[devices.length - 1].deviceId;
       await readerRef.current.decodeFromVideoDevice(preferredDeviceId, video, (result, err) => {
-        if (result) {
+        if (result && !scannedRef.current) {
+          scannedRef.current = true;
           onScan?.(result.getText());
           stopScanning();
           return;
@@ -56,7 +61,7 @@ export const QRScanner = ({ onScan, onError, className = '' }) => {
       setHasCamera(false);
       onError?.('Không thể truy cập camera');
     }
-  };
+  }, [onScan, onError, stopScanning]);
 
   return (
     <section className={`w-full ${className}`}>

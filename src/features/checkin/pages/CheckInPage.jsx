@@ -1,5 +1,10 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { useParams, useSearchParams, Link, useNavigate } from "react-router-dom";
+import {
+  useParams,
+  useSearchParams,
+  Link,
+  useNavigate,
+} from "react-router-dom";
 import { eventsApi, usersApi, pointsApi } from "../../../api";
 import { QRScanner } from "../components/QRScanner";
 import { useCheckIn } from "../hooks/useCheckIn";
@@ -26,8 +31,8 @@ export const CheckInPage = () => {
   // Get user's current location
   const getUserLocation = useCallback(() => {
     if (!navigator.geolocation) {
-      setLocationError('Trình duyệt của bạn không hỗ trợ định vị GPS');
-      return Promise.reject(new Error('Geolocation not supported'));
+      setLocationError("Trình duyệt của bạn không hỗ trợ định vị GPS");
+      return Promise.reject(new Error("Geolocation not supported"));
     }
 
     return new Promise((resolve, reject) => {
@@ -40,20 +45,21 @@ export const CheckInPage = () => {
           resolve(location);
         },
         (error) => {
-          let errorMessage = 'Không thể lấy vị trí của bạn';
-          
+          let errorMessage = "Không thể lấy vị trí của bạn";
+
           switch (error.code) {
             case error.PERMISSION_DENIED:
-              errorMessage = 'Bạn đã từ chối quyền truy cập vị trí. Vui lòng bật định vị và thử lại.';
+              errorMessage =
+                "Bạn đã từ chối quyền truy cập vị trí. Vui lòng bật định vị và thử lại.";
               break;
             case error.POSITION_UNAVAILABLE:
-              errorMessage = 'Thông tin vị trí không có sẵn.';
+              errorMessage = "Thông tin vị trí không có sẵn.";
               break;
             case error.TIMEOUT:
-              errorMessage = 'Hết thời gian chờ lấy vị trí.';
+              errorMessage = "Hết thời gian chờ lấy vị trí.";
               break;
           }
-          
+
           setLocationError(errorMessage);
           reject(new Error(errorMessage));
         },
@@ -61,7 +67,7 @@ export const CheckInPage = () => {
           enableHighAccuracy: true,
           timeout: 10000,
           maximumAge: 60000,
-        }
+        },
       );
     });
   }, []);
@@ -86,16 +92,28 @@ export const CheckInPage = () => {
 
         // Get current badges before check-in
         const { data: beforeData } = await pointsApi.getMyBadges();
-        const beforeBadgeIds = new Set((beforeData || []).map(b => b.badgeId || b.id));
+        const beforeBadgeIds = new Set(
+          (beforeData || []).map((b) => b.badgeId || b.id),
+        );
 
         // Call checkIn API with location data
-        const response = await checkIn(eventId, token, location?.latitude, location?.longitude);
+        const response = await checkIn(
+          eventId,
+          token,
+          location?.latitude,
+          location?.longitude,
+        );
 
-        // Check if check-in failed due to distance
-        if (response && !response.success && response.distanceToEvent) {
-          setDistanceToEvent(response.distanceToEvent);
-          setRequiredRadius(response.requiredRadius || 50);
-          setStatus("out_of_range");
+        // Check if check-in failed due to distance or other reason with success: false
+        if (response && !response.success) {
+          if (response.distanceToEvent) {
+            setDistanceToEvent(response.distanceToEvent);
+            setRequiredRadius(response.requiredRadius || 50);
+            setStatus("out_of_range");
+          } else {
+            // Other failure with success: false from API
+            setStatus("error");
+          }
           return;
         }
 
@@ -104,7 +122,7 @@ export const CheckInPage = () => {
         const afterBadges = afterData || [];
 
         // Find newly earned badges
-        const newlyEarned = afterBadges.filter(b => {
+        const newlyEarned = afterBadges.filter((b) => {
           const id = b.badgeId || b.id;
           return !beforeBadgeIds.has(id);
         });
@@ -112,10 +130,24 @@ export const CheckInPage = () => {
         setNewBadges(newlyEarned);
         setStatus("success");
       } catch (err) {
-        // Handle specific error cases
-        if (err.response?.data?.message?.includes('vị trí') || 
-            err.response?.data?.message?.includes('location')) {
+        // Handle specific error cases from error response
+        const errorMessage = err.response?.data?.message || "";
+
+        if (
+          errorMessage.includes("vị trí") ||
+          errorMessage.includes("location") ||
+          errorMessage.includes("GPS")
+        ) {
           setStatus("location_denied");
+        } else if (
+          errorMessage.includes("khoảng cách") ||
+          errorMessage.includes("xa") ||
+          errorMessage.includes("phạm vi") ||
+          errorMessage.includes("range") ||
+          errorMessage.includes("distance")
+        ) {
+          // Try to extract distance info from error if available
+          setStatus("out_of_range");
         } else {
           setStatus("error");
         }
@@ -130,7 +162,7 @@ export const CheckInPage = () => {
         const { data } = await eventsApi.getById(eventId);
         const eventData = data?.data || data;
         setEvent(eventData);
-        
+
         // Set required radius from event data
         if (eventData?.checkinRadius) {
           setRequiredRadius(eventData.checkinRadius);
@@ -289,7 +321,9 @@ export const CheckInPage = () => {
           {!checkingRegistration &&
             isRegistered &&
             status !== "success" &&
-            status !== "error" && (
+            status !== "error" &&
+            status !== "out_of_range" &&
+            status !== "location_denied" && (
               <>
                 <QRScanner
                   onScan={(token) => {
@@ -318,7 +352,8 @@ export const CheckInPage = () => {
                 Cần quyền truy cập vị trí
               </p>
               <p className="mt-2 text-sm text-ink/70">
-                {LOCATION_ERROR || "Bạn cần cấp quyền truy cập vị trí để check-in sự kiện này."}
+                {LOCATION_ERROR ||
+                  "Bạn cần cấp quyền truy cập vị trí để check-in sự kiện này."}
               </p>
               <div className="mt-4 space-y-2">
                 <button
@@ -346,8 +381,13 @@ export const CheckInPage = () => {
                 Bạn đang quá xa sự kiện
               </p>
               <p className="mt-2 text-sm text-ink/70">
-                Bạn đang cách sự kiện <span className="font-bold">{Math.round(distanceToEvent || 0)}m</span>. 
-                Vui lòng di chuyển đến trong phạm vi <span className="font-bold">{requiredRadius}m</span> để check-in.
+                Bạn đang cách sự kiện{" "}
+                <span className="font-bold">
+                  {Math.round(distanceToEvent || 0)}m
+                </span>
+                . Vui lòng di chuyển đến trong phạm vi{" "}
+                <span className="font-bold">{requiredRadius}m</span> để
+                check-in.
               </p>
               <div className="mt-4 space-y-2">
                 <Link
@@ -404,15 +444,26 @@ export const CheckInPage = () => {
                     {newBadges.map((badge, idx) => {
                       const name = badge.badge?.name || badge.name;
                       const icon = badge.badge?.iconUrl || badge.iconUrl;
-                      const isFirstStep = name === 'First Green Step';
+                      const isFirstStep = name === "First Green Step";
                       return (
-                        <div key={idx} className={`flex items-center gap-2 px-3 py-2 rounded-xl ${isFirstStep ? 'bg-amber-100' : 'bg-white'}`}>
+                        <div
+                          key={idx}
+                          className={`flex items-center gap-2 px-3 py-2 rounded-xl ${isFirstStep ? "bg-amber-100" : "bg-white"}`}
+                        >
                           {icon ? (
-                            <img src={icon} alt={name} className="w-6 h-6 object-contain" />
+                            <img
+                              src={icon}
+                              alt={name}
+                              className="w-6 h-6 object-contain"
+                            />
                           ) : (
-                            <span className="text-lg">{isFirstStep ? '⚡' : '★'}</span>
+                            <span className="text-lg">
+                              {isFirstStep ? "⚡" : "★"}
+                            </span>
                           )}
-                          <span className={`text-xs font-bold ${isFirstStep ? 'text-amber-800' : 'text-primary'}`}>
+                          <span
+                            className={`text-xs font-bold ${isFirstStep ? "text-amber-800" : "text-primary"}`}
+                          >
                             {name}
                           </span>
                         </div>
@@ -423,7 +474,7 @@ export const CheckInPage = () => {
               )}
 
               <button
-                onClick={() => navigate('/profile')}
+                onClick={() => navigate("/profile")}
                 className="w-full rounded-2xl bg-primary py-3 text-sm font-bold text-white hover:bg-primary/90 transition"
               >
                 Xem hồ sơ & huy hiệu
