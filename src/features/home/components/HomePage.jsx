@@ -93,7 +93,7 @@ export const HomePage = () => {
           <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold leading-tight tracking-tight">Trái đất không có nút reset.</h1>
           <p className="text-white/80 font-medium text-sm sm:text-base lg:text-lg leading-relaxed">Tham gia sự kiện xanh. Tích điểm và dẫn đầu bảng xếp hạng cộng đồng.</p>
           <div className="pt-2 sm:pt-4 flex flex-col xs:flex-row gap-2 sm:gap-4">
-            <button onClick={() => navigate('/events')} className="bg-[#F75A0D] dark:bg-[#FF8566] text-white px-[clamp(0.75rem,2vw,1.5rem)] py-[clamp(0.5rem,1.5vw,0.875rem)] rounded-lg sm:rounded-xl font-bold text-[clamp(0.625rem,1.5vw,0.875rem)] shadow-xl shadow-[#F75A0D]/20 hover:scale-105 transition-transform whitespace-nowrap">
+            <button onClick={() => navigate('/events')} className="bg-[#F75A0D] dark:bg-[#A8D38E] text-white px-[clamp(0.75rem,2vw,1.5rem)] py-[clamp(0.5rem,1.5vw,0.875rem)] rounded-lg sm:rounded-xl font-bold text-[clamp(0.625rem,1.5vw,0.875rem)] shadow-xl shadow-[#F75A0D]/20 dark:shadow-[#A8D38E]/20 hover:scale-105 transition-transform whitespace-nowrap">
               <span className="hidden xs:inline">Tham gia Hành động</span>
               <span className="xs:hidden">Tham gia</span>
             </button>
